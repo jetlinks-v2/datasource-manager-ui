@@ -1,0 +1,19 @@
+{
+  "name": "datasource-manager-ui",
+  "version": "1.0.0",
+  "description": "数据源管理",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jetlinks-v2/datasource-manager-ui.git"
+  },
+  "keywords": [
+    "jetlinks"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jetlinks-v2/datasource-manager-ui/issues"
+  },
+  "homepage": "https://github.com/jetlinks-v2/datasource-manager-ui#readme"
+}
