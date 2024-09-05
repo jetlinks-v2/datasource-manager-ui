@@ -1,11 +1,10 @@
-const routerModules = import.meta.glob('./views/**/index.vue')
-
+const routerModules = import.meta.glob('./views/DataSource/**/index.vue')
 
 const getAsyncRoutesMap = () => {
     const modules = {}
     Object.keys(routerModules).forEach(item => {
         const code = item.replace('./views/', '').replace('/index.vue', '')
-        const key = `${code}`
+        const key = `system/${code}`
         modules[key] = routerModules[item]
     })
 
@@ -24,6 +23,16 @@ const getExtraRoutesMap = () => {
         //         }
         //     ]
         // }
+        'system/DataSource': {
+            children: [
+                {
+                    code: 'Management',
+                    name: '详情',
+                    url: '/management:id',
+                    component: () => import('./views/DataSource/Management/index.vue')
+                }
+            ]
+        },
     }
 }
 
