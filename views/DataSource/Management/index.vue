@@ -248,7 +248,6 @@ import {randomString} from '../../../utills/utils';
 import {FormInstance} from 'ant-design-vue';
 import _, {cloneDeep} from 'lodash-es';
 import type {dbColumnType, dictItemType, sourceItemType} from '../typing';
-import {log} from "echarts/types/src/util/log";
 
 const id = useRoute().query.id as string;
 
