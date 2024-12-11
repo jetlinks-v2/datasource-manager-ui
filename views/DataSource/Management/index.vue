@@ -4,44 +4,44 @@
       <div class="manager-container">
         <div class="left">
           <a-input-search
-              v-model:value="leftData.searchValue"
-              placeholder="请输入"
-              style="margin-bottom: 24px"
+            v-model:value="leftData.searchValue"
+            :placeholder="$t('Management.index.799232-0')"
+            style="margin-bottom: 24px"
           />
           <!-- 使用v-if用于解决异步加载数据后不展开的问题 -->
           <div class="tree">
             <a-tree
-                v-if="leftData.treeData.length > 0"
-                defaultExpandAll
-                :tree-data="leftData.treeData"
-                v-model:selectedKeys="leftData.selectedKeys"
-                @select="onSelect"
-                :showLine="{ showLeafIcon: false }"
-                :show-icon="true"
+              v-if="leftData.treeData.length > 0"
+              defaultExpandAll
+              :tree-data="leftData.treeData"
+              v-model:selectedKeys="leftData.selectedKeys"
+              @select="onSelect"
+              :showLine="{ showLeafIcon: false }"
+              :show-icon="true"
             >
               <template #title="{ dataRef }">
                 <j-ellipsis>
                   <div
-                      v-if="dataRef.root"
-                      style="
-                                            justify-content: space-between;
-                                            display: flex;
-                                            align-items: center;
-                                            width: 200px;
-                                        "
+                    v-if="dataRef.root"
+                    style="
+                      justify-content: space-between;
+                      display: flex;
+                      align-items: center;
+                      width: 200px;
+                    "
                   >
-                                        <span>
-                                            {{ dataRef.title }}
-                                        </span>
+                    <span>
+                      {{ dataRef.title }}
+                    </span>
                     <AIcon
-                        type="PlusOutlined"
-                        style="color: #1677ff"
-                        @click="addTable"
+                      type="PlusOutlined"
+                      style="color: #1677ff"
+                      @click="addTable"
                     />
                   </div>
                   <span v-else>
-                                        {{ dataRef.title }}
-                                    </span>
+                    {{ dataRef.title }}
+                  </span>
                 </j-ellipsis>
               </template>
             </a-tree>
@@ -49,134 +49,118 @@
         </div>
         <div class="right">
           <div class="btns">
-            <a-button type="primary" @click="clickSave"
-            >保存
-            </a-button
-            >
+            <a-button type="primary" @click="clickSave">{{ $t('Management.index.799232-1') }} </a-button>
           </div>
           <a-form ref="formRef" :model="table">
             <a-table
-                :columns="columns"
-                :dataSource="table.data"
-                :pagination="false"
-                :scroll="{ y: 500 }"
+              :columns="columns"
+              :dataSource="table.data"
+              :pagination="false"
+              :scroll="{ y: 500 }"
             >
               <template #bodyCell="{ column, record, index }">
                 <template v-if="column.key === 'name'">
                   <a-form-item
-                      :name="['data', index, 'name']"
-                      :rules="[
-                                            {
-                                                max: 64,
-                                                message: '最多可输入64个字符',
-                                            },
-                                            {
-                                                required: true,
-                                                message: '请输入名称',
-                                            },
-                                        ]"
+                    :name="['data', index, 'name']"
+                    :rules="[
+                      {
+                        max: 64,
+                        message: $t('Management.index.799232-2'),
+                      },
+                      {
+                        required: true,
+                        message: $t('Management.index.799232-3'),
+                      },
+                    ]"
                   >
                     <a-input
-                        :disabled="record.old_id"
-                        v-model:value="record.name"
-                        placeholder="请输入名称"
+                      :disabled="record.old_id"
+                      v-model:value="record.name"
+                      :placeholder="$t('Management.index.799232-3')"
                     />
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'type'">
                   <a-form-item
-                      :name="['data', index, 'type']"
-                      :rules="[
-                                            {
-                                                max: 64,
-                                                message: '最多可输入64个字符',
-                                            },
-                                            {
-                                                required: true,
-                                                message: '请输入类型',
-                                            },
-                                        ]"
+                    :name="['data', index, 'type']"
+                    :rules="[
+                      {
+                        max: 64,
+                        message: $t('Management.index.799232-2'),
+                      },
+                      {
+                        required: true,
+                        message: $t('Management.index.799232-4'),
+                      },
+                    ]"
                   >
                     <a-input
-                        :disabled="record.old_id"
-                        v-model:value="record.type"
-                        placeholder="请输入类型"
+                      :disabled="record.old_id"
+                      v-model:value="record.type"
+                      :placeholder="$t('Management.index.799232-4')"
                     />
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'length'">
-                  <a-form-item
-                      :name="['data', index, 'length']"
-                  >
+                  <a-form-item :name="['data', index, 'length']">
                     <a-input-number
-                        v-model:value="record.length"
-                        :min="0"
-                        :max="99999"
-                        style="width: 100%"
+                      v-model:value="record.length"
+                      :min="0"
+                      :max="99999"
+                      style="width: 100%"
                     />
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'scale'">
-                  <a-form-item
-                      :name="['data', index, 'scale']"
-                  >
+                  <a-form-item :name="['data', index, 'scale']">
                     <a-input-number
-                        v-model:value="record.scale"
-                        :min="0"
-                        :max="99999"
-                        style="width: 100%"
+                      v-model:value="record.scale"
+                      :min="0"
+                      :max="99999"
+                      style="width: 100%"
                     />
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'notnull'">
                   <a-form-item
-                      :name="['data', index, 'notnull']"
-                      :rules="[
-                                            {
-                                                required: true,
-                                                message: '请选择是否不能为空',
-                                            },
-                                        ]"
+                    :name="['data', index, 'notnull']"
+                    :rules="[
+                      {
+                        required: true,
+                        message: $t('Management.index.799232-5'),
+                      },
+                    ]"
                   >
                     <a-radio-group
-                        v-model:value="record.notnull"
-                        button-style="solid"
+                      v-model:value="record.notnull"
+                      button-style="solid"
                     >
-                      <a-radio-button :value="true"
-                      >是
-                      </a-radio-button
-                      >
-                      <a-radio-button :value="false"
-                      >否
-                      </a-radio-button
-                      >
+                      <a-radio-button :value="true">{{ $t('Management.index.799232-6') }} </a-radio-button>
+                      <a-radio-button :value="false">{{ $t('Management.index.799232-7') }} </a-radio-button>
                     </a-radio-group>
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'comment'">
-                  <a-form-item
-                      :name="['data', index, 'comment']"
-                  >
+                  <a-form-item :name="['data', index, 'comment']">
                     <a-input
-                        v-model:value="record.comment"
-                        placeholder="请输入说明"
+                      v-model:value="record.comment"
+                      :placeholder="$t('Management.index.799232-8')"
                     />
                   </a-form-item>
                 </template>
                 <template v-else-if="column.key === 'action'">
                   <j-permission-button
-                      hasPermission="system/DataSource:delete"
-                      type="link"
-                      :tooltip="{ title: '删除' }"
-                      :danger="true"
-                      :popConfirm="{
-                                            title: `确认删除`,
-                                            onConfirm: () =>
-                                                clickDel(record, index),
-                                        }"
-                      :disabled="record.status"
+                    hasPermission="system/DataSource:delete"
+                    type="link"
+                    :tooltip="{ title: $t('Management.index.799232-9') }"
+                    :danger="true"
+                    :popConfirm="{
+                      title: $t('Management.index.799232-10'),
+                      onConfirm: () => clickDel(record, index),
+                    }"
+                    :disabled="record.status"
                   >
-                    <AIcon type="DeleteOutlined"/>
+                    <AIcon type="DeleteOutlined" />
                   </j-permission-button>
                 </template>
               </template>
@@ -184,51 +168,48 @@
           </a-form>
 
           <a-button class="add-row" @click="addRow">
-            <AIcon type="PlusOutlined"/>
-            新增行
+            <AIcon type="PlusOutlined" />
+            {{ $t('Management.index.799232-11') }}
           </a-button>
         </div>
       </div>
     </FullPage>
     <a-modal
-        :visible="true"
-        v-if="dialog.visible"
-        title="新增"
-        @ok="handleOk"
-        @cancel="handleCancel"
+      :visible="true"
+      v-if="dialog.visible"
+      :title="$t('Management.index.799232-12')"
+      @ok="handleOk"
+      @cancel="handleCancel"
     >
       <a-form :model="dialog.form" ref="addFormRef" :layout="'vertical'">
         <a-form-item
-            label="名称"
-            name="name"
-            :required="true"
-            :rules="[
-                        {
-                            required: true,
-                            message: '请输入名称',
-                        },
-                        {
-                            max: 64,
-                            message: '最多可输入64个字符',
-                            trigger: 'change',
-                        },
-                        {
-                            // pattern: /^[0-9].*$/,
-                            // message: '不能以数字开头',
-                            trigger: 'change',
-                            validator: checkName,
-                        },
-                        {
-                            pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
-                            message: '名称只能由英文、汉字、下划线、数字组成',
-                            trigger: 'change',
-                        },
-                    ]"
+          :label="$t('Management.index.799232-13')"
+          name="name"
+          :required="true"
+          :rules="[
+            {
+              required: true,
+              message: $t('Management.index.799232-3'),
+            },
+            {
+              max: 64,
+              message: $t('Management.index.799232-2'),
+              trigger: 'change',
+            },
+            {
+              // pattern: /^[0-9].*$/,
+              // message: $t('Management.index.799232-24'),
+              trigger: 'change',
+              validator: checkName,
+            },
+            {
+              pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
+              message: $t('Management.index.799232-14'),
+              trigger: 'change',
+            },
+          ]"
         >
-          <a-input
-              v-model:value="dialog.form.name"
-              placeholder="请输入名称"
-          />
+          <a-input v-model:value="dialog.form.name" :placeholder="$t('Management.index.799232-3')" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -242,51 +223,54 @@ import {
   rdbTables_api,
   saveTable_api,
   delSaveRow_api,
-} from '../../../api/dataSource';
-import {onlyMessage} from '@jetlinks-web/utils';
-import {randomString} from '../../../utills/utils';
-import {FormInstance} from 'ant-design-vue';
-import _, {cloneDeep} from 'lodash-es';
-import type {dbColumnType, dictItemType, sourceItemType} from '../typing';
+} from "../../../api/dataSource";
+import { onlyMessage } from "@jetlinks-web/utils";
+import { randomString } from "../../../utills/utils";
+import { FormInstance } from "ant-design-vue";
+import _, { cloneDeep } from "lodash-es";
+import type { dbColumnType, dictItemType, sourceItemType } from "../typing";
+import { useI18n } from 'vue-i18n';
+
+const { t: $t } = useI18n();
 
 const id = useRoute().query.id as string;
 
 const columns = [
   {
-    title: '列名',
-    dataIndex: 'name',
-    key: 'name',
+    title: $t('Management.index.799232-15'),
+    dataIndex: "name",
+    key: "name",
   },
   {
-    title: '类型',
-    dataIndex: 'type',
-    key: 'type',
+    title: $t('Management.index.799232-16'),
+    dataIndex: "type",
+    key: "type",
   },
   {
-    title: '长度',
-    dataIndex: 'length',
-    key: 'length',
+    title: $t('Management.index.799232-17'),
+    dataIndex: "length",
+    key: "length",
   },
   {
-    title: '精度',
-    dataIndex: 'scale',
-    key: 'scale',
+    title: $t('Management.index.799232-18'),
+    dataIndex: "scale",
+    key: "scale",
   },
   {
-    title: '不能为空',
-    dataIndex: 'notnull',
-    key: 'notnull',
+    title: $t('Management.index.799232-19'),
+    dataIndex: "notnull",
+    key: "notnull",
     width: 130,
   },
   {
-    title: '说明',
-    dataIndex: 'comment',
-    key: 'comment',
+    title: $t('Management.index.799232-20'),
+    dataIndex: "comment",
+    key: "comment",
   },
   {
-    title: '操作',
-    dataIndex: 'action',
-    key: 'action',
+    title: $t('Management.index.799232-21'),
+    dataIndex: "action",
+    key: "action",
   },
 ];
 const formRef = ref();
@@ -302,42 +286,39 @@ const info = reactive({
 });
 
 const leftData = reactive({
-  searchValue: '',
+  searchValue: "",
   sourceTree: [] as dictItemType[],
   treeData: [] as any[],
   selectedKeys: [] as string[],
-  oldKey: '',
+  oldKey: "",
 });
 
 const queryTables = (key: string) => {
   if (key) {
     rdbTables_api(id, key).then((resp: any) => {
-      table.data = resp.result.columns.map(
-          (item: object, index: number) => ({
-            old_id: randomString(),
-            ...item,
-            index,
-          }),
-      );
+      table.data = resp.result.columns.map((item: object, index: number) => ({
+        old_id: randomString(),
+        ...item,
+        index,
+      }));
     });
   }
 };
 
 const handleSearch = (refresh?: boolean) => {
   rdbTree_api(id)
-      .then((resp: any) => {
-        if (resp.status === 200) {
-          leftData.sourceTree = resp.result;
-          if (refresh) {
-            leftData.selectedKeys = [resp.result[0]?.name];
-            queryTables(resp.result[0]?.name);
-          } else {
-            queryTables(leftData.selectedKeys[0]);
-          }
+    .then((resp: any) => {
+      if (resp.status === 200) {
+        leftData.sourceTree = resp.result;
+        if (refresh) {
+          leftData.selectedKeys = [resp.result[0]?.name];
+          queryTables(resp.result[0]?.name);
+        } else {
+          queryTables(leftData.selectedKeys[0]);
         }
-      })
-      .catch(() => {
-      });
+      }
+    })
+    .catch(() => {});
 };
 
 const onSelect = (selectedKeys: string[], e?: any) => {
@@ -359,16 +340,16 @@ const addTable = (e: Event) => {
 };
 
 watch(
-    () => id,
-    (newId) => {
-      if (newId) {
-        getInfo(newId);
-        handleSearch(true);
-      }
-    },
-    {
-      immediate: true,
-    },
+  () => id,
+  (newId) => {
+    if (newId) {
+      getInfo(newId);
+      handleSearch(true);
+    }
+  },
+  {
+    immediate: true,
+  }
 );
 
 const table = reactive({
@@ -380,18 +361,16 @@ const addRow = () => {
     scale: 0,
     length: 0,
     notnull: false,
-    type: '',
-    comment: '',
-    name: '',
+    type: "",
+    comment: "",
+    name: "",
   };
   table.data.push(initData);
 };
 
 const clickDel = (row: any, index: number) => {
   if (row.scale !== undefined) {
-    const response = delSaveRow_api(id, leftData.selectedKeys[0], [
-      row.name,
-    ]);
+    const response = delSaveRow_api(id, leftData.selectedKeys[0], [row.name]);
     response.then((resp: any) => {
       if (resp.status === 200) {
         table.data.splice(index, 1);
@@ -411,7 +390,7 @@ const clickSave = () => {
       delete item?.index;
     });
     if (!columns.length) {
-      onlyMessage('请配置数据源字段', 'error');
+      onlyMessage($t('Management.index.799232-22'), "error");
       return;
     }
     const params = {
@@ -420,7 +399,7 @@ const clickSave = () => {
     };
     saveTable_api(id, params).then((resp) => {
       if (resp.status === 200) {
-        onlyMessage('操作成功');
+        onlyMessage($t('Management.index.799232-23'));
         queryTables(params.name);
       }
     });
@@ -431,30 +410,30 @@ const addFormRef = ref<FormInstance>();
 const dialog = reactive({
   visible: false,
   form: {
-    name: '',
+    name: "",
   },
 });
 
 const handleOk = () => {
   addFormRef.value &&
-  addFormRef.value.validate().then(() => {
-    const name = dialog.form.name;
-    leftData.sourceTree.unshift({
-      id: name,
-      name,
+    addFormRef.value.validate().then(() => {
+      const name = dialog.form.name;
+      leftData.sourceTree.unshift({
+        id: name,
+        name,
+      });
+      leftData.oldKey = name;
+      leftData.selectedKeys = [name];
+      table.data = [];
+      dialog.visible = false;
+      addFormRef.value?.resetFields();
     });
-    leftData.oldKey = name;
-    leftData.selectedKeys = [name];
-    table.data = [];
-    dialog.visible = false;
-    addFormRef.value?.resetFields();
-  });
   saveTable_api(id, {
     name: dialog.form.name,
     columns: [],
   }).then((resp) => {
     if (resp.status === 200) {
-      onlyMessage('操作成功');
+      onlyMessage($t('Management.index.799232-23'));
     }
   });
 };
@@ -465,57 +444,57 @@ const handleCancel = () => {
 };
 
 watch(
-    [() => leftData.searchValue, () => leftData.sourceTree],
-    ([m, n]) => {
-      if (!!m) {
-        const list = n.filter((item) => {
-          return item.name.includes(m);
-        });
-        leftData.treeData = [
-          {
-            title: info.data.shareConfig?.schema,
-            key: info.data.shareConfig?.schema,
-            root: true,
-            children: list.map((item) => ({
-              title: item.name,
-              key: item.name,
-            })),
-          },
-        ];
-        if (!_.map(list, 'name').includes(leftData.selectedKeys[0])) {
-          leftData.selectedKeys = [list[0]?.name];
-          queryTables(list[0]?.name);
-        }
-      } else {
-        leftData.treeData = [
-          {
-            title: info.data.shareConfig?.schema,
-            key: info.data.shareConfig?.schema,
-            root: true,
-            children: leftData.sourceTree.map((item) => ({
-              title: item.name,
-              key: item.name,
-            })),
-          },
-        ];
+  [() => leftData.searchValue, () => leftData.sourceTree],
+  ([m, n]) => {
+    if (!!m) {
+      const list = n.filter((item) => {
+        return item.name.includes(m);
+      });
+      leftData.treeData = [
+        {
+          title: info.data.shareConfig?.schema,
+          key: info.data.shareConfig?.schema,
+          root: true,
+          children: list.map((item) => ({
+            title: item.name,
+            key: item.name,
+          })),
+        },
+      ];
+      if (!_.map(list, "name").includes(leftData.selectedKeys[0])) {
+        leftData.selectedKeys = [list[0]?.name];
+        queryTables(list[0]?.name);
       }
-    },
-    {deep: true},
+    } else {
+      leftData.treeData = [
+        {
+          title: info.data.shareConfig?.schema,
+          key: info.data.shareConfig?.schema,
+          root: true,
+          children: leftData.sourceTree.map((item) => ({
+            title: item.name,
+            key: item.name,
+          })),
+        },
+      ];
+    }
+  },
+  { deep: true }
 );
 
 const checkName = (_: any, value: any) =>
-    new Promise((resolve, reject) => {
-      if (value) {
-        const first = value.slice(0, 1);
-        if (typeof Number(first) === 'number' && !isNaN(Number(first))) {
-          reject('不能以数字开头');
-        } else {
-          resolve('');
-        }
+  new Promise((resolve, reject) => {
+    if (value) {
+      const first = value.slice(0, 1);
+      if (typeof Number(first) === "number" && !isNaN(Number(first))) {
+        reject($t('Management.index.799232-24'));
       } else {
-        resolve('');
+        resolve("");
       }
-    });
+    } else {
+      resolve("");
+    }
+  });
 </script>
 
 <style lang="less" scoped>
