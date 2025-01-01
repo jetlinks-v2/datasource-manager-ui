@@ -2,6 +2,12 @@ export default [
     {
         code: 'system',
         name: '系统管理',
+        i18nMessages: {
+            name: {
+                zh_CN: '系统管理',
+                en_US: 'System Management',
+            }
+        },
         owner: 'iot',
         id: 'fd1670b860ae58cc58bcd01d027ccd35',
         url: '/system',
@@ -13,6 +19,12 @@ export default [
             {
                 code: 'system/DataSource',
                 name: '数据源管理',
+                i18nMessages: {
+                    name: {
+                        zh_CN: '数据源管理',
+                        en_US: 'Data Source Management',
+                    }
+                },
                 owner: 'iot',
                 //parentId: '3',
                 id: 'c62a6bd5018763dae9fc0d869b6df3a2',
@@ -25,6 +37,10 @@ export default [
                     {
                         id: 'manage',
                         name: '管理',
+                        i18nMessages: {
+                            zh_CN: '管理',
+                            en_US: 'Manage',
+                        },
                         permissions: [
                             {
                                 permission: 'datasource-config',
@@ -41,6 +57,10 @@ export default [
                     {
                         id: 'delete',
                         name: '删除',
+                        i18nMessages: {
+                            zh_CN: '删除',
+                            en_US: 'Delete',
+                        },
                         permissions: [
                             {
                                 permission: 'datasource-config',
@@ -51,6 +71,10 @@ export default [
                     {
                         id: 'action',
                         name: '启用/禁用',
+                        i18nMessages: {
+                            zh_CN: '启用/禁用',
+                            en_US: 'Enable/Disable',
+                        },
                         permissions: [
                             {
                                 permission: 'datasource-config',
@@ -61,6 +85,10 @@ export default [
                     {
                         id: 'update',
                         name: '编辑',
+                        i18nMessages: {
+                            zh_CN: '编辑',
+                            en_US: 'Edit',
+                        },
                         permissions: [
                             {
                                 permission: 'datasource-config',
@@ -77,6 +105,10 @@ export default [
                     {
                         id: 'add',
                         name: '新增',
+                        i18nMessages: {
+                            zh_CN: '新增',
+                            en_US: 'Add',
+                        },
                         permissions: [
                             {
                                 permission: 'datasource-config',
