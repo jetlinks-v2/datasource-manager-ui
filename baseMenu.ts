@@ -6,6 +6,7 @@ export default [
             name: {
                 zh_CN: '系统管理',
                 en_US: 'System Management',
+                en: 'System Management',
             }
         },
         owner: 'iot',
@@ -23,6 +24,7 @@ export default [
                     name: {
                         zh_CN: '数据源管理',
                         en_US: 'Data Source Management',
+                        en: 'Data Source Management',
                     }
                 },
                 owner: 'iot',
@@ -40,6 +42,7 @@ export default [
                         i18nMessages: {
                             zh_CN: '管理',
                             en_US: 'Manage',
+                            en: 'Manage',
                         },
                         permissions: [
                             {
@@ -60,6 +63,7 @@ export default [
                         i18nMessages: {
                             zh_CN: '删除',
                             en_US: 'Delete',
+                            en: 'Delete',
                         },
                         permissions: [
                             {
@@ -74,6 +78,7 @@ export default [
                         i18nMessages: {
                             zh_CN: '启用/禁用',
                             en_US: 'Enable/Disable',
+                            en: 'Enable/Disable',
                         },
                         permissions: [
                             {
@@ -88,6 +93,7 @@ export default [
                         i18nMessages: {
                             zh_CN: '编辑',
                             en_US: 'Edit',
+                            en: 'Edit',
                         },
                         permissions: [
                             {
@@ -108,6 +114,7 @@ export default [
                         i18nMessages: {
                             zh_CN: '新增',
                             en_US: 'Add',
+                            en: 'Add',
                         },
                         permissions: [
                             {

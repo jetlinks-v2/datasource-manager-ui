@@ -1,4 +1,5 @@
 const routerModules = import.meta.glob('./views/DataSource/**/index.vue')
+import i18n from "@/locales";
 
 const getAsyncRoutesMap = () => {
     const modules = {}
@@ -27,7 +28,7 @@ const getExtraRoutesMap = () => {
             children: [
                 {
                     code: 'Management',
-                    name: '详情',
+                    name: i18n.global.t('datasource-manager-ui.index.024689-0'),
                     url: '/management:id',
                     component: () => import('./views/DataSource/Management/index.vue')
                 }
