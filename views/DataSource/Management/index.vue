@@ -260,7 +260,7 @@ const columns = [
     title: $t('Management.index.799232-19'),
     dataIndex: "notnull",
     key: "notnull",
-    width: 130,
+    width: 170,
   },
   {
     title: $t('Management.index.799232-20'),
