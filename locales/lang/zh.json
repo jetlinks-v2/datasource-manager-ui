@@ -4,7 +4,7 @@
     "DataSource.index.625668-2": "暂不支持管理功能",
     "DataSource.index.625668-3": "管理",
     "DataSource.index.625668-4": "请先启用数据源",
-    "DataSource.index.625668-5": "确认${\r\n                                        table.getRowStatus(slotProps)\r\n                                            ? '禁用'\r\n                                            : '启用'\r\n                                    }？",
+    "DataSource.index.625668-5": "确认{0}？",
     "DataSource.index.625668-6": "禁用",
     "DataSource.index.625668-7": "启用",
     "DataSource.index.625668-8": "请先禁用，再删除",

@@ -80,7 +80,11 @@
                   :hasPermission="`${permission}:action`"
                   type="link"
                   :popConfirm="{
-                                    title: $t('DataSource.index.625668-5', []),
+                                    title: $t('DataSource.index.625668-5', [
+                                        table.getRowStatus(slotProps)
+                                            ? $t('DataSource.index.625668-6')
+                                            : $t('DataSource.index.625668-7')
+                                    ]),
                                     onConfirm: () =>
                                         table.clickChangeStatus(slotProps),
                                 }"
