@@ -4,7 +4,7 @@
     "DataSource.index.625668-2": "Management function is currently not supported",
     "DataSource.index.625668-3": "Administration",
     "DataSource.index.625668-4": "Please enable the data source first",
-    "DataSource.index.625668-5": "",
+    "DataSource.index.625668-5": "Confirm {0}?",
     "DataSource.index.625668-6": "Disable",
     "DataSource.index.625668-7": "Enable",
     "DataSource.index.625668-8": "Please disable first, then delete",
