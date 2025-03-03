@@ -263,7 +263,7 @@ const getTypeOption = () => {
     const result = resp.result as dictItemType[];
     const options: any = [];
     result.forEach((item) => {
-      if (item.name !== "redis") {
+      if (!['redis', 'api'].includes(item.id)) {
         options.push({
           label: item.name,
           value: item.id,
