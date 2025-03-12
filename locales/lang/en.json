@@ -49,7 +49,7 @@
     "components.EditDialog.725183-3": "type",
     "components.EditDialog.725183-4": "Please select type",
     "components.EditDialog.725183-5": "Please enter URL",
-    "components.EditDialog.725183-6": "Please enter the r2bdc or jdbc connection address, for example: r2dbc: mysql://127.0.0.1:3306/test",
+    "components.EditDialog.725183-6": "Please enter the r2dbc or jdbc connection address, for example: r2dbc: mysql://127.0.0.1:3306/test",
     "components.EditDialog.725183-7": "Manage address",
     "components.EditDialog.725183-8": "Please enter the management address",
     "components.EditDialog.725183-9": "Please enter the management address, for example: http://localhost:15672",

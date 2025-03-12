@@ -49,7 +49,7 @@
     "components.EditDialog.725183-3": "类型",
     "components.EditDialog.725183-4": "请选择类型",
     "components.EditDialog.725183-5": "请输入URL",
-    "components.EditDialog.725183-6": "请输入r2bdc或者jdbc连接地址，示例：r2dbc:mysql://127.0.0.1:3306/test",
+    "components.EditDialog.725183-6": "请输入r2dbc或者jdbc连接地址，示例：r2dbc:mysql://127.0.0.1:3306/test",
     "components.EditDialog.725183-7": "管理地址",
     "components.EditDialog.725183-8": "请输入管理地址",
     "components.EditDialog.725183-9": "请输入管理地址，示例：http://localhost:15672",
