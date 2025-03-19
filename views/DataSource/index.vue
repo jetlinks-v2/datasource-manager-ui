@@ -176,17 +176,19 @@ const columns = [
       type: 'select',
       options: () =>
           new Promise((resolve) => {
-            if (table.typeOptions.value.length > 0)
-              return resolve(table.typeOptions.value);
-            getDataTypeDict_api().then((resp: any) => {
-              const result = resp.result as dictItemType[];
-              resolve(
-                  result.map((item) => ({
-                    label: item.name,
-                    value: item.id,
-                  })),
-              );
-            });
+            if (table.typeOptions.value.length > 0) {
+              resolve(table.typeOptions.value.filter(item => !['redis', 'api'].includes(item.value)));
+            } else {
+              getDataTypeDict_api().then((resp: any) => {
+                const result = resp.result as dictItemType[];
+                resolve(
+                    result.filter(item => !['redis', 'api'].includes(item.id)).map((item) => ({
+                      label: item.name,
+                      value: item.id,
+                    })),
+                );
+              });
+            }
           }),
     },
     scopedSlots: true,

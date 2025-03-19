@@ -55,7 +55,7 @@
     "components.EditDialog.725183-9": "请输入管理地址，示例：http://localhost:15672",
     "components.EditDialog.725183-10": "链接地址",
     "components.EditDialog.725183-11": "请输入链接地址",
-    "components.EditDialog.725183-12": "请输入链接地址，示例：localhost:5672",
+    "components.EditDialog.725183-12": "请输入链接地址，示例：http://xxx.xxx",
     "components.EditDialog.725183-13": "用户名",
     "components.EditDialog.725183-14": "请输入用户名",
     "components.EditDialog.725183-15": "密码",

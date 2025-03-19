@@ -81,13 +81,13 @@
             :name="['shareConfig', 'addresses']"
             :label="$t('components.EditDialog.725183-10')"
             :rules="[
-              { required: true, message: $t('components.EditDialog.725183-11') },
-              { validator: validateAddress },
+              { required: true, message: $t('components.EditDialog.725183-11') }
             ]"
           >
+            <!--            { validator: validateAddress },-->
             <a-input
               v-model:value="form.data.shareConfig.addresses"
-              :placeholder="$t('components.EditDialog.725183-12')"
+              :placeholder="$t('components.EditDialog.725183-11')"
             />
           </a-form-item>
         </a-col>
@@ -247,11 +247,15 @@ const validateAddress = (_rule: Rule, value: string): Promise<any> => {
     if (!value) {
       resolve("");
     } else {
-      const reg =
-        /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
-      if (reg.test(value)) {
+      const arr = value.split("://");
+      if (arr[0] === "http" || arr[0] === "https") {
         resolve("");
       } else {
+      // const reg =
+      //   /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+      // if (reg.test(value)) {
+      //   resolve("");
+      // } else {
         reject($t('components.EditDialog.725183-26'));
       }
     }
