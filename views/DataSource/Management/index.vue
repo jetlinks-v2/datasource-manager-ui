@@ -185,7 +185,6 @@
         <a-form-item
           :label="$t('Management.index.799232-13')"
           name="name"
-          :required="true"
           :rules="[
             {
               required: true,
@@ -415,27 +414,26 @@ const dialog = reactive({
 });
 
 const handleOk = () => {
-  addFormRef.value &&
-    addFormRef.value.validate().then(() => {
+    addFormRef.value?.validate().then(() => {
       const name = dialog.form.name;
-      leftData.sourceTree.unshift({
-        id: name,
-        name,
+      saveTable_api(id, {
+        name: name,
+        columns: [],
+      }).then((resp) => {
+        if (resp.success) {
+          leftData.sourceTree.unshift({
+            id: name,
+            name,
+          });
+          leftData.oldKey = name;
+          leftData.selectedKeys = [name];
+          table.data = [];
+          dialog.visible = false;
+          addFormRef.value?.resetFields();
+          onlyMessage($t('Management.index.799232-23'));
+        }
       });
-      leftData.oldKey = name;
-      leftData.selectedKeys = [name];
-      table.data = [];
-      dialog.visible = false;
-      addFormRef.value?.resetFields();
     });
-  saveTable_api(id, {
-    name: dialog.form.name,
-    columns: [],
-  }).then((resp) => {
-    if (resp.status === 200) {
-      onlyMessage($t('Management.index.799232-23'));
-    }
-  });
 };
 
 const handleCancel = () => {
@@ -507,12 +505,14 @@ const checkName = (_: any, value: any) =>
   .left {
     flex-basis: 280px;
     padding: 0 24px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
     width: 300px;
     height: 100%;
 
     .tree {
-      height: 680px;
+      min-height: 0;
+      flex: 1;
       overflow-y: auto;
     }
   }
