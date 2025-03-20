@@ -11,13 +11,14 @@
           <!-- 使用v-if用于解决异步加载数据后不展开的问题 -->
           <div class="tree">
             <a-tree
-              v-if="leftData.treeData.length > 0"
+              v-if="treeData.length > 0"
               defaultExpandAll
-              :tree-data="leftData.treeData"
+              :tree-data="treeData"
               v-model:selectedKeys="leftData.selectedKeys"
               @select="onSelect"
               :showLine="{ showLeafIcon: false }"
               :show-icon="true"
+              v-model:expandedKeys="leftData.expandedKeys"
             >
               <template #title="{ dataRef }">
                 <j-ellipsis>
@@ -48,10 +49,37 @@
           </div>
         </div>
         <div class="right">
-          <div class="btns">
-            <a-button type="primary" @click="clickSave">{{ $t('Management.index.799232-1') }} </a-button>
-          </div>
-          <a-form ref="formRef" :model="table">
+          <a-form ref="formRef" :model="table" layout="vertical">
+            <a-form-item
+                :label="$t('Management.index.799232-13')"
+                name="name"
+                validate-first
+                :rules="[
+                  {
+                    required: true,
+                    message: $t('Management.index.799232-3'),
+                  },
+                  {
+                    max: 64,
+                    message: $t('Management.index.799232-2'),
+                    trigger: 'change',
+                  },
+                  {
+                    trigger: 'change',
+                    validator: checkName,
+                  },
+                  {
+                    pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
+                    message: $t('Management.index.799232-14'),
+                    trigger: 'change',
+                  },
+              ]"
+            >
+              <a-input :disabled="!dialog.visible" v-model:value="table.name" :placeholder="$t('Management.index.799232-3')" />
+            </a-form-item>
+            <div class="ant-form-item-label" style="margin-top: 16px">
+              <label class="ant-form-item-required">{{ $t('Management.index.799232-25') }}</label>
+            </div>
             <a-table
               :columns="columns"
               :dataSource="table.data"
@@ -171,47 +199,13 @@
             <AIcon type="PlusOutlined" />
             {{ $t('Management.index.799232-11') }}
           </a-button>
+
+          <div class="btns">
+            <a-button type="primary" @click="clickSave">{{ $t('Management.index.799232-1') }} </a-button>
+          </div>
         </div>
       </div>
     </FullPage>
-    <a-modal
-      :visible="true"
-      v-if="dialog.visible"
-      :title="$t('Management.index.799232-12')"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <a-form :model="dialog.form" ref="addFormRef" :layout="'vertical'">
-        <a-form-item
-          :label="$t('Management.index.799232-13')"
-          name="name"
-          :rules="[
-            {
-              required: true,
-              message: $t('Management.index.799232-3'),
-            },
-            {
-              max: 64,
-              message: $t('Management.index.799232-2'),
-              trigger: 'change',
-            },
-            {
-              // pattern: /^[0-9].*$/,
-              // message: $t('Management.index.799232-24'),
-              trigger: 'change',
-              validator: checkName,
-            },
-            {
-              pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
-              message: $t('Management.index.799232-14'),
-              trigger: 'change',
-            },
-          ]"
-        >
-          <a-input v-model:value="dialog.form.name" :placeholder="$t('Management.index.799232-3')" />
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </j-page-container>
 </template>
 
@@ -225,8 +219,7 @@ import {
 } from "../../../api/dataSource";
 import { onlyMessage } from "@jetlinks-web/utils";
 import { randomString } from "../../../utills/utils";
-import { FormInstance } from "ant-design-vue";
-import _, { cloneDeep } from "lodash-es";
+import { cloneDeep } from "lodash-es";
 import type { dbColumnType, dictItemType, sourceItemType } from "../typing";
 import { useI18n } from 'vue-i18n';
 
@@ -273,13 +266,6 @@ const columns = [
   },
 ];
 const formRef = ref();
-
-const getInfo = (_id: string) => {
-  getDataSourceInfo_api(_id).then((resp: any) => {
-    info.data = resp.result;
-  });
-};
-
 const info = reactive({
   data: {} as sourceItemType,
 });
@@ -289,17 +275,51 @@ const leftData = reactive({
   sourceTree: [] as dictItemType[],
   treeData: [] as any[],
   selectedKeys: [] as string[],
+  expandedKeys: [] as string[],
   oldKey: "",
 });
 
+const table = reactive({
+  data: [] as dbColumnType[],
+  name: undefined
+});
+const dialog = reactive({
+  visible: false,
+});
+const getInfo = (_id: string) => {
+  getDataSourceInfo_api(_id).then((resp: any) => {
+    info.data = resp.result;
+    leftData.expandedKeys = [info.data.shareConfig?.schema]
+  });
+};
+
+const treeData = computed(() => {
+  const list = leftData.sourceTree.filter((item) => {
+    return !leftData.searchValue || item.name.includes(leftData.searchValue);
+  });
+  return [
+    {
+      title: info.data.shareConfig?.schema,
+      key: info.data.shareConfig?.schema,
+      root: true,
+      children: list.map((item) => ({
+        title: item.name,
+        key: item.name,
+      })),
+    },
+  ];
+})
+
+// 查询表格字段
 const queryTables = (key: string) => {
   if (key) {
     rdbTables_api(id, key).then((resp: any) => {
-      table.data = resp.result.columns.map((item: object, index: number) => ({
+      table.data = (resp.result?.columns || []).map((item: any, index: number) => ({
         old_id: randomString(),
         ...item,
         index,
       }));
+      table.name = resp.result?.name
     });
   }
 };
@@ -307,7 +327,7 @@ const queryTables = (key: string) => {
 const handleSearch = (refresh?: boolean) => {
   rdbTree_api(id)
     .then((resp: any) => {
-      if (resp.status === 200) {
+      if (resp.success) {
         leftData.sourceTree = resp.result;
         if (refresh) {
           leftData.selectedKeys = [resp.result[0]?.name];
@@ -336,6 +356,9 @@ const onSelect = (selectedKeys: string[], e?: any) => {
 const addTable = (e: Event) => {
   e?.stopPropagation();
   dialog.visible = true;
+  leftData.selectedKeys = []
+  table.data = []
+  table.name = undefined
 };
 
 watch(
@@ -350,10 +373,6 @@ watch(
     immediate: true,
   }
 );
-
-const table = reactive({
-  data: [] as dbColumnType[],
-});
 
 const addRow = () => {
   const initData: dbColumnType = {
@@ -393,106 +412,32 @@ const clickSave = () => {
       return;
     }
     const params = {
-      name: leftData.selectedKeys[0],
+      name: _data.name,
       columns,
     };
     saveTable_api(id, params).then((resp) => {
-      if (resp.status === 200) {
+      if (resp.success) {
         onlyMessage($t('Management.index.799232-23'));
-        queryTables(params.name);
+        leftData.selectedKeys[0] = _data.name
+        handleSearch()
+        dialog.visible = false
       }
     });
   });
 };
 
-const addFormRef = ref<FormInstance>();
-const dialog = reactive({
-  visible: false,
-  form: {
-    name: "",
-  },
-});
-
-const handleOk = () => {
-    addFormRef.value?.validate().then(() => {
-      const name = dialog.form.name;
-      saveTable_api(id, {
-        name: name,
-        columns: [],
-      }).then((resp) => {
-        if (resp.success) {
-          leftData.sourceTree.unshift({
-            id: name,
-            name,
-          });
-          leftData.oldKey = name;
-          leftData.selectedKeys = [name];
-          table.data = [];
-          dialog.visible = false;
-          addFormRef.value?.resetFields();
-          onlyMessage($t('Management.index.799232-23'));
-        }
-      });
-    });
-};
-
-const handleCancel = () => {
-  dialog.visible = false;
-  addFormRef.value?.resetFields();
-};
-
-watch(
-  [() => leftData.searchValue, () => leftData.sourceTree],
-  ([m, n]) => {
-    if (!!m) {
-      const list = n.filter((item) => {
-        return item.name.includes(m);
-      });
-      leftData.treeData = [
-        {
-          title: info.data.shareConfig?.schema,
-          key: info.data.shareConfig?.schema,
-          root: true,
-          children: list.map((item) => ({
-            title: item.name,
-            key: item.name,
-          })),
-        },
-      ];
-      if (!_.map(list, "name").includes(leftData.selectedKeys[0])) {
-        leftData.selectedKeys = [list[0]?.name];
-        queryTables(list[0]?.name);
-      }
-    } else {
-      leftData.treeData = [
-        {
-          title: info.data.shareConfig?.schema,
-          key: info.data.shareConfig?.schema,
-          root: true,
-          children: leftData.sourceTree.map((item) => ({
-            title: item.name,
-            key: item.name,
-          })),
-        },
-      ];
-    }
-  },
-  { deep: true }
-);
-
-const checkName = (_: any, value: any) =>
-  new Promise((resolve, reject) => {
-    if (value) {
-      const first = value.slice(0, 1);
-      if (typeof Number(first) === "number" && !isNaN(Number(first))) {
-        reject($t('Management.index.799232-24'));
-      } else {
-        resolve("");
-      }
+const checkName = (_, value) => new Promise((resolve, reject) => {
+  if (value) {
+    const first = value.slice(0, 1);
+    if (typeof Number(first) === "number" && !isNaN(Number(first))) {
+      reject($t('Management.index.799232-24'));
     } else {
       resolve("");
     }
-  });
+  } else {
+    resolve("");
+  }
+});
 </script>
 
 <style lang="less" scoped>
@@ -525,7 +470,6 @@ const checkName = (_: any, value: any) =>
 
     .btns {
       display: flex;
-      justify-content: right;
     }
 
     .add-row {

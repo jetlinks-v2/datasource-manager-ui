@@ -43,6 +43,7 @@
     "Management.index.799232-22": "Please configure the data source fields",
     "Management.index.799232-23": "Operation successful",
     "Management.index.799232-24": "Cannot start with a number",
+    "Management.index.799232-25": "field",
     "components.EditDialog.725183-0": "name",
     "components.EditDialog.725183-1": "Please enter a name",
     "components.EditDialog.725183-2": "Up to 64 characters can be entered",
