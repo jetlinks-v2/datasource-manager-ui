@@ -479,6 +479,7 @@ const checkName = (_, value) => new Promise((resolve, reject) => {
 
     .btns {
       display: flex;
+      justify-content: right;
     }
 
     .add-row {
