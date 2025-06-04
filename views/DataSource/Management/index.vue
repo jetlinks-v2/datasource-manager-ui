@@ -49,13 +49,14 @@
           </div>
         </div>
         <div class="right">
-          <div v-if="leftData.sourceTree?.length || dialog.visible">
-            <a-form ref="formRef" :model="table" layout="vertical">
-              <a-form-item
-                  :label="$t('Management.index.799232-13')"
-                  name="name"
-                  validate-first
-                  :rules="[
+          <div v-if="leftData.sourceTree?.length || dialog.visible" class="right-content">
+            <div class="right-content-form">
+              <a-form ref="formRef" :model="table" layout="vertical">
+                <a-form-item
+                    :label="$t('Management.index.799232-13')"
+                    name="name"
+                    validate-first
+                    :rules="[
                   {
                     required: true,
                     message: $t('Management.index.799232-3'),
@@ -75,23 +76,25 @@
                     trigger: 'change',
                   },
               ]"
-              >
-                <a-input :disabled="!dialog.visible" v-model:value="table.name" :placeholder="$t('Management.index.799232-3')" />
-              </a-form-item>
-              <div class="ant-form-item-label">
-                <label class="ant-form-item-required">{{ $t('Management.index.799232-25') }}</label>
-              </div>
-              <a-table
-                  :columns="columns"
-                  :dataSource="table.data"
-                  :pagination="false"
-                  :scroll="{ y: 500 }"
-              >
-                <template #bodyCell="{ column, record, index }">
-                  <template v-if="column.key === 'name'">
-                    <a-form-item
-                        :name="['data', index, 'name']"
-                        :rules="[
+                >
+                  <a-input :disabled="!dialog.visible" v-model:value="table.name" :placeholder="$t('Management.index.799232-3')" />
+                </a-form-item>
+                <div class="ant-form-item-label">
+                  <label class="ant-form-item-required">{{ $t('Management.index.799232-25') }}</label>
+                </div>
+                <div class="right-content-form-table">
+                  <a-table
+                      :columns="columns"
+                      :dataSource="table.data"
+                      :pagination="false"
+                      :scroll="{y: '100%'}"
+                      class="j-table-scroll"
+                  >
+                    <template #bodyCell="{ column, record, index }">
+                      <template v-if="column.key === 'name'">
+                        <a-form-item
+                            :name="['data', index, 'name']"
+                            :rules="[
                       {
                         max: 64,
                         message: $t('Management.index.799232-2'),
@@ -101,18 +104,18 @@
                         message: $t('Management.index.799232-3'),
                       },
                     ]"
-                    >
-                      <a-input
-                          :disabled="record.old_id"
-                          v-model:value="record.name"
-                          :placeholder="$t('Management.index.799232-3')"
-                      />
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'type'">
-                    <a-form-item
-                        :name="['data', index, 'type']"
-                        :rules="[
+                        >
+                          <a-input
+                              :disabled="record.old_id"
+                              v-model:value="record.name"
+                              :placeholder="$t('Management.index.799232-3')"
+                          />
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'type'">
+                        <a-form-item
+                            :name="['data', index, 'type']"
+                            :rules="[
                       {
                         max: 64,
                         message: $t('Management.index.799232-2'),
@@ -122,79 +125,81 @@
                         message: $t('Management.index.799232-4'),
                       },
                     ]"
-                    >
-                      <a-input
-                          :disabled="record.old_id"
-                          v-model:value="record.type"
-                          :placeholder="$t('Management.index.799232-4')"
-                      />
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'length'">
-                    <a-form-item :name="['data', index, 'length']">
-                      <a-input-number
-                          v-model:value="record.length"
-                          :min="0"
-                          :max="99999"
-                          style="width: 100%"
-                      />
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'scale'">
-                    <a-form-item :name="['data', index, 'scale']">
-                      <a-input-number
-                          v-model:value="record.scale"
-                          :min="0"
-                          :max="99999"
-                          style="width: 100%"
-                      />
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'notnull'">
-                    <a-form-item
-                        :name="['data', index, 'notnull']"
-                        :rules="[
+                        >
+                          <a-input
+                              :disabled="record.old_id"
+                              v-model:value="record.type"
+                              :placeholder="$t('Management.index.799232-4')"
+                          />
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'length'">
+                        <a-form-item :name="['data', index, 'length']">
+                          <a-input-number
+                              v-model:value="record.length"
+                              :min="0"
+                              :max="99999"
+                              style="width: 100%"
+                          />
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'scale'">
+                        <a-form-item :name="['data', index, 'scale']">
+                          <a-input-number
+                              v-model:value="record.scale"
+                              :min="0"
+                              :max="99999"
+                              style="width: 100%"
+                          />
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'notnull'">
+                        <a-form-item
+                            :name="['data', index, 'notnull']"
+                            :rules="[
                       {
                         required: true,
                         message: $t('Management.index.799232-5'),
                       },
                     ]"
-                    >
-                      <a-radio-group
-                          v-model:value="record.notnull"
-                          button-style="solid"
-                      >
-                        <a-radio-button :value="true">{{ $t('Management.index.799232-6') }} </a-radio-button>
-                        <a-radio-button :value="false">{{ $t('Management.index.799232-7') }} </a-radio-button>
-                      </a-radio-group>
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'comment'">
-                    <a-form-item :name="['data', index, 'comment']">
-                      <a-input
-                          v-model:value="record.comment"
-                          :placeholder="$t('Management.index.799232-8')"
-                      />
-                    </a-form-item>
-                  </template>
-                  <template v-else-if="column.key === 'action'">
-                    <j-permission-button
-                        hasPermission="system/DataSource:delete"
-                        type="link"
-                        :tooltip="{ title: $t('Management.index.799232-9') }"
-                        :danger="true"
-                        :popConfirm="{
+                        >
+                          <a-radio-group
+                              v-model:value="record.notnull"
+                              button-style="solid"
+                          >
+                            <a-radio-button :value="true">{{ $t('Management.index.799232-6') }} </a-radio-button>
+                            <a-radio-button :value="false">{{ $t('Management.index.799232-7') }} </a-radio-button>
+                          </a-radio-group>
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'comment'">
+                        <a-form-item :name="['data', index, 'comment']">
+                          <a-input
+                              v-model:value="record.comment"
+                              :placeholder="$t('Management.index.799232-8')"
+                          />
+                        </a-form-item>
+                      </template>
+                      <template v-else-if="column.key === 'action'">
+                        <j-permission-button
+                            hasPermission="system/DataSource:delete"
+                            type="link"
+                            :tooltip="{ title: $t('Management.index.799232-9') }"
+                            :danger="true"
+                            :popConfirm="{
                       title: $t('Management.index.799232-10'),
                       onConfirm: () => clickDel(record, index),
                     }"
-                        :disabled="record.status"
-                    >
-                      <AIcon type="DeleteOutlined" />
-                    </j-permission-button>
-                  </template>
-                </template>
-              </a-table>
-            </a-form>
+                            :disabled="record.status"
+                        >
+                          <AIcon type="DeleteOutlined" />
+                        </j-permission-button>
+                      </template>
+                    </template>
+                  </a-table>
+                </div>
+              </a-form>
+            </div>
 
             <a-button class="add-row" @click="addRow">
               <AIcon type="PlusOutlined" />
@@ -476,6 +481,55 @@ const checkName = (_, value) => new Promise((resolve, reject) => {
     box-sizing: border-box;
     border-left: 1px solid #f0f0f0;
     padding-left: 24px;
+    height: 100%;
+
+    .right-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      .right-content-form {
+        flex: 1;
+        min-height: 0;
+        .ant-form {
+          height: 100%;
+        }
+
+        .right-content-form-table {
+          height: calc(100% - 100px);
+          //overflow-y: auto;
+          background-color: red;
+
+          .j-table-scroll {
+            height: 100%;
+
+            :deep(.ant-spin-nested-loading){
+              height: 100%;
+
+              .ant-spin-container {
+                height: 100%;
+
+                .ant-table {
+                  height: 100%;
+
+                  .ant-table-container {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+
+                    .ant-table-body {
+                      flex: 1;
+                      min-height: 0;
+                      overflow-y: auto;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
     .btns {
       display: flex;
