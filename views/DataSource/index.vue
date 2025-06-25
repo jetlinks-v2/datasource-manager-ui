@@ -1,314 +1,239 @@
 <template>
   <j-page-container>
-    <div class="data-source-container">
-      <pro-search
-          :columns="columns"
-          target="system-data-source"
-          @search="(params:any)=>queryParams = {...params}"
-      />
-      <FullPage>
-        <j-pro-table
-            ref="tableRef"
-            :columns="columns"
-            :request="getDataSourceList_api"
-            mode="TABLE"
-            :params="queryParams"
-            :defaultParams="{
-                        sorts: [{ name: 'createTime', order: 'desc' }],
-                    }"
+    <FullPage>
+      <div class="datasource-container">
+        <div class="datasource-title">数据源</div>
+        <j-permission-button
+          type="primary"
+          :hasPermission="`${permission}:add`"
+          @click="_handleAdd"
         >
-          <template #headerLeftRender>
-            <j-permission-button
-                type="primary"
-                :hasPermission="`${permission}:add`"
-                @click="table.openDialog({})"
-            >
-              <AIcon type="PlusOutlined"/>
-              {{ $t('DataSource.index.625668-0') }}
-            </j-permission-button>
-          </template>
-          <template #state="slotProps">
-            <j-badge-status
-                :status="slotProps.state?.value"
-                :text="slotProps.state?.text"
-                :statusNames="{
-                                enabled: 'processing',
-                                disabled: 'error',
-                            }"
-            >
-            </j-badge-status>
-          </template>
-          <template #typeId="slotProps">
-            {{
-              (table.typeOptions.value.length &&
-                  table.getTypeLabel(slotProps.typeId)) ||
-              ''
-            }}
-          </template>
-          <template #action="slotProps">
-            <a-space :size="16">
-              <j-permission-button
-                  :hasPermission="`${permission}:update`"
-                  type="link"
-                  :tooltip="{
-                                    title: $t('DataSource.index.625668-1'),
-                                }"
-                  @click="table.openDialog(slotProps)"
-              >
-                <AIcon type="EditOutlined"/>
-              </j-permission-button>
-              <j-permission-button
-                  :hasPermission="`${permission}:manage`"
-                  type="link"
-                  :tooltip="{
-                                    title:
-                                        slotProps?.typeId === 'rabbitmq'
-                                            ? $t('DataSource.index.625668-2')
-                                            : table.getRowStatus(slotProps)
-                                            ? $t('DataSource.index.625668-3')
-                                            : $t('DataSource.index.625668-4'),
-                                }"
-                  @click="jump(slotProps)"
-                  :disabled="
-                                    slotProps?.typeId === 'rabbitmq' ||
-                                    !table.getRowStatus(slotProps)
-                                "
-              >
-                <AIcon type="icon-ziyuankuguanli"/>
-              </j-permission-button>
-              <j-permission-button
-                  :hasPermission="`${permission}:action`"
-                  type="link"
-                  :popConfirm="{
-                                    title: $t('DataSource.index.625668-5', [
-                                        table.getRowStatus(slotProps)
-                                            ? $t('DataSource.index.625668-6')
-                                            : $t('DataSource.index.625668-7')
-                                    ]),
-                                    onConfirm: () =>
-                                        table.clickChangeStatus(slotProps),
-                                }"
-                  :tooltip="{
-                                    title: table.getRowStatus(slotProps)
-                                        ? $t('DataSource.index.625668-6')
-                                        : $t('DataSource.index.625668-7'),
-                                }"
-              >
-                <AIcon
-                    :type="
-                                        table.getRowStatus(slotProps)
-                                            ? 'StopOutlined'
-                                            : 'PlayCircleOutlined'
-                                    "
-                />
-                <!-- <AIcon type="PlayCircleOutlined" /> -->
-              </j-permission-button>
+          <AIcon type="PlusOutlined" />
+          新建
+        </j-permission-button>
+      </div>
 
-              <j-permission-button
-                  :hasPermission="`${permission}:delete`"
-                  type="link"
-                  :tooltip="{
-                                    title: table.getRowStatus(slotProps)
-                                        ? $t('DataSource.index.625668-8')
-                                        : $t('DataSource.index.625668-9'),
-                                }"
-                  :danger="true"
-                  :popConfirm="{
-                                    title: $t('DataSource.index.625668-10'),
-                                    onConfirm: () => table.clickDel(slotProps),
-                                }"
-                  :disabled="table.getRowStatus(slotProps)"
-              >
-                <AIcon type="DeleteOutlined"/>
-              </j-permission-button>
-            </a-space>
-          </template>
-        </j-pro-table>
-      </FullPage>
-
-      <EditDialog
-          v-if="dialog.visible"
-          @cancel="table.cancel"
-          :data="dialog.selectItem"
-          @confirm="table.refresh"
-      />
-    </div>
+      <div class="parameter-container">
+        <div class="fixed-width">
+          <CategorySelect
+            ref="categorySelect"
+            :data="categoryList"
+            labelKey="name"
+            :labelRules="labelRules"
+            valueKey="id"
+            :defaultKey="DEFAULT_CATEGORY_ID"
+            :showId="false"
+            removeDefaultMore
+            :bodyStyle="{ maxHeight: 'calc(100vh - 270px)' }"
+            :permission="permission"
+            :active-id="clickItem.id"
+            @change="handleChange"
+            @search="handleSearch"
+            @click="handleClick"
+            @delete="handleClickDelete"
+          >
+            <template #content="{ item }">
+              <j-ellipsis>
+                <div>{{ item.name }}</div>
+              </j-ellipsis>
+            </template>
+          </CategorySelect>
+        </div>
+        <a-divider
+          type="vertical"
+          style="height: calc(100% - 20px); margin: 0"
+        ></a-divider>
+        <div style="flex: 1">
+          <DataSourceList
+            v-model:value="listLength"
+            :clickItem="clickItem"
+            :permission="permission"
+            ref="dataSourceListRef"
+            @refreshCategoryList="getCategoryList"
+          ></DataSourceList>
+        </div>
+      </div>
+    </FullPage>
   </j-page-container>
 </template>
 
-<script setup lang="ts" name="DataSource">
-import EditDialog from './components/EditDialog.vue';
-
-import type {dictItemType, optionItemType, sourceItemType} from './typing';
-
+<script setup lang="ts" name="Datasource">
+import DataSourceList from './DataSourceList.vue'
+import { onlyMessage } from '@jetlinks-web/utils'
+import { Modal } from 'ant-design-vue'
+import { cloneDeep } from 'lodash-es'
+import CategorySelect from '@datasoureceManager/components/CategorySelect/index.vue'
 import {
-  getDataSourceList_api,
-  getDataTypeDict_api,
-  changeStatus_api,
-  delDataSource_api,
-} from '../../api/dataSource';
-import {onlyMessage} from '@jetlinks-web/utils';
-import {useMenuStore} from "@/store";
-import { useI18n } from 'vue-i18n';
+  deleteDataSourceGroup,
+  getDataSourceGroup,
+  addDataSourceGroup,
+  updateDataSourceGroup
+} from '@datasoureceManager/api/data'
+import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
+import { Rule } from 'ant-design-vue/es/form'
 
-const { t: $t } = useI18n();
-
-const permission = 'system/DataSource';
-
-const router = useRouter();
-const menuStory = useMenuStore();
-
-const columns = [
+const permission = 'data/datasource'
+const dataSourceListRef = ref()
+const listLength = ref()
+const categorySelect = ref()
+const categoryList = ref([] as any)
+const categoryListDeep = ref([] as any)
+const clickItem = ref<any>({})
+const labelRules: Rule[] = [
   {
-    title: $t('DataSource.index.625668-11'),
-    dataIndex: 'name',
-    key: 'name',
-    search: {
-      type: 'string',
-    },
-    width: '250px',
-  },
-  {
-    title: $t('DataSource.index.625668-12'),
-    dataIndex: 'typeId',
-    key: 'typeId',
-    search: {
-      type: 'select',
-      options: () =>
-          new Promise((resolve) => {
-            if (table.typeOptions.value.length > 0) {
-              resolve(table.typeOptions.value.filter(item => !['redis', 'api'].includes(item.value)));
-            } else {
-              getDataTypeDict_api().then((resp: any) => {
-                const result = resp.result as dictItemType[];
-                resolve(
-                    result.filter(item => !['redis', 'api'].includes(item.id)).map((item) => ({
-                      label: item.name,
-                      value: item.id,
-                    })),
-                );
-              });
-            }
-          }),
-    },
-    scopedSlots: true,
-  },
-  {
-    title: $t('DataSource.index.625668-13'),
-    dataIndex: 'description',
-    key: 'description',
-    search: {
-      type: 'string',
-    },
-    ellipsis: true,
-  },
-  {
-    title: $t('DataSource.index.625668-14'),
-    dataIndex: 'state',
-    key: 'state',
-    search: {
-      type: 'select',
-      options: [
-        {
-          label: $t('DataSource.index.625668-15'),
-          value: 'enabled',
-        },
-        {
-          label: $t('DataSource.index.625668-6'),
-          value: 'disabled',
-        },
-      ],
-    },
-    scopedSlots: true,
-    width: '120px',
-  },
-  {
-    title: $t('DataSource.index.625668-16'),
-    dataIndex: 'action',
-    key: 'action',
-    scopedSlots: true,
-    width: '160px',
-    fixed: 'right',
-  },
-];
-const queryParams = ref({});
-
-const tableRef = ref<Record<string, any>>({}); // 表格实例
-const table = {
-  typeOptions: ref<optionItemType[]>([]),
-
-  getTypeOption: () => {
-    getDataTypeDict_api().then((resp: any) => {
-      const result = resp.result as dictItemType[];
-      table.typeOptions.value = result.map((item) => ({
-        label: item.name,
-        value: item.id,
-      }));
-    });
-  },
-  getTypeLabel: (val: string): string => {
-    const options = table.typeOptions.value;
-    if (options.length < 1 || val === '') return '';
-    return options.find((item) => item.value === val)?.label || '';
-  },
-
-  getRowStatus: (row: sourceItemType) => {
-    return row.state?.value === 'enabled';
-  },
-  // 打开编辑弹窗
-  openDialog: (row: sourceItemType | {}) => {
-    dialog.selectItem = {shareConfig: {}, ...row};
-    dialog.visible = true;
-  },
-  // 删除
-  clickDel: (row: sourceItemType) => {
-    const response = delDataSource_api(row.id as string)
-    response.then((resp: any) => {
-      if (resp.status === 200) {
-        tableRef.value?.reload();
-        onlyMessage($t('DataSource.index.625668-17'));
+    validator: (_, value: string) => {
+      const flag = categoryList.value
+        .filter((item: any) => {
+          return !clickItem.value?.id || item.id !== clickItem.value?.id
+        })
+        .find((i: any) => i.name === value)
+      if (!flag && value !== '全部') {
+        return Promise.resolve()
+      } else {
+        return Promise.reject('该名称重复')
       }
-    });
-    return response
-  },
-  clickChangeStatus: (row: sourceItemType) => {
-    const status = row.state.value === 'enabled' ? '_disable' : '_enable';
-    const response = changeStatus_api(row.id as string, status);
-    response.then(() => {
-      onlyMessage($t('DataSource.index.625668-18'));
-      table.refresh();
-    });
-    return response;
-  },
-  // 刷新列表
-  refresh: () => {
-    tableRef.value.reload();
-    dialog.visible = false;
-    dialog.selectItem = {};
-  },
-  cancel: () => {
-    dialog.visible = false;
-    dialog.selectItem = {};
-  },
-};
-table.getTypeOption();
+    },
+    trigger: 'blur'
+  }
+]
 
-const jump = (slotProps) => {
-  menuStory.jumpPage('system/DataSource/Management', {params: {id: slotProps.id}, query: {id: slotProps.id}});
-}
-
-const dialog = reactive({
-  visible: false,
-  selectItem: {} as any,
-});
-</script>
-
-<style lang="less" scoped>
-.data-source-container {
-  :deep(.ant-table-cell) {
-    .ant-btn-link {
-      padding: 0;
+const getCategoryList = async (searchValue?: string) => {
+  let searchObj = {}
+  if (searchValue) {
+    searchObj = {
+      column: 'name',
+      value: `%${searchValue}%`,
+      termType: 'like'
     }
   }
+  let res = await getDataSourceGroup({
+    terms: [searchObj],
+    sorts: [
+      {
+        name: 'ordinal',
+        order: 'desc'
+      }
+    ],
+    paging: false
+  })
+  if (res.status === 200) {
+    if (searchValue) {
+      categoryList.value = res.result
+    } else {
+      categoryList.value = [
+        {
+          id: DEFAULT_CATEGORY_ID,
+          name: '全部'
+        },
+        ...res.result
+      ]
+      categoryListDeep.value = cloneDeep(categoryList.value)
+    }
+
+    if (categoryList.value.length > 0) {
+      handleClick(categoryList.value[0])
+    } else {
+      clickItem.value = {}
+    }
+  }
+}
+
+const _handleAdd = () => {
+  dataSourceListRef.value.handleAdd()
+}
+
+const handleChange = async (item: { id?: string; name: string }) => {
+  try {
+    const isEdit = !!item.id
+    const successMessage = isEdit ? '编辑成功' : '新增成功'
+    const res = isEdit
+      ? await updateDataSourceGroup(item.id!, { name: item.name })
+      : await addDataSourceGroup({ name: item.name })
+    if (res.status === 200) {
+      clickItem.value = item
+      onlyMessage(successMessage)
+    } else {
+      throw new Error(`API returned status ${res.status}`)
+    }
+  } catch (error) {
+    const errorMessage = item.id ? '编辑失败' : '新增失败'
+    onlyMessage(errorMessage, 'error')
+    console.error('Operation failed:', error)
+  } finally {
+    await getCategoryList()
+  }
+}
+
+const handleSearch = (value: string) => {
+  getCategoryList(value)
+}
+
+const handleClickDelete = async (id: string) => {
+  const text =
+    listLength.value === 0
+      ? '删除该分类？此操作不可撤销'
+      : '将同步删除该分类下的所有数据，删除后可能导致错误或异常。谨慎操作，此操作不可撤销'
+  Modal.confirm({
+    title: '确定删除吗？',
+    okType: 'danger',
+    content: text,
+    okText: '删除',
+    centered: true,
+    onOk: async () => {
+      const res = await deleteDataSourceGroup(id)
+      onlyMessage('操作成功')
+      if (res.status === 200) {
+        clickItem.value = {}
+        await getCategoryList()
+      }
+    }
+  })
+}
+
+const handleClick = (item: any) => {
+  clickItem.value = item
+}
+
+onMounted(() => {
+  getCategoryList()
+})
+
+provide('CATEGORY_LIST', categoryListDeep)
+</script>
+
+<style scoped lang="less">
+.datasource-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 8px 20px;
+
+  .datasource-title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+.parameter-container {
+  height: calc(100% - 40px);
+  display: flex;
+  padding: 0 0 20px 20px;
+
+  .fixed-width {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+    box-sizing: border-box;
+  }
+}
+:deep(.content-list-item) {
+  padding: 7px 12px !important;
+}
+
+:deep(.JSearch-warp) {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+:deep(.jtable-body-header) {
+  margin-bottom: 0;
 }
 </style>
