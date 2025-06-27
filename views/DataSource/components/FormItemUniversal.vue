@@ -167,17 +167,19 @@
         >
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.key === 'key'">
-              <a-input
+              <FormItem
                 v-model:value="record.key"
-                :maxlength="256"
                 placeholder="Key"
+                :error="formItemErrors[record.id]?.key"
+                @change="(val: string) => handleFieldChange(val, 'key', record)"
               />
             </template>
             <template v-else-if="column.key === 'value'">
-              <a-input
+              <FormItem
                 v-model:value="record.value"
-                :maxlength="256"
                 placeholder="Value"
+                :error="formItemErrors[record.id]?.value"
+                @change="(val: string) => handleFieldChange(val, 'value', record)"
               />
             </template>
             <template v-else-if="column.key === 'action'">
@@ -214,17 +216,19 @@
         >
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.key === 'key'">
-              <a-input
+              <FormItem
                 v-model:value="record.key"
-                :maxlength="256"
                 placeholder="Key"
+                :error="formItemErrors[record.id]?.key"
+                @change="(val: string) => handleFieldChange(val, 'key', record)"
               />
             </template>
             <template v-else-if="column.key === 'value'">
-              <a-input
+              <FormItem
                 v-model:value="record.value"
-                :maxlength="256"
                 placeholder="Value"
+                :error="formItemErrors[record.id]?.value"
+                @change="(val: string) => handleFieldChange(val, 'value', record)"
               />
             </template>
             <template v-else-if="column.key === 'action'">
@@ -257,6 +261,7 @@
 <script lang="ts" name="FormItemUniversal" setup>
 import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
 import { cloneDeep } from 'lodash-es'
+import FormItem from './FormItem.vue'
 
 const sourceDetailStore = useSourceDetailStore()
 
@@ -265,6 +270,8 @@ interface Header {
   value: string
   id: number
 }
+
+const formItemErrors = ref<Record<string | number, Record<string, string>>>({})
 
 //表头
 const columns: any[] = [
@@ -333,10 +340,88 @@ const formData = ref<any>({
   }
 })
 
+const validateField = (value: string, field: 'key' | 'value'): string => {
+  if (value && value.length > 256) {
+    return '最多可输入256个字符'
+  }
+  return ''
+}
+
+const updateFormError = (recordId: string | number, field: string, error?: string): boolean => {
+  if (!formItemErrors.value[recordId]) {
+    formItemErrors.value[recordId] = {}
+  }
+  if (error) {
+    formItemErrors.value[recordId][field] = error
+    return true
+  }
+  delete formItemErrors.value[recordId][field]
+  if (!Object.keys(formItemErrors.value[recordId]).length) {
+    delete formItemErrors.value[recordId]
+  }
+  return false
+}
+
+const handleFieldChange = (val: string, field: 'key' | 'value', record: any) => {
+  record[field] = val
+  updateFormError(record.id, field)
+
+  const lengthError = validateField(val, field)
+  if (lengthError) {
+    updateFormError(record.id, field, lengthError)
+  }
+
+  const isKeyField = field === 'key'
+  const isValueField = field === 'value'
+
+  if (isValueField && val && !record.key) {
+    updateFormError(record.id, 'key', 'Key为必填项')
+  }
+
+  if (isKeyField && !val && record.value) {
+    updateFormError(record.id, 'key', 'Key为必填项')
+  }
+}
+
+// 表单数据校验
+const validateFormData = (): boolean => {
+  formItemErrors.value = {}
+  let hasError = false
+
+  // 统一校验函数
+  const validateRecord = (record: Header) => {
+    // 只有当value有值时，key才必填
+    if (record.value && !record.key) {
+      hasError = true
+      updateFormError(record.id, 'key', 'Key为必填项')
+    }
+
+    // 字段长度校验
+    const keyErr = validateField(record.key, 'key')
+    const valueErr = validateField(record.value, 'value')
+
+    if (keyErr) {
+      hasError = true
+      updateFormError(record.id, 'key', keyErr)
+    }
+    if (valueErr) {
+      hasError = true
+      updateFormError(record.id, 'value', valueErr)
+    }
+  }
+
+  dynamicValidateForm.value.headers.forEach(validateRecord)
+  dynamicValidateForm.value.params.forEach(validateRecord)
+
+  return !hasError
+}
+
 const removeHeader = (item: Header, type: 'headers' | 'params') => {
   let index = dynamicValidateForm.value[type].indexOf(item)
   if (index !== -1) {
     dynamicValidateForm.value[type].splice(index, 1)
+    // 清除对应的错误状态
+    delete formItemErrors.value[item.id]
   }
 }
 
@@ -350,9 +435,25 @@ const addHeader = (type: 'headers' | 'params') => {
 
 const validate = () => {
   return new Promise((resolve, reject) => {
+    // 先校验基本表单
     formRef.value
       .validate()
       .then(() => {
+        // 再校验动态表单数据
+        const isFormDataValid = validateFormData()
+        if (!isFormDataValid) {
+          reject(new Error('请完善参数信息'))
+          return
+        }
+
+        // 过滤掉key和value都为空的数据
+        const filteredHeaders = dynamicValidateForm.value.headers.filter((item) => item.key || item.value)
+        const filteredParams = dynamicValidateForm.value.params.filter((item) => item.key || item.value)
+
+        // 更新OAuth2数据
+        formData.value.OAuth2.headers = filteredHeaders
+        formData.value.OAuth2.params = filteredParams
+
         emit('update:formData', formData.value)
         resolve(true)
       })

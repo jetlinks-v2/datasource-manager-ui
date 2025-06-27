@@ -5,7 +5,7 @@
     centered
     :maskClosable="false"
     @cancel="emit('cancel')"
-    width="1200px"
+    :width="sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE && currentStep === 1 ? '600px' : '1200px'"
     :bodyStyle="{ maxHeight: '80vh', overflowY: 'auto' }"
   >
     <a-form

@@ -91,7 +91,7 @@
 import { cloneDeep, isArray } from 'lodash-es'
 import { ParamsSpec } from '../../type'
 import DataTypeCell from './DataTypeCell.vue'
-import FormItem from '../FormItem.vue'
+import FormItem from '../../../../../components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from '../setting'
 
