@@ -202,8 +202,8 @@ import { RelationData } from './type'
 import { DATASOURCE_NAME, getSourceClassify, getTypesDataDetail, datasourceParseUrl, DATASOURCE_TYPE } from './table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
-import { spaceValidator } from '@datasoureceManager/utils/validate'
-import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/consts'
+import { spaceValidator } from '@datasoureceManager/utils/utils'
+import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
 import { addDataSourceGroup, getDataSourceGroup } from '@datasoureceManager/api/data'
 
 const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList'])

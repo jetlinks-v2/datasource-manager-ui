@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { Rule } from 'ant-design-vue/es/form'
-import { spaceValidator } from '@datasoureceManager/utils/validate'
+import { spaceValidator } from '@datasoureceManager/utils/utils'
 import { queryDicItemNoPage } from '@datasoureceManager/api/system/dictionary'
 
 defineOptions({

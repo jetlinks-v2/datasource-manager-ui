@@ -149,7 +149,7 @@ import { DATASOURCE_TYPE, datasourceParseUrl } from './table'
 import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { ConnectionMode } from '@datasourceManager/views/dataSource/detail/type.d'
-import { spaceValidator } from '@datasoureceManager/utils/validate'
+import { spaceValidator } from '@datasoureceManager/utils/utils'
 
 const emit = defineEmits(['update:formData', 'testConnection'])
 const props = defineProps({
