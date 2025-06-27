@@ -29,9 +29,9 @@
             "en": "Data Source"
           }
         },
-        "code": "data/datasource",
+        "code": "system/dataSource",
         "icon": "icon-shujuyuan",
-        "url": "/data/datasource",
+        "url": "/system/dataSource",
         "showPage": ["datasource", "datasource-config"],
         "permissions": [
           {

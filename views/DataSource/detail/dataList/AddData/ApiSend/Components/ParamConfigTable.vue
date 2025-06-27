@@ -74,7 +74,7 @@ import type { TableColumnType } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { DEFAULT_PARAM_ITEM, type ParamItem } from './setting'
-import FormItem from '../../components/FormItem.vue'
+import FormItem from '../../../../../components/FormItem.vue'
 
 const props = defineProps<{
   dataSource: ParamItem[]

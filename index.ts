@@ -7,22 +7,19 @@ const getAsyncRoutesMap = () => {
     const key = `system/${code}`
     modules[key] = routerModules[item]
   })
-
   return modules
 }
 
 const getExtraRoutesMap = () => {
   return {
-    data: {
-      children: [
-        {
-          code: 'datasourceDetail',
-          url: '/datasource/detail/:id',
-          name: '数据源详情',
-          component: () => import('./views/dataSource/detail/index.vue')
-        }
-      ]
-    }
+    'system/dataSource': [
+      {
+        code: 'Detail',
+        url: '/Detail/:id',
+        name: '数据源详情',
+        component: () => import('./views/dataSource/detail/index.vue')
+      }
+    ]
   }
 }
 

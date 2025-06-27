@@ -110,7 +110,7 @@ import { getSourceClassify } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
-const permission = 'data/datasource'
+const permission = 'system/dataSource'
 const loading = ref(false)
 const route = useRoute()
 const router = useRouter()
@@ -129,7 +129,7 @@ const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
 const sourceClassify = ref<'database' | 'common'>('database')
 const routeLink = computed(() => ({
-  path: `/data/datasource`,
+  path: `/system/dataSource`,
   query: {
     group: info.value.group?.value
   }

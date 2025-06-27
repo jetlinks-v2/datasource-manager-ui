@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isShow">
     <div class="title">数据连接</div>
     <a-descriptions
       :column="3"
@@ -14,7 +14,28 @@
           :label="item.label"
           v-if="item.condition"
         >
-          <j-ellipsis>{{ item.value }}</j-ellipsis>
+          <template v-if="item.label === '密码'">
+            <a-space>
+              <j-ellipsis>
+                <span :class="{ 'password-mask': !showDatabasePassword && databaseData.password }">
+                  {{ showDatabasePassword ? item.value : '********' }}
+                </span>
+              </j-ellipsis>
+              <a-button
+                type="text"
+                size="small"
+                @click="showDatabasePassword = !showDatabasePassword"
+              >
+                <template #icon>
+                  <AIcon
+                    :type="showDatabasePassword ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
+                    v-if="databaseData.password"
+                  />
+                </template>
+              </a-button>
+            </a-space>
+          </template>
+          <j-ellipsis v-else>{{ item.value }}</j-ellipsis>
         </a-descriptions-item>
       </template>
     </a-descriptions>
@@ -40,9 +61,52 @@
             :key="itemIndex"
           >
             <a-descriptions-item :label="item.label">
-              <j-ellipsis>{{ item.value }}</j-ellipsis>
+              <template v-if="item.label === '密码'">
+                <a-space>
+                  <j-ellipsis>
+                    <span :class="{ 'password-mask': !showBasicPassword && commonData.authConfig.basic.password }">
+                      {{ showBasicPassword ? item.value : '********' }}
+                    </span>
+                  </j-ellipsis>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="showBasicPassword = !showBasicPassword"
+                  >
+                    <template #icon>
+                      <AIcon
+                        :type="showBasicPassword ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
+                        v-if="commonData.authConfig.basic.password"
+                      />
+                    </template>
+                  </a-button>
+                </a-space>
+              </template>
+              <template v-else-if="item.label === 'Scope'">
+                <a-space>
+                  <j-ellipsis>
+                    <span :class="{ 'password-mask': !showScope && item.value }">
+                      {{ showScope ? item.value : '********' }}
+                    </span>
+                  </j-ellipsis>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="showScope = !showScope"
+                  >
+                    <template #icon>
+                      <AIcon
+                        :type="showScope ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
+                        v-if="item.value"
+                      />
+                    </template>
+                  </a-button>
+                </a-space>
+              </template>
+              <j-ellipsis v-else>{{ item.value }}</j-ellipsis>
             </a-descriptions-item>
           </template>
+
           <a-descriptions-item v-if="authType === 'OAuth2'">
             <template #label>
               <a-space>
@@ -73,9 +137,25 @@
                 </a-tooltip>
               </a-space>
             </template>
-            <j-ellipsis>
-              {{ commonData.authConfig.oauth2.clientSecret ? '******' : '--' }}
-            </j-ellipsis>
+            <a-space>
+              <j-ellipsis>
+                <span :class="{ 'password-mask': !showSecret && commonData.authConfig.oauth2.clientSecret }">
+                  {{ showSecret ? commonData.authConfig.oauth2.clientSecret || '--' : '********' }}
+                </span>
+              </j-ellipsis>
+              <a-button
+                type="text"
+                size="small"
+                @click="showSecret = !showSecret"
+              >
+                <template #icon>
+                  <AIcon
+                    :type="showSecret ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
+                    v-if="commonData.authConfig.oauth2.clientSecret"
+                  />
+                </template>
+              </a-button>
+            </a-space>
           </a-descriptions-item>
         </template>
       </a-descriptions>
@@ -154,8 +234,16 @@ const commonData = reactive({
   }
 })
 
+const isShow = computed(() => {
+  return info.value.shareConfig && Object.keys(info.value.shareConfig).length > 0
+})
+
 const authType = ref('')
 const authTypeText = ref('')
+const showSecret = ref(false)
+const showDatabasePassword = ref(false)
+const showBasicPassword = ref(false)
+const showScope = ref(false)
 const requestHeaderData = ref([{ key: '', value: '' }])
 const argumentData = ref([{ key: '', value: '' }])
 const columns = [
@@ -203,7 +291,7 @@ const databaseItems = computed(() => [
   },
   { label: 'schema', value: databaseData.schema || '--', condition: true },
   { label: '用户名', value: databaseData.username || '--', condition: true },
-  { label: '密码', value: databaseData.password ? '**********' : '--', condition: true }
+  { label: '密码', value: databaseData.password || '--', condition: true }
 ])
 const authTypes = ref<any[]>([])
 const handleAuthType = () => {
@@ -211,7 +299,7 @@ const handleAuthType = () => {
     type: 'basic',
     items: [
       { label: '用户名', value: commonData.authConfig.basic.username || '--' },
-      { label: '密码', value: commonData.authConfig.basic.password ? '**********' : '--' }
+      { label: '密码', value: commonData.authConfig.basic.password || '--' }
     ]
   }
 
@@ -226,7 +314,7 @@ const handleAuthType = () => {
       { label: '模式', value: commonData.authConfig.oauth2.grantType === 'client_credentials' ? '客户端凭证' : '--' },
       { label: 'Token地址', value: commonData.authConfig.oauth2.tokenUrl || '--' },
       { label: '请求方式', value: commonData.authConfig.oauth2.tokenRequestType === 'POST_URI' ? 'URL参数' : '请求体' },
-      { label: 'Scope', value: commonData.authConfig.oauth2.scope ? '******' : '--' }
+      { label: 'Scope', value: commonData.authConfig.oauth2.scope || '--' }
     ]
   }
   if (authType.value === 'basic') authTypes.value = [basic]
@@ -284,5 +372,9 @@ watch(
 }
 .hover-show:hover > .hover-hidden {
   display: block;
+}
+.password-mask {
+  -webkit-text-security: disc;
+  font-family: 'PingFang SC';
 }
 </style>

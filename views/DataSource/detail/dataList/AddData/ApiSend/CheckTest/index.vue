@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import FormItem from '../../components/FormItem.vue'
+import FormItem from '../../../../../components/FormItem.vue'
 
 interface ParamItem {
   name: string

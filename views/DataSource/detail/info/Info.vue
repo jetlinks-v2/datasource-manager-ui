@@ -15,10 +15,7 @@
         <j-ellipsis>{{ info.id || '--' }}</j-ellipsis>
       </a-descriptions-item>
       <a-descriptions-item label="创建时间">
-        <span v-if="info.createTime">
-          {{ dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') }}
-        </span>
-        <span v-else>--</span>
+        <j-ellipsis>{{ info.createTime ? dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') : '--' }}</j-ellipsis>
       </a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
