@@ -49,7 +49,7 @@
       </a-form-item>
       <a-form-item
         name="port"
-        :rules="[{ validator: validatePort, trigger: ['blur', 'change'] }]"
+        :rules="[{ required: true, validator: validatePort, trigger: ['blur', 'change'] }]"
         label="端口"
       >
         <a-input
@@ -148,7 +148,6 @@ import { RelationData } from './type'
 import { DATASOURCE_TYPE, datasourceParseUrl } from './table'
 import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
 import { cloneDeep } from 'lodash-es'
-import { ConnectionMode } from '@datasourceManager/views/dataSource/detail/type.d'
 import { spaceValidator } from '@datasoureceManager/utils/utils'
 
 const emit = defineEmits(['update:formData', 'testConnection'])
@@ -167,7 +166,7 @@ const sourceDetailStore = useSourceDetailStore()
 const { active } = toRefs(props)
 const formRef = ref()
 const formData = ref<RelationData>({
-  connectionMode: 'basic' as ConnectionMode,
+  connectionMode: 'basic',
   host: '',
   port: '',
   schema: '',
