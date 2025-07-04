@@ -19,7 +19,7 @@
     "children": [
       {
         "id": "9ccc358320b3949b756029b0a3f2ca54",
-        "sortIndex": 1,
+        "sortIndex": 12,
         "owner": "iot",
         "name": "数据源",
         "i18nMessages": {
