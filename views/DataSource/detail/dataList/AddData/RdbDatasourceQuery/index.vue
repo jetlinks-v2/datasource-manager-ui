@@ -208,20 +208,28 @@ const handleRegistrationTips = () => {
 }
 
 const validateSql = () => {
-  const sql = sqlValue.value.trim().toUpperCase()
+  const sql = sqlValue.value.trim()
+  const sqlUpper = sql.toUpperCase()
 
-  if (!sql.startsWith('SELECT')) {
+  // 检查是否只包含一条SQL语句
+  const sqlStatements = sql.split(';').filter((stmt) => stmt.trim() !== '')
+  if (sqlStatements.length > 1) {
+    onlyMessage('当前列表只能输入一条SQL语句', 'error')
+    return false
+  }
+
+  if (!sqlUpper.startsWith('SELECT')) {
     onlyMessage('SQL语句必须以SELECT开头', 'error')
     return false
   }
 
-  if (!sql.includes('FROM')) {
+  if (!sqlUpper.includes('FROM')) {
     onlyMessage('SQL语句缺少FROM子句', 'error')
     return false
   }
 
   const dangerousKeywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'UPDATE', 'INSERT']
-  if (dangerousKeywords.some((keyword) => sql.includes(keyword))) {
+  if (dangerousKeywords.some((keyword) => sqlUpper.includes(keyword))) {
     onlyMessage('SQL语句不允许包含修改数据的操作', 'error')
     return false
   }
@@ -273,7 +281,7 @@ const handleRequest = (request: any) =>
             status: resp.status,
             success: resp.success,
             result: {
-              data: selectedRowKeys.value.length === 0 ? [] : resp.result.data,
+              data: activeTab.value === 'visual' && selectedRowKeys.value.length === 0 ? [] : resp.result.data,
               pageSize: resp.result.pageSize,
               pageIndex: resp.result.pageIndex,
               total: resp.result.total
@@ -317,14 +325,29 @@ const handleActiveTabChange = (tab: string) => {
   if (activeTab.value === tab) return
   activeTab.value = tab
   const params = resultQueryParams.value
-  resultColumns.value = []
 
   if (activeTab.value === 'sql') {
     delete params.table
+    delete params.columns
     params.sql = sqlValue.value
+    resultColumns.value = []
   } else {
     delete params.sql
     params.table = selectedTable.value
+    if (selectedRowKeys.value.length === 0 && fieldsData.value.length > 0) {
+      selectAllRows()
+    }
+    params.columns = selectedRowKeys.value
+    resultColumns.value = selectedRowKeys.value.map((key: any) => ({
+      title: key,
+      dataIndex: key,
+      key: key,
+      width: 100,
+      ellipsis: true,
+      search: {
+        type: 'string'
+      }
+    }))
   }
 
   updateConfiguration()
