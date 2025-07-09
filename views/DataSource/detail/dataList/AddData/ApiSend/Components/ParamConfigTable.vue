@@ -99,7 +99,7 @@ const validators: Record<ValidatorKey, ValidatorFn> = {
     if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(value) && !/^\{\{(.*?)\}\}$/.test(value)) {
       return '只能以字母开头，可包含数字、下划线或连字符'
     }
-    if (tableData.value.some((item, idx) => idx !== index && item.key === value)) {
+    if (tableData.value.some((item, idx) => idx !== index && item.enable && item.key === value && value !== '')) {
       return '键名重复'
     }
     if (value.length > 64) return '键名长度不能超过64个字符'
@@ -204,6 +204,12 @@ watch(
     } else {
       tableData.value = newData.map((item) => item)
     }
+    
+    nextTick(() => {
+      if (props.isValid) {
+        validateAll()
+      }
+    })
   },
   { immediate: true, deep: true }
 )

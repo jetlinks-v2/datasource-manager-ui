@@ -160,40 +160,63 @@ const handleSQL = async () => {
   executionResult.value.length = 0
   errorMessage.value = ''
   initialize.value = false
+  
   // 数据拆分
-  let aueryArr = queryData.value.trim().split(';')
+  let sqlArr = queryData.value.trim().split(';')
   // 过滤掉空语句
-  aueryArr = aueryArr.filter((sql) => sql.trim() !== '')
+  sqlArr = sqlArr.filter((sql) => sql.trim() !== '')
 
-  const params = {
-    sqlRequests: []
+  const results = []
+  
+  // 顺序执行每条SQL语句，确保结果顺序正确
+  for (let i = 0; i < sqlArr.length; i++) {
+    const params = {
+      sqlRequests: [{
+        sql: sqlArr[i],
+        parameter: {}
+      }]
+    }
+    
+    try {
+      const res = await handleSQL_api(route.params.id, params)
+      if (res?.success && res.result?.[0]) {
+        results.push(res.result[0].data)
+      } else {
+        results.push([])
+      }
+    } catch (err) {
+      if (err.request.responseText) {
+        errorMessage.value = JSON.parse(err.request.responseText).message
+        return
+      } else {
+        results.push([])
+      }
+    }
   }
-
-  aueryArr.forEach((item, index) => {
-    params.sqlRequests[index] = {
-      // sql语句字符串
-      sql: item,
-      // sql替换参数，暂时没有该需求，先暂时带一个空的结构体
-      parameter: {}
+  
+  executionResult.value = results
+  
+  // 查找第一个有效的数组结果来生成表头
+  let firstValidResult = null
+  for (let i = 0; i < results.length; i++) {
+    if (results[i] && 
+        results[i].constructor === Array && 
+        results[i].length > 0) {
+      firstValidResult = results[i][0]
+      break
     }
-  })
-  let res = await handleSQL_api(route.params.id, params).catch((err) => {
-    if (err.request.responseText) {
-      errorMessage.value = JSON.parse(err.request.responseText).message
-    }
-  })
-  if (res?.success) {
-    executionResult.value = res.result.map((item) => item.data)
-    if (res.result[0].data.constructor === Array) {
-      const obj = executionResult.value[0][0]
-      columns.value = Object.keys(obj).map((key) => ({
-        title: key,
-        dataIndex: key,
-        key: key
-      }))
-    }
-    activeKey.value = 1
   }
+  
+  if (firstValidResult) {
+    columns.value = Object.keys(firstValidResult).map((key) => ({
+      title: key,
+      dataIndex: key,
+      ellipsis: true,
+      key: key
+    }))
+  }
+  
+  activeKey.value = 1
 }
 
 const handleRegistrationTips = () => {
@@ -210,6 +233,7 @@ watch(
         columns.value = Object.keys(obj).map((key) => ({
           title: key,
           dataIndex: key,
+          ellipsis: true,
           key: key
         }))
       }
