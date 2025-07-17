@@ -66,10 +66,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'error', 'update'])
 
 const editorContainer = ref<HTMLElement | null>(null)
-// 使用 shallowRef 避免深层响应式追踪
+// shallowRef 避免深层响应式追踪
 const monacoInstance = shallowRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
-// 错误信息映射表
 const ERROR_MESSAGES: ErrorMessagesMap = {
   1: '包含无效的符号',
   2: '数字格式不正确',
@@ -92,29 +91,23 @@ const ERROR_MESSAGES: ErrorMessagesMap = {
   19: '模板变量不能使用双引号包裹，例如 "{{variable}}" 是非法的，应直接使用 {{variable}}'
 }
 
-// 变量正则表达式，提取到外部避免重复创建
+// 变量正则表达式
 const VARIABLE_REGEX = /\{\{[^{}]*\}\}/g
 const PLACEHOLDER_REGEX = /"__VAR_PLACEHOLDER_(\d+)__"/g
 
-// JSON解析和格式化选项，统一配置
+// JSON解析和格式化选项
 const JSON_PARSE_OPTIONS = { allowTrailingComma: true, disallowComments: true }
 const JSON_FORMAT_OPTIONS = { insertSpaces: true, tabSize: 2 }
 
-/**
- * 根据错误码返回对应的中文错误描述
- */
 const getErrorMessage = (code: number): string => {
   return ERROR_MESSAGES[code] || ERROR_MESSAGES[17]
 }
 
-/**
- * 将文本中所有 {{xxx}} 替换为合法 JSON 占位符，并记录映射关系
- */
 const getReplacedContentAndMapping = (text: string): { replacedText: string; mapping: VariableMapping[] } => {
   const mapping: VariableMapping[] = []
   let replacedText = ''
   let lastIndex = 0
-  VARIABLE_REGEX.lastIndex = 0 // 确保正则从头开始匹配
+  VARIABLE_REGEX.lastIndex = 0
 
   let match
   while ((match = VARIABLE_REGEX.exec(text)) !== null) {
@@ -122,7 +115,7 @@ const getReplacedContentAndMapping = (text: string): { replacedText: string; map
     replacedText += text.slice(lastIndex, match.index)
     const replacedStart = replacedText.length
 
-    // 用占位符代替变量，并用双引号包裹保证 JSON 解析正常
+    // 占位符代替变量
     const placeholder = `__VAR_PLACEHOLDER_${mapping.length}__`
     const wrappedPlaceholder = `"${placeholder}"`
     replacedText += wrappedPlaceholder
@@ -144,9 +137,7 @@ const getReplacedContentAndMapping = (text: string): { replacedText: string; map
   return { replacedText, mapping }
 }
 
-/**
- * 将替换后文本的偏移量转换回原始文本中的对应偏移量
- */
+// 将替换后文本的偏移量转换回原始文本中的对应偏移量
 const getOriginalOffset = (replacedOffset: number, mapping: VariableMapping[]): number => {
   let diff = 0
   for (const m of mapping) {
@@ -160,9 +151,7 @@ const getOriginalOffset = (replacedOffset: number, mapping: VariableMapping[]): 
   return replacedOffset - diff
 }
 
-/**
- * 利用 AST 遍历检测重复 key 的辅助函数
- */
+// 利用 AST 遍历检测重复 key 的辅助函数
 const checkDuplicateKeysInTree = (node: any): { error: number; offset: number; length: number }[] => {
   if (!node) return []
 
@@ -197,9 +186,7 @@ const checkDuplicateKeysInTree = (node: any): { error: number; offset: number; l
   return errors
 }
 
-/**
- * JSON 验证：替换占位符后使用 jsonc-parser 检查 JSON 是否有效，并生成 Monaco 错误 marker
- */
+// JSON 验证：替换占位符后使用 jsonc-parser 检查 JSON 是否有效，并生成 Monaco 错误 marker
 const validateAndMark = (value: string): boolean => {
   const instance = monacoInstance.value
   if (!instance) return true
@@ -268,11 +255,9 @@ const validateAndMark = (value: string): boolean => {
   }
 }
 
-/**
- * 格式化函数：先替换 {{xxx}} 为占位符格式化 JSON，再将占位符还原成原始变量
- */
+// 格式化函数：先替换 {{xxx}} 为占位符格式化 JSON，再将占位符还原成原始变量
 const formatJsonWithVariables = (jsonString: string): string => {
-  // 替换 {{xxx}} 变量为占位符，保证 JSON 结构正确
+  // 替换 {{xxx}} 变量为占位符
   const { replacedText, mapping } = getReplacedContentAndMapping(jsonString)
 
   // 使用 jsonc-parser 的 format 接口进行格式化
@@ -286,9 +271,7 @@ const formatJsonWithVariables = (jsonString: string): string => {
   })
 }
 
-/**
- * 点击按钮或失焦时触发格式化
- */
+// 点击按钮或失焦时触发格式化
 const handleFormat = (): void => {
   const instance = monacoInstance.value
   if (!instance) return
@@ -305,11 +288,8 @@ const handleFormat = (): void => {
   }
 }
 
-/**
- * 注册自定义 JSON 语言规则
- */
+// 注册自定义 JSON 语言规则
 const registerCustomJsonLanguage = (): void => {
-  // 只有首次注册时才执行
   if (monaco.languages.getLanguages().some((l) => l.id === 'json-with-variables')) {
     return
   }
@@ -373,16 +353,14 @@ const registerCustomJsonLanguage = (): void => {
   })
 }
 
-/**
- * 初始化编辑器
- */
+// 初始化编辑器
 const initEditor = (): void => {
   if (!editorContainer.value) return
 
   // 注册自定义语言支持
   registerCustomJsonLanguage()
 
-  const instance = monaco.editor.create(editorContainer.value, {
+  const instance = monaco.editor.create(editorContainer.value as HTMLElement, {
     value: props.modelValue,
     language: 'json-with-variables',
     theme: 'json-with-variables-theme',
@@ -416,10 +394,8 @@ const initEditor = (): void => {
   validateAndMark(props.modelValue)
 }
 
-// 生命周期钩子
 onMounted(initEditor)
 
-// 监听 props 变化
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -468,18 +444,22 @@ defineExpose({
 .editor-wrapper {
   position: relative;
   width: 100%;
+  height: 100%;
 }
 
 .monaco-editor-container {
   border-radius: 2px;
   overflow: hidden;
+  height: 100%;
 }
 
 .format-btn {
   position: absolute;
-  right: 0;
-  top: -38px;
+  right: 8px;
+  top: -32px;
   cursor: pointer;
   transition: all 0.3s;
+  z-index: 10;
+  user-select: none;
 }
 </style>
