@@ -48,7 +48,7 @@
             class="copy-btn"
           >
             <AIcon type="CopyOutlined" />
-            复制代码
+            复制
           </a-button>
         </div>
         <div class="editor-container">
@@ -349,15 +349,8 @@ watch(
 }
 
 .copy-btn {
-  padding: 2px 8px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
   font-size: 12px;
-
-  .anticon {
-    margin-right: 4px;
-  }
+  padding-top: 6px;
 }
 
 .editor-container {

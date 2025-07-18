@@ -236,16 +236,18 @@ export function useAllParams(url: string) {
     const params: { key: string; value: string; enable: boolean; edit: boolean }[] = []
     const query = url.split('?')[1] || ''
 
+    if (!query) return params
+
     query.split('&').forEach((pair) => {
-      const [key, value = ''] = pair.split('=')
-      if (key) {
-        params.push({
-          key,
-          value,
-          enable: true,
-          edit: true
-        })
-      }
+      const [key = '', value = ''] = pair.split('=')
+      if (key === '' && value === '') return
+
+      params.push({
+        key,
+        value,
+        enable: true,
+        edit: true
+      })
     })
 
     return params

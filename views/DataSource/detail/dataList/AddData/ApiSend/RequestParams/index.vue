@@ -75,6 +75,7 @@
             ref="jsonEditorRef"
             v-if="bodyFormat === 'application/json'"
             v-model="requestBody"
+            height="100%"
             @update="handleJsonUpdate"
           />
         </div>

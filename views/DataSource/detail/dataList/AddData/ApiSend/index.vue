@@ -212,6 +212,12 @@ watch(
   { immediate: true, deep: true }
 )
 
+onMounted(() => {
+  nextTick(() => {
+    requestParamsRef.value?.handleUriChange()
+  })
+})
+
 defineExpose({
   validateAll
 })
