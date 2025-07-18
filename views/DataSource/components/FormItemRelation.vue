@@ -246,7 +246,7 @@ const validatePort = (rule: any, value: string) => {
     return Promise.reject('请输入端口号')
   }
   if (!/^-?\d+$/.test(value)) {
-    return Promise.reject('端口号仅可输入数字（可包含负号）')
+    return Promise.reject('端口号仅可输入数字')
   }
   if (Number(value) < 0 || Number(value) > 65536) {
     return Promise.reject('端口号必须在0到65536之间')
