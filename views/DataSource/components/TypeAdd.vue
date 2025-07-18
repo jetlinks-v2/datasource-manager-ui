@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="true"
-    title="新建数据源连接"
+    title="新增数据源连接"
     @cancel="emit('close')"
     centered
     :width="616"

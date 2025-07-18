@@ -154,7 +154,7 @@ const handleCloseSearch = () => {
 
 // 处理添加分类
 const handleAdd = () => {
-  categoryModelTitle.value = '新建分类'
+  categoryModelTitle.value = '新增分类'
   categoryModelVisible.value = true
   resetForm()
   nextTick(() => {
