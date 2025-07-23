@@ -116,7 +116,12 @@
               }
             ]
           }
-        ]
+        ],
+        "assetType": "datasource",
+        "accessSupport": {
+          "text": "支持",
+          "value": "support"
+        }
       }
     ]
   }
