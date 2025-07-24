@@ -56,13 +56,13 @@
     </template>
 
     <a-form-item
-      label="描述"
+      label="说明"
       name="description"
     >
       <a-textarea
         :value="modelValue.description"
         :maxlength="200"
-        placeholder="请输入描述"
+        placeholder="请输入说明"
         @change="(e) => handleFieldChange('description', e.target.value)"
       />
     </a-form-item>

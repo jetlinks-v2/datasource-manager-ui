@@ -29,7 +29,7 @@
         </template>
       </template>
 
-      <!-- 描述列 -->
+      <!-- 说明列 -->
       <template v-else-if="column.dataIndex === 'description'">
         <a-input
           v-if="!preview"
@@ -141,7 +141,7 @@ const popoverVisible = ref<Record<string, boolean>>({})
 const placeholders: Record<string, string> = {
   id: '请输入标识',
   name: '请输入名称',
-  description: '请输入描述'
+  description: '请输入说明'
 }
 
 const selectedKeys = ref<(string | number)[]>([])

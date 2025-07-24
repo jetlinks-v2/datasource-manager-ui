@@ -21,7 +21,7 @@
       <a-divider class="divider" />
       <div class="card-content">
         <div class="content-row">
-          <div class="label">描述：</div>
+          <div class="label">说明：</div>
           <j-ellipsis>
             <div class="text">{{ data.description || '--' }}</div>
           </j-ellipsis>

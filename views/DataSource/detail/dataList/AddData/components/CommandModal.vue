@@ -22,7 +22,7 @@
           <span class="value">{{ data.id }}</span>
         </p>
         <j-ellipsis class="command-desc">
-          <span class="label">描述：</span>
+          <span class="label">说明：</span>
           <span class="value">{{ data.description || '--' }}</span>
         </j-ellipsis>
       </div>
