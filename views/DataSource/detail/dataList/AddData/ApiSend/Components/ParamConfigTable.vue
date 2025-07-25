@@ -39,7 +39,7 @@
           <FormItem
             :error="formErrors[index]?.description"
             :value="record.description"
-            placeholder="请输入描述"
+            placeholder="请输入说明"
             @change="(val) => handleFieldChange(val, 'description', record, index)"
           />
         </template>
@@ -111,7 +111,7 @@ const validators: Record<ValidatorKey, ValidatorFn> = {
     return ''
   },
   description: (value: string) => {
-    if (value.length > 200) return '描述长度不能超过200个字符'
+    if (value.length > 200) return '说明长度不能超过200个字符'
     return ''
   }
 }

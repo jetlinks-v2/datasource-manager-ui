@@ -240,7 +240,7 @@ const handleSave = async () => {
           title: '提示',
           content: '命令返回响应配置为空，是否继续保存',
           cancelText: '取消',
-          okText: '继续保存',
+          okText: '确定',
           onOk: () => onSaveData(params)
         })
       } else {

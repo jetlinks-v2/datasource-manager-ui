@@ -98,11 +98,11 @@
         :rules="[{ max: 200, message: '最多可输入200个字符' }]"
         :validateFirst="true"
         name="description"
-        label="描述"
+        label="说明"
       >
         <a-textarea
           v-model:value="formData.description"
-          placeholder="请输入描述"
+          placeholder="请输入说明"
           :rows="3"
         />
       </a-form-item>
@@ -141,7 +141,7 @@
             type="primary"
             @click="handleSubmit"
           >
-            {{ isEditor ? '保存' : '新建' }}
+            确定
           </a-button>
         </a-space>
       </div>
@@ -662,6 +662,7 @@ onMounted(() => {
 .editor-footer {
   justify-content: flex-end;
 }
+
 .add-footer {
   justify-content: space-between;
 }

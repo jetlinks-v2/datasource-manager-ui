@@ -66,7 +66,7 @@ const columns = [
     key: 'name'
   },
   {
-    title: '描述',
+    title: '说明',
     dataIndex: 'description',
     key: 'description'
   }

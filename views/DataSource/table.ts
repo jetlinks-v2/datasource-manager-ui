@@ -70,13 +70,13 @@ export const dataSourceColumns: Array<any> = [
     ellipsis: true
   },
   {
-    title: '描述',
+    title: '说明',
     dataIndex: 'description',
     key: 'description',
     search: {
       type: 'string',
       componentProps: {
-        placeholder: '请输入描述'
+        placeholder: '请输入说明'
       }
     },
     scopedSlots: true

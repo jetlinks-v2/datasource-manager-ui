@@ -29,7 +29,7 @@
             </a-col>
             <a-col :span="16">
               <div class="info-item">
-                <span class="info-label">描述：</span>
+                <span class="info-label">说明：</span>
                 <div class="info-value">
                   <j-ellipsis>{{ info?.description || '--' }}</j-ellipsis>
                 </div>

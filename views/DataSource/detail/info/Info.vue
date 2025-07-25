@@ -19,7 +19,7 @@
       </a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
-      <a-descriptions-item label="描述">
+      <a-descriptions-item label="说明">
         <j-ellipsis>{{ info.description || '--' }}</j-ellipsis>
       </a-descriptions-item>
     </a-descriptions>

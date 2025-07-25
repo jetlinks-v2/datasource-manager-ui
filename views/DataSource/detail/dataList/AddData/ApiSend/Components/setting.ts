@@ -33,7 +33,7 @@ export const paramColumns: TableColumnType<ParamItem>[] = [
     dataIndex: 'value'
   },
   {
-    title: '描述',
+    title: '说明',
     key: 'description',
     dataIndex: 'description'
   },

@@ -79,7 +79,7 @@
           size="small"
           type="primary"
         >
-          确认
+          确定
         </a-button>
       </a-space>
     </div>

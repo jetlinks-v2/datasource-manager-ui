@@ -56,7 +56,7 @@ const selectedRowKeys = ref<Key[]>(props.selectedKeys)
 const columns = [
   { title: '字段名', dataIndex: 'name', key: 'name', search: { type: 'input' } },
   { title: '类型', dataIndex: 'type', key: 'type', search: { type: 'input' } },
-  { title: '描述', dataIndex: 'comment', key: 'comment', search: { type: 'input' }, ellipsis: true }
+  { title: '说明', dataIndex: 'comment', key: 'comment', search: { type: 'input' }, ellipsis: true }
 ]
 
 const filteredFields = computed(() => {
