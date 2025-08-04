@@ -18,71 +18,51 @@
     "buttons": [],
     "children": [
       {
-        "id": "9ccc358320b3949b756029b0a3f2ca54",
-        "sortIndex": 12,
-        "owner": "iot",
-        "name": "数据源",
+        "code": "system/DataSource",
+        "name": "数据源管理",
         "i18nMessages": {
           "name": {
-            "zh_CN": "数据源",
-            "en_US": "Data Source",
-            "en": "Data Source"
+            "zh_CN": "数据源管理",
+            "en_US": "Data Source Management",
+            "en": "Data Source Management"
           }
         },
-        "code": "system/dataSource",
-        "icon": "icon-shujuyuan",
-        "url": "/system/dataSource",
-        "showPage": ["datasource", "datasource-config"],
-        "permissions": [
-          {
-            "permission": "datasource",
-            "actions": ["query", "save", "delete", "execute"]
-          },
-          {
-            "permission": "datasource-config",
-            "actions": [
-              "del-mongodb-collection",
-              "query",
-              "rdb-ddl",
-              "state",
-              "delete",
-              "save",
-              "create-mongodb-collection"
-            ]
-          },
-          {
-            "permission": "datasource-config-group",
-            "actions": ["query", "save", "delete"]
-          }
-        ],
+        "owner": "iot",
+        "id": "c62a6bd5018763dae9fc0d869b6df3a2",
+        "sortIndex": 8,
+        "url": "/system/DataSource",
+        "icon": "icon-shebei",
+        "showPage": ["datasource-config"],
+        "permissions": [],
         "buttons": [
           {
-            "id": "add",
-            "name": "新增",
+            "id": "view",
+            "name": "查看",
             "i18nMessages": {
-              "zh_CN": "新增",
-              "en_US": "Add",
-              "en": "Add"
+              "zh_CN": "查看",
+              "en_US": "View",
+              "en": "View"
             },
             "permissions": [
               {
-                "permission": "datasource",
-                "actions": ["query", "save", "add"]
+                "permission": "datasource-config",
+                "actions": ["query"]
               }
-            ]
+            ],
+            "i18nName": "查询"
           },
           {
-            "id": "edit",
-            "name": "编辑",
+            "id": "manage",
+            "name": "管理",
             "i18nMessages": {
-              "zh_CN": "编辑",
-              "en_US": "Edit",
-              "en": "Edit"
+              "zh_CN": "管理",
+              "en_US": "Manage",
+              "en": "Manage"
             },
             "permissions": [
               {
-                "permission": "datasource",
-                "actions": ["query", "save"]
+                "permission": "datasource-config",
+                "actions": ["query", "del-mongodb-collection", "save", "rdb-ddl", "create-mongodb-collection"]
               }
             ]
           },
@@ -96,27 +76,63 @@
             },
             "permissions": [
               {
-                "permission": "datasource",
+                "permission": "datasource-config",
                 "actions": ["query", "delete"]
               }
             ]
           },
           {
-            "id": "state",
-            "name": "测试",
+            "id": "action",
+            "name": "启用/禁用",
             "i18nMessages": {
-              "zh_CN": "测试",
-              "en_US": "State",
-              "en": "State"
+              "zh_CN": "启用/禁用",
+              "en_US": "Enable/Disable",
+              "en": "Enable/Disable"
             },
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": ["state"]
+                "actions": ["query", "save"]
+              }
+            ]
+          },
+          {
+            "id": "update",
+            "name": "编辑",
+            "i18nMessages": {
+              "zh_CN": "编辑",
+              "en_US": "Edit",
+              "en": "Edit"
+            },
+            "permissions": [
+              {
+                "permission": "datasource-config",
+                "actions": ["query", "del-mongodb-collection", "save", "rdb-ddl", "create-mongodb-collection"]
+              }
+            ]
+          },
+          {
+            "id": "add",
+            "name": "新增",
+            "i18nMessages": {
+              "zh_CN": "新增",
+              "en_US": "Add",
+              "en": "Add"
+            },
+            "permissions": [
+              {
+                "permission": "datasource-config",
+                "actions": ["query", "del-mongodb-collection", "save", "rdb-ddl", "create-mongodb-collection"]
               }
             ]
           }
-        ]
+        ],
+        "accessSupport": {
+          "text": "支持",
+          "value": "support"
+        },
+        "supportDataAccess": true,
+        "assetType": "datasource"
       }
     ]
   }
