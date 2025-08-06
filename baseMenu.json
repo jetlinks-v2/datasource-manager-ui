@@ -19,12 +19,12 @@
     "children": [
       {
         "code": "system/DataSource",
-        "name": "数据源管理",
+        "name": "数据源",
         "i18nMessages": {
           "name": {
-            "zh_CN": "数据源管理",
-            "en_US": "Data Source Management",
-            "en": "Data Source Management"
+            "zh_CN": "数据源",
+            "en_US": "Data Source",
+            "en": "Data Source"
           }
         },
         "owner": "iot",
