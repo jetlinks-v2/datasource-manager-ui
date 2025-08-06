@@ -72,7 +72,7 @@ import {
 import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
 import { Rule } from 'ant-design-vue/es/form'
 
-const permission = 'system/dataSource'
+const permission = 'system/DataSource'
 const dataSourceListRef = ref()
 const listLength = ref()
 const categorySelect = ref()

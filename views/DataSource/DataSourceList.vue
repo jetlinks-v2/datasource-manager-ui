@@ -14,7 +14,7 @@
           mode="TABLE"
         >
           <template #name="slotProps">
-            <router-link :to="`/system/dataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
+            <router-link :to="`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
               <a-space>
                 <AIcon :type="iconMaps[slotProps.searchCode]" />
                 <j-ellipsis>
