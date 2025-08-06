@@ -1,4 +1,4 @@
-const routerModules = import.meta.glob('./views/dataSource/**/index.vue')
+const routerModules = import.meta.glob('./views/DataSource/**/index.vue')
 
 const getAsyncRoutesMap = () => {
   const modules = {}
@@ -12,12 +12,12 @@ const getAsyncRoutesMap = () => {
 
 const getExtraRoutesMap = () => {
   return {
-    'system/dataSource': [
+    'system/DataSource': [
       {
         code: 'Detail',
         url: '/Detail/:id',
         name: '数据源详情',
-        component: () => import('./views/dataSource/detail/index.vue')
+        component: () => import('./views/DataSource/detail/index.vue')
       }
     ]
   }
