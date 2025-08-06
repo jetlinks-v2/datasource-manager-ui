@@ -662,6 +662,7 @@ onMounted(() => {
 .editor-footer {
   justify-content: flex-end;
 }
+
 .add-footer {
   justify-content: space-between;
 }
