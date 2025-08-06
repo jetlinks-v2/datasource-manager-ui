@@ -73,7 +73,7 @@
             <template #description>
               <a-space direction="vertical">
                 <span style="font-size: 18px">暂无数据</span>
-                <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">点击右上角「新建数据源」</span>
+                <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">点击右上角「新增数据源」</span>
               </a-space>
             </template>
           </j-empty>

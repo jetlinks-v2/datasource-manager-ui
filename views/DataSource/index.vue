@@ -9,7 +9,7 @@
           @click="_handleAdd"
         >
           <AIcon type="PlusOutlined" />
-          新建
+          新增
         </j-permission-button>
       </div>
 
