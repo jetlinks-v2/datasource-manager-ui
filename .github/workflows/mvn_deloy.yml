@@ -2,17 +2,16 @@ name: Auto Deploy jetlinks-ui to the JetLinks Maven Repository
 
 on:
   push:
-    branches: ["2.10"]
-
+    branches: ['2.11']
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: [ 18.x ]
+        node_version: [18.x]
         #        os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [ ubuntu-latest ]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
       - run: echo ${{github.ref}}
@@ -37,7 +36,7 @@ jobs:
                     </server>
                   </servers>
                 </settings>" > ~/.m2/settings.xml
-          
+
           # Step 4: 构建并发布到 Maven 私有仓库
       - name: Build and Deploy to Maven
         run: mvn clean deploy -Pui-package
