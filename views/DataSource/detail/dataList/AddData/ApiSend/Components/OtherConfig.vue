@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    v-model:visible="visible"
+    v-model:open="visible"
     title="其他配置"
     @ok="handleOk"
     @cancel="handleCancel"

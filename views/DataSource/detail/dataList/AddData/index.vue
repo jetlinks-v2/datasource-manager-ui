@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    visible
+    open
     :title="isEdit ? '编辑功能' : '新增功能'"
     centered
     :maskClosable="false"
