@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    visible
+    open
     :title="preview ? '命令详情' : '编辑命令'"
     centered
     :maskClosable="false"

@@ -47,7 +47,7 @@
 
     <!-- 数据类型编辑弹窗 -->
     <a-popover
-      v-model:visible="popoverVisibleValue"
+      v-model:open="popoverVisibleValue"
       trigger="click"
       destroyTooltipOnHide
       placement="right"

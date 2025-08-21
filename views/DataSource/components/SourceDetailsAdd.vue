@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="isEditor ? '编辑' : '新增数据源连接'"
-    :visible="true"
+    :open="true"
     :width="700"
     @cancel="cancelModal"
     :maskClosable="false"
@@ -150,7 +150,7 @@
 
   <a-modal
     title="新增分类"
-    :visible="showAddCategory"
+    :open="showAddCategory"
     @cancel="handleCancelAddCategory"
     @ok="handleAddCategory"
     :width="400"

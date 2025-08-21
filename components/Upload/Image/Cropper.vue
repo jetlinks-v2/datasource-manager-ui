@@ -1,7 +1,7 @@
 <template>
   <Modal
     :title="title"
-    visible
+    open
     :width="400"
     @cancel="cancel"
     @ok="ok"
