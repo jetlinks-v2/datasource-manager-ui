@@ -33,7 +33,12 @@
         "url": "/system/DataSource",
         "icon": "icon-shebei",
         "showPage": ["datasource-config"],
-        "permissions": [],
+        "permissions": [
+          {
+            "permission": "datasource-config-group",
+            "actions": ["query"]
+          }
+        ],
         "buttons": [
           {
             "id": "view",
