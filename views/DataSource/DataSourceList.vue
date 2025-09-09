@@ -40,7 +40,7 @@
             <!-- 编辑按钮 -->
             <j-permission-button
               style="padding: 4px 8px"
-              :hasPermission="`${permission}:edit`"
+              :hasPermission="`${permission}:update`"
               :tooltip="{ title: '编辑' }"
               type="link"
               @click="handleEdit(slotProps)"
