@@ -11,7 +11,7 @@
         运行
       </a-button>
     </div>
-    <j-monaco-editor
+    <MonacoEditor
       ref="editorRef"
       v-model:modelValue="sqlValue"
       :registrationTips="registrationTips"
