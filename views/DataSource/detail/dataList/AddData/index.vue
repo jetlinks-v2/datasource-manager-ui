@@ -204,7 +204,7 @@ const handleSave = async () => {
       const isDataSourceArray = isEdit.value
         ? props.data.configuration.output.type === 'array'
         : isArray(checkTestDataSource.value)
-      const { queryParams, headers } = formData.configuration.expression
+      const { queryParams, headers, uri } = formData.configuration.expression
 
       params = {
         ...formData,
@@ -213,7 +213,10 @@ const handleSave = async () => {
           expression: {
             ...formData.configuration.expression,
             queryParams: transformArray(queryParams),
-            headers: transformArray(headers)
+            headers: transformArray(headers),
+            uri: {
+              url: uri.url.split('?')[0]
+            }
           },
           input: parseTableTreeToMetadata(formData.configuration.input),
           output: {
@@ -287,7 +290,7 @@ onMounted(() => {
 
   if (sourceClassify.value === DATA_TYPE_ITEM.API_SEND) {
     // 处理API发送类型数据
-    const { queryParams, headers } = props.data.configuration.expression
+    const { queryParams, headers, uri } = props.data.configuration.expression
     const transformParam = (item: any) => ({
       ...item,
       key: item.key.value,
@@ -298,6 +301,16 @@ onMounted(() => {
       ...props.data.configuration.expression,
       queryParams: queryParams.map(transformParam),
       headers: headers.map(transformParam)
+    }
+
+    if (uri) {
+      const queryString = formData.configuration.expression.queryParams
+        ?.map((item: any) => `${item.key}=${item.value}`)
+        .join('&')
+      if (queryString) {
+        const separator = uri.url.includes('?') ? '&' : '?'
+        formData.configuration.expression.uri.url = `${uri.url}${separator}${queryString}`
+      }
     }
 
     // 处理输入输出配置

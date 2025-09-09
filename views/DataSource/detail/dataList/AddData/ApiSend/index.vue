@@ -178,7 +178,9 @@ const handleSend = async () => {
       const { uri, method, body, queryParams, headers } = expression.value
 
       const _expression = {
-        uri,
+        uri: {
+          url: uri.url.split('?')[0]
+        },
         method,
         body,
         queryParams: transformArray(queryParams),
