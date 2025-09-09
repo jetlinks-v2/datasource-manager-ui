@@ -17,13 +17,13 @@
           <AIcon type="ConsoleSqlOutlined" />
           SQL表达式
         </div>
-        <j-monacoEditor
+        <MonacoEditor
           v-model="queryData"
           style="flex: 1"
           theme="vs-white"
           :registrationTips="tips"
           language="sql"
-        ></j-monacoEditor>
+        ></MonacoEditor>
       </div>
       <div class="result-container">
         <div
