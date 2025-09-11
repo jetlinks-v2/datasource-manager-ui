@@ -370,9 +370,9 @@ defineExpose({
 }
 
 :deep(.ant-radio-group-outline .ant-radio-button-wrapper:first-child) {
-  border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0 0 6px;
 }
 :deep(.ant-radio-group-outline .ant-radio-button-wrapper:last-child) {
-  border-radius: 0px 6px 6px 0px;
+  border-radius: 0 6px 6px 0;
 }
 </style>

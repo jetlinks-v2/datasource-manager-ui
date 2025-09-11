@@ -88,13 +88,13 @@ const handleOutputExpandChange = (data: any[]) => {
 
 const validateCommandParams = async () => {
   let hasError = false
-  hasError = await CommandTableInputRef.value.validateAllData()
+  hasError = CommandTableInputRef.value.validateAllData()
   if (hasError) {
     onlyMessage('请检查命令入参配置', 'error')
     return false
   }
 
-  hasError = await CommandTableOutputRef.value.validateAllData()
+  hasError = CommandTableOutputRef.value.validateAllData()
   if (hasError) {
     onlyMessage('请检查命令返回响应配置', 'error')
     return false
