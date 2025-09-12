@@ -305,7 +305,12 @@ onMounted(() => {
 
     if (uri) {
       const queryString = formData.configuration.expression.queryParams
-        ?.map((item: any) => `${item.key}=${item.value}`)
+        ?.map((item: any) => {
+          if (item.enable) {
+            return `${item.key}=${item.value}`
+          }
+        })
+        .filter(Boolean)
         .join('&')
       if (queryString) {
         const separator = uri.url.includes('?') ? '&' : '?'

@@ -11,9 +11,7 @@
     </div>
     <div>
       <slot name="action">
-        <a-dropdown
-          v-if="active && !removeEdit && (!removeDefaultMore || item[valueKey] !== defaultKey)"
-        >
+        <a-dropdown v-if="active && !removeEdit && (!removeDefaultMore || item[valueKey] !== defaultKey)">
           <div class="icon">
             <AIcon type="MoreOutlined" />
           </div>
@@ -21,7 +19,7 @@
             <a-menu style="width: 144px">
               <a-menu-item :key="1">
                 <j-permission-button
-                  :hasPermission="`${permission}:edit` || true"
+                  :hasPermission="`${permission}:update`"
                   type="link"
                   size="small"
                   @click="$emit('edit', 1, item)"
@@ -38,7 +36,7 @@
               >
                 <div v-if="item[valueKey] !== defaultKey">
                   <j-permission-button
-                    :hasPermission="`${permission}:delete` || true"
+                    :hasPermission="`${permission}:delete`"
                     type="link"
                     size="small"
                     @click="$emit('delete', item)"
@@ -124,4 +122,4 @@ const getItemLabel = (item: Record<string, any>): string => {
     display: none;
   }
 }
-</style> 
+</style>
