@@ -4,7 +4,9 @@
       v-if="!isSearching"
       class="count-text"
     >
-      共 <span>{{ count }}</span> 个分类
+      共
+      <span>{{ count }}</span>
+      个分类
     </div>
     <div class="header-right">
       <div
@@ -40,7 +42,7 @@
       >
         <j-permission-button
           type="text"
-          :hasPermission="`${permission}:add` || true"
+          :hasPermission="`${permission}:add`"
           @click="$emit('add')"
         >
           <template #icon>
@@ -169,4 +171,4 @@ defineExpose({
     }
   }
 }
-</style> 
+</style>
