@@ -34,6 +34,7 @@
 <script setup lang="ts" name="CommandParams">
 import CommandTable from './CommandTable.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { cloneDeep, isArray } from 'lodash-es'
 
 const props = defineProps({
   preview: {
@@ -79,11 +80,11 @@ const inputDataSource = ref<any[]>([])
 const outputDataSource = ref<any[]>([])
 
 const handleInputSelectedChange = (data: any[]) => {
-  inputDataSource.value = data
+  inputDataSource.value = cloneDeep(data)
 }
 
 const handleOutputExpandChange = (data: any[]) => {
-  outputDataSource.value = data
+  outputDataSource.value = cloneDeep(data)
 }
 
 const validateCommandParams = async () => {
@@ -110,8 +111,8 @@ watch(
   () => props.modelValue,
   (newVal) => {
     if (newVal) {
-      inputDataSource.value = newVal.input
-      outputDataSource.value = newVal.output
+      inputDataSource.value = isArray(newVal.input) ? newVal.input : []
+      outputDataSource.value = isArray(newVal.output) ? newVal.output : []
 
       // 只在初始化时全选
       nextTick(() => {

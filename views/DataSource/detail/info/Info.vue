@@ -15,7 +15,9 @@
         <j-ellipsis>{{ info.id || '--' }}</j-ellipsis>
       </a-descriptions-item>
       <a-descriptions-item label="创建时间">
-        <j-ellipsis>{{ info.createTime ? dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') : '--' }}</j-ellipsis>
+        <j-ellipsis>
+          {{ info.createTime ? dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') : '--' }}
+        </j-ellipsis>
       </a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
       <a-descriptions-item label=""></a-descriptions-item>
@@ -36,7 +38,7 @@ import DataConnection from './DataConnection.vue'
 import { DATASOURCE_NAME } from '../../components/table'
 import { SourceDataInfo } from '../type'
 
-const props = defineProps<{ info: SourceDataInfo; sourceClassify: string }>()
+const props = defineProps<{ info: SourceDataInfo; sourceClassify: 'database' | 'common'; sourceData?: any }>()
 const { info } = toRefs(props)
 const sourceType = computed(() => {
   if (info.value) {

@@ -92,7 +92,7 @@ const props = defineProps({
     default: () => ({})
   },
   dynamicParams: {
-    type: Array,
+    type: [Array, Object],
     default: () => []
   },
   isRdb: {
