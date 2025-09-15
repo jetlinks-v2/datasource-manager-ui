@@ -194,7 +194,7 @@
 <script lang="ts" name="DataConnection" setup>
 import { datasourceParseUrl, DATASOURCE_TYPE, typesData } from '../../components/table'
 
-const props = defineProps<{ info: any; sourceClassify: string }>()
+const props = defineProps<{ info: any; sourceClassify: 'database' | 'common' }>()
 const { info, sourceClassify } = toRefs(props)
 
 const databaseData = reactive({
@@ -367,12 +367,15 @@ watch(
   font-family: AliRegular !important;
   margin-bottom: 20px;
 }
+
 .hover-hidden {
   display: none;
 }
+
 .hover-show:hover > .hover-hidden {
   display: block;
 }
+
 .password-mask {
   -webkit-text-security: disc;
   font-family: 'PingFang SC';
