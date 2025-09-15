@@ -82,7 +82,7 @@
           </a-select>
           <j-permission-button
             type="dashed"
-            :hasPermission="`${permission}:add` || true"
+            :hasPermission="`${permission}:add`"
             @click="addCategory"
           >
             <template #icon>
@@ -267,22 +267,18 @@ const handleCancelAddCategory = () => {
   categoryFormRef.value.resetFields()
 }
 
-const handleAddCategory = async () => {
-  try {
+const handleAddCategory = () => {
+  categoryFormRef.value.validate().then(async () => {
     const res = await addDataSourceGroup({ name: categoryFormState.value.name })
     if (res.status === 200) {
+      await getCategoryList()
+      formData.value.group = categoryList.value.find((item: any) => item.name === categoryFormState.value.name)?.id
+      showAddCategory.value = false
+      categoryFormRef.value.resetFields()
+      emit('refreshCategoryList')
       onlyMessage('新增成功')
     }
-  } catch (error) {
-    onlyMessage('新增失败', 'error')
-    console.error('Operation failed:', error)
-  } finally {
-    await getCategoryList()
-    formData.value.group = categoryList.value.find((item: any) => item.name === categoryFormState.value.name)?.id
-    showAddCategory.value = false
-    categoryFormRef.value.resetFields()
-    emit('refreshCategoryList')
-  }
+  })
 }
 
 const nameValidator = async (_: Rule, value: string) => {
