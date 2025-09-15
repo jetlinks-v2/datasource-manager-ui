@@ -2,7 +2,7 @@
   <div class="main">
     <pro-search
       :columns="dataSourceColumns"
-      target="system-user"
+      target="datasource-manager"
       @search="onSearch"
     />
     <FullPage>
