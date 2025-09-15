@@ -50,7 +50,7 @@
             删除
           </j-permission-button>
           <j-permission-button
-            :hasPermission="`${permission}:edit`"
+            :hasPermission="`${permission}:update`"
             @click="showSourceEdit"
           >
             <EditOutlined />
