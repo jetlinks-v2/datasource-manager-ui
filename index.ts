@@ -1,3 +1,7 @@
+import { moduleRegistry } from '@/utils/module-registry'
+import registerSetting from './register'
+import { name } from './package.json'
+
 const routerModules = import.meta.glob('./views/DataSource/**/index.vue')
 
 const getAsyncRoutesMap = () => {
@@ -23,7 +27,12 @@ const getExtraRoutesMap = () => {
   }
 }
 
+const register = () => {
+  moduleRegistry.register(name, registerSetting)
+}
+
 export default {
   getAsyncRoutesMap,
-  getExtraRoutesMap
+  getExtraRoutesMap,
+  register
 }
