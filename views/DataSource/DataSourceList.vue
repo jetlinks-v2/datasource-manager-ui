@@ -2,6 +2,7 @@
   <div class="main">
     <pro-search
       :columns="dataSourceColumns"
+      target="system-user"
       @search="onSearch"
     />
     <FullPage>
