@@ -27,7 +27,7 @@
         <template #card="slotProps">
           <TableCard
             :data="slotProps"
-            :createTime="activeItem.createTime"
+            :createTime="activeItem?.createTime || ''"
             @click="handleCardClick"
           />
         </template>
@@ -84,6 +84,8 @@ interface ImportData {
 
 const props = defineProps<{
   info: DataSourceInfo
+  sourceData?: any
+  sourceClassify?: any
 }>()
 
 const router = useRouter()

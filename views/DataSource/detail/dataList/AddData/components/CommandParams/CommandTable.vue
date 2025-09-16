@@ -1,89 +1,91 @@
 <template>
-  <a-table
-    :data-source="tableData"
-    :columns="columns"
-    :pagination="false"
-    row-key="key"
-    :row-selection="multiple ? rowSelection : undefined"
-    :showExpandColumn="showExpandColumn"
-    :expanded-row-keys="expandedRowKeys"
-    @expand="onExpand"
-    bordered
-    size="small"
-    :scroll="scroll"
-    style="min-height: 200px"
-  >
-    <template #bodyCell="{ column, record, index }">
-      <!-- ID / Name 列 -->
-      <template v-if="column.dataIndex === 'id' || column.dataIndex === 'name'">
-        <template v-if="!preview">
-          <FormItem
-            :error="formItemErrors[record.key]?.[column.dataIndex]"
-            :value="record[column.dataIndex]"
+  <div>
+    <a-table
+      :data-source="tableData"
+      :columns="columns"
+      :pagination="false"
+      row-key="key"
+      :row-selection="multiple ? rowSelection : undefined"
+      :showExpandColumn="showExpandColumn"
+      :expanded-row-keys="expandedRowKeys"
+      @expand="onExpand"
+      bordered
+      size="small"
+      :scroll="scroll"
+      style="min-height: 200px"
+    >
+      <template #bodyCell="{ column, record, index }">
+        <!-- ID / Name 列 -->
+        <template v-if="column.dataIndex === 'id' || column.dataIndex === 'name'">
+          <template v-if="!preview">
+            <FormItem
+              :error="formItemErrors[record.key]?.[column.dataIndex]"
+              :value="record[column.dataIndex]"
+              :placeholder="placeholders[column.dataIndex]"
+              @blur="(val) => handleFieldChange(val, column.dataIndex, record)"
+            />
+          </template>
+          <template v-else>
+            <j-ellipsis>{{ record[column.dataIndex] }}</j-ellipsis>
+          </template>
+        </template>
+
+        <!-- 说明列 -->
+        <template v-else-if="column.dataIndex === 'description'">
+          <a-input
+            v-if="!preview"
+            v-model:value="record[column.dataIndex]"
             :placeholder="placeholders[column.dataIndex]"
-            @blur="(val) => handleFieldChange(val, column.dataIndex, record)"
+            :maxlength="200"
+            @blur="() => handleInputChange(record, column.dataIndex)"
+          />
+          <j-ellipsis v-else>{{ record[column.dataIndex] }}</j-ellipsis>
+        </template>
+
+        <!-- 数据类型列 -->
+        <template v-else-if="column.dataIndex === 'dataType'">
+          <DataTypeCell
+            :record="record"
+            :index="index"
+            :has-error="!!formItemErrors[record.key]?.dataType"
+            :error-message="formItemErrors[record.key]?.dataType"
+            :popover-visible="popoverVisible[record.key]"
+            :mode="mode"
+            :disabled="record.disabled || preview"
+            @update:data-type="(newType) => handleDataTypeUpdate(record, newType)"
+            @update:popover-visible="(visible) => updatePopoverVisible(record.key, visible)"
+            @verify="() => handleVerify(record)"
           />
         </template>
-        <template v-else>
-          <j-ellipsis>{{ record[column.dataIndex] }}</j-ellipsis>
+
+        <!-- 操作列 -->
+        <template v-else-if="column.dataIndex === 'operate'">
+          <a-button
+            type="link"
+            danger
+            @click="() => handleDelete(index)"
+            :disabled="preview"
+          >
+            <AIcon type="DeleteOutlined" />
+          </a-button>
         </template>
       </template>
+    </a-table>
 
-      <!-- 说明列 -->
-      <template v-else-if="column.dataIndex === 'description'">
-        <a-input
-          v-if="!preview"
-          v-model:value="record[column.dataIndex]"
-          :placeholder="placeholders[column.dataIndex]"
-          :maxlength="200"
-          @blur="() => handleInputChange(record, column.dataIndex)"
-        />
-        <j-ellipsis v-else>{{ record[column.dataIndex] }}</j-ellipsis>
-      </template>
-
-      <!-- 数据类型列 -->
-      <template v-else-if="column.dataIndex === 'dataType'">
-        <DataTypeCell
-          :record="record"
-          :index="index"
-          :has-error="!!formItemErrors[record.key]?.dataType"
-          :error-message="formItemErrors[record.key]?.dataType"
-          :popover-visible="popoverVisible[record.key]"
-          :mode="mode"
-          :disabled="record.disabled || preview"
-          @update:data-type="(newType) => handleDataTypeUpdate(record, newType)"
-          @update:popover-visible="(visible) => updatePopoverVisible(record.key, visible)"
-          @verify="() => handleVerify(record)"
-        />
-      </template>
-
-      <!-- 操作列 -->
-      <template v-else-if="column.dataIndex === 'operate'">
-        <a-button
-          type="link"
-          danger
-          @click="() => handleDelete(index)"
-          :disabled="preview"
-        >
-          <AIcon type="DeleteOutlined" />
-        </a-button>
-      </template>
-    </template>
-  </a-table>
-
-  <div
-    class="add-button-wrapper"
-    v-if="addButton"
-  >
-    <a-button
-      type="dashed"
-      block
-      @click="handleAdd"
-      :disabled="preview"
+    <div
+      class="add-button-wrapper"
+      v-if="addButton"
     >
-      <AIcon type="PlusOutlined" />
-      新增参数
-    </a-button>
+      <a-button
+        type="dashed"
+        block
+        @click="handleAdd"
+        :disabled="preview"
+      >
+        <AIcon type="PlusOutlined" />
+        新增参数
+      </a-button>
+    </div>
   </div>
 </template>
 
@@ -268,7 +270,6 @@ const handleDataTypeUpdate = (record: any, newDataType: any) => {
 
 const updatePopoverVisible = (recordKey: string, visible: boolean) => {
   popoverVisible.value[recordKey] = visible
-  emit('update', tableData.value)
 }
 
 const validateRecord = (record: any, path: string[] = []): boolean => {
