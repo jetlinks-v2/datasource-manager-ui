@@ -16,14 +16,16 @@ const getAsyncRoutesMap = () => {
 
 const getExtraRoutesMap = () => {
   return {
-    'system/DataSource': [
-      {
-        code: 'Detail',
-        url: '/Detail/:id',
-        name: '数据源详情',
-        component: () => import('./views/DataSource/detail/index.vue')
-      }
-    ]
+    'system/DataSource': {
+      children:[
+        {
+          code: 'Detail',
+          url: '/Detail/:id',
+          name: '数据源详情',
+          component: () => import('./views/DataSource/Detail/index.vue')
+        }
+      ]
+    }
   }
 }
 

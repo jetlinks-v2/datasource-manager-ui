@@ -116,7 +116,6 @@ const route = useRoute()
 const router = useRouter()
 const sourceId = route.params.id as string
 const sourceData = ref()
-
 const info = ref({} as SourceDataInfo)
 const list = ref<{ key: string; tab: string }[]>([])
 const tabs = {
