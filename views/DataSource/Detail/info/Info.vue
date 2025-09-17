@@ -19,8 +19,6 @@
           {{ info.createTime ? dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') : '--' }}
         </j-ellipsis>
       </a-descriptions-item>
-      <a-descriptions-item label=""></a-descriptions-item>
-      <a-descriptions-item label=""></a-descriptions-item>
       <a-descriptions-item label="说明">
         <j-ellipsis>{{ info.description || '--' }}</j-ellipsis>
       </a-descriptions-item>
@@ -61,14 +59,5 @@ const getDataSourceName = (value: string) => {
   line-height: 1.5715;
   font-family: AliRegular !important;
   margin-bottom: 20px;
-}
-.ant-descriptions-item-label {
-  width: 268px !important;
-}
-:deep(.ant-descriptions-item-label) {
-  width: 268px !important;
-}
-:deep(.ant-descriptions-item-content) {
-  min-width: 268px;
 }
 </style>
