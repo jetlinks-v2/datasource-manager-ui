@@ -4,7 +4,6 @@
     :title="title"
     :maskClosable="false"
     width="416px"
-    :bodyStyle="{ padding: '20px 20px 8px 20px' }"
     @cancel="handleCancel"
     @ok="handleOk"
     class="category-modal"
@@ -70,7 +69,7 @@ defineOptions({
 })
 
 const props = defineProps<{
-  visible: boolean
+  open: boolean
   title: string
   formState: Record<string, any>
   labelKey: string
@@ -81,18 +80,18 @@ const props = defineProps<{
   showId: boolean
 }>()
 
-const emit = defineEmits(['update:visible', 'ok'])
+const emit = defineEmits(['update:open', 'ok'])
 
 const formRef = ref()
 
 // 内部响应式状态，用于同步visible属性
 const modelVisible = computed({
-  get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  get: () => props.open,
+  set: (value) => emit('update:open', value)
 })
 
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
 const handleOk = async () => {
