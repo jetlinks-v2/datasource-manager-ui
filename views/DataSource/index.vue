@@ -79,6 +79,9 @@ const categorySelect = ref()
 const categoryList = ref([] as any)
 const categoryListDeep = ref([] as any)
 const clickItem = ref<any>({})
+const router = useRouter()
+console.log(router.getRoutes(), '=====')
+
 const labelRules: Rule[] = [
   {
     validator: (_, value: string) => {
