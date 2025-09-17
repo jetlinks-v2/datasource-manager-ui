@@ -2,7 +2,6 @@
   <a-form
     :model="formData"
     ref="formRef"
-    size="small"
     layout="vertical"
   >
     <a-form-item label="连接方式">
