@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper">
+  <div>
     <j-page-container
       :tabActiveKey="tabActiveKey"
       :tabList="list"
@@ -80,14 +80,14 @@
         </div>
       </FullPage>
     </j-page-container>
-  </div>
 
-  <SourceDetailsAdd
-    v-if="showSourceAdd"
-    :editData="info"
-    :permission="permission"
-    @close="showSourceAdd = false"
-  />
+    <SourceDetailsAdd
+      v-if="showSourceAdd"
+      :editData="info"
+      :permission="permission"
+      @close="showSourceAdd = false"
+    />
+  </div>
 </template>
 
 <script lang="ts" name="Detail" setup>
@@ -248,12 +248,6 @@ onMounted(async () => {
 </script>
 
 <style lang="less" scoped>
-.page-wrapper {
-  :deep(.ant-page-header-heading-title) {
-    white-space: normal !important;
-  }
-}
-
 .page-header {
   display: flex;
   align-items: center;
@@ -301,9 +295,10 @@ onMounted(async () => {
 }
 
 .content-wrapper {
+  margin-top: 24px;
   padding: 24px;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 :deep(.full-page-warp) {

@@ -87,7 +87,7 @@
     v-if="showTypeAdd"
     :active="activeKey"
     @close="handleClickNext"
-  ></TypeAdd>
+  />
 
   <SourceDetailsAdd
     v-if="showSourceAdd"
@@ -98,7 +98,7 @@
     @openType="handleShowTypeAdd"
     @update="updateSourceList"
     @refreshCategoryList="refreshCategoryList"
-  ></SourceDetailsAdd>
+  />
 </template>
 <script lang="ts" name="DataSourceList" setup>
 import { dataSourceColumns, iconMaps } from './table'

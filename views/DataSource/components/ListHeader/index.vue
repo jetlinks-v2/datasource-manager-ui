@@ -111,7 +111,8 @@ defineExpose({
     align-items: center;
     flex-grow: 1;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 4px;
+    margin-right: 4px;
   }
 
   .search-container {
