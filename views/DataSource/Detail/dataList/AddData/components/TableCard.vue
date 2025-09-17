@@ -50,8 +50,7 @@ const props = defineProps({
     })
   },
   createTime: {
-    type: String,
-    required: true,
+    type: [String, Number],
     default: ''
   }
 })

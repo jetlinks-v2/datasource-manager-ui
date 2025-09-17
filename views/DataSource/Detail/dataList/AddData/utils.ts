@@ -29,7 +29,7 @@ export const getValueType = (value: any) => {
  * 数据转换成树形表格支持结构
  * @param {Object} data
  */
-export const convertToTableTreeData = (data: Object): any => {
+export const convertToTableTreeData = (data: Object | Array<any>): any => {
   let _data = {} as any
   if (isArray(data)) {
     _data = { ...data[0] }

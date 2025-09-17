@@ -83,7 +83,7 @@ const props = defineProps({
   },
   formRef: {
     type: Object,
-    required: true
+    default: () => ({})
   },
   data: {
     type: Object,
