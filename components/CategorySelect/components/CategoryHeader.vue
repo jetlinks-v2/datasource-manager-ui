@@ -43,7 +43,9 @@
         <j-permission-button
           type="text"
           :hasPermission="`${permission}:add`"
+          size="small"
           @click="$emit('add')"
+          style="margin-right: 8px"
         >
           <template #icon>
             <AIcon type="PlusOutlined" />
@@ -141,11 +143,6 @@ defineExpose({
     width: 32px;
     transition: all 0.3s;
 
-    .ant-btn {
-      font-size: 16px;
-      transition: all 0.3s;
-    }
-
     &.expanded {
       flex-grow: 1;
       width: 100%;
@@ -164,11 +161,6 @@ defineExpose({
 
   .header-buttons {
     flex-shrink: 0;
-
-    :deep(.ant-btn) {
-      transition: all 0.3s;
-      font-size: 16px;
-    }
   }
 }
 </style>

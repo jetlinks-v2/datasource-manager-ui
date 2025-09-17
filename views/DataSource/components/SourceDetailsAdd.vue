@@ -6,14 +6,13 @@
     @cancel="cancelModal"
     :maskClosable="false"
     centered
-    :bodyStyle="{ maxHeight: '80vh', overflow: 'auto' }"
+    :bodyStyle="{ maxHeight: '75vh', overflow: 'auto', padding: '8px' }"
   >
     <a-form
       ref="formRef"
       :model="formData"
       layout="vertical"
       labelAlign="left"
-      size="small"
     >
       <a-form-item label="类型">
         <a-input
@@ -153,14 +152,13 @@
     :open="showAddCategory"
     @cancel="handleCancelAddCategory"
     @ok="handleAddCategory"
-    :width="400"
+    :width="420"
   >
     <a-form
       ref="categoryFormRef"
       :model="categoryFormState"
       layout="vertical"
       labelAlign="left"
-      size="small"
     >
       <a-form-item
         label="分类名称"
@@ -661,9 +659,5 @@ onMounted(() => {
 
 .add-footer {
   justify-content: space-between;
-}
-
-.ant-modal-footer {
-  padding: 16px !important;
 }
 </style>

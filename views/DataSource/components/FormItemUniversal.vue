@@ -2,7 +2,6 @@
   <a-form
     ref="formRef"
     :model="formData"
-    size="small"
     layout="vertical"
   >
     <a-form-item
@@ -163,7 +162,6 @@
           :dataSource="dynamicValidateForm.headers"
           :pagination="false"
           rowKey="id"
-          size="small"
         >
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.key === 'key'">

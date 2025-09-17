@@ -5,7 +5,7 @@
     @cancel="emit('close')"
     centered
     :width="616"
-    :bodyStyle="{ maxHeight: '75vh', overflow: 'auto' }"
+    :bodyStyle="{ maxHeight: '75vh', padding: '8px' }"
   >
     <a-row class="data-source-modal">
       <TitleComponent data="类型" />
@@ -16,43 +16,39 @@
           class="type-section"
         >
           <span class="type-title">{{ dataTypeItem.title }}</span>
-          <a-list
-            :grid="{ gutter: 16, column: 5 }"
-            :data-source="dataTypeItem.types"
-            class="type-list"
-          >
-            <template #renderItem="{ item }">
-              <a-list-item
-                @click="handleSelect(item)"
-                class="type-item"
+          <div class="type-grid">
+            <div
+              v-for="item in dataTypeItem.types"
+              :key="item.value"
+              class="type-grid-item"
+              @click="handleSelect(item)"
+            >
+              <div
+                class="type-card"
+                :class="{
+                  'is-disabled': item.disable,
+                  'is-active': item.value === activeType.value
+                }"
               >
+                <img
+                  :alt="item.value"
+                  :src="item.icon"
+                  class="type-image"
+                  draggable="false"
+                />
+                <!-- 选中标记 -->
                 <div
-                  class="type-card"
-                  :class="{
-                    'is-disabled': item.disable,
-                    'is-active': item.value === activeType.value
-                  }"
+                  v-if="item.value === activeType.value"
+                  class="selected-mark"
                 >
-                  <img
-                    :alt="item.value"
-                    :src="item.icon"
-                    class="type-image"
-                    draggable="false"
+                  <AIcon
+                    type="CheckOutlined"
+                    class="check-icon"
                   />
-                  <!-- 选中标记 -->
-                  <div
-                    v-if="item.value === activeType.value"
-                    class="selected-mark"
-                  >
-                    <AIcon
-                      type="CheckOutlined"
-                      class="check-icon"
-                    />
-                  </div>
                 </div>
-              </a-list-item>
-            </template>
-          </a-list>
+              </div>
+            </div>
+          </div>
         </div>
       </a-col>
     </a-row>
@@ -104,7 +100,7 @@ const handleClickNext = () => {
 <style lang="less" scoped>
 .data-source-modal {
   .type-section {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     .type-title {
       font-size: 14px;
@@ -113,12 +109,16 @@ const handleClickNext = () => {
       margin-bottom: 16px;
       display: block;
     }
+  }
 
-    .type-list {
-      .type-item {
-        cursor: pointer;
-      }
-    }
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .type-grid-item {
+    cursor: pointer;
   }
 
   .type-card {

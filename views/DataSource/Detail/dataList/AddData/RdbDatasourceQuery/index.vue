@@ -56,13 +56,18 @@
       </div>
 
       <!-- 条件过滤组件 -->
-      <ProSearch
-        :columns="resultColumns"
-        type="simple"
-        target="rdb-datasource-query"
-        @search="handleSearch"
-        style="padding: 24px 0 16px 0"
-      />
+      <div
+        v-if="resultColumns.length > 0"
+        :key="randomString(6)"
+      >
+        <ProSearch
+          :columns="resultColumns"
+          type="simple"
+          target="rdb-datasource-query"
+          @search="handleSearch"
+          style="padding: 24px 0 16px 0"
+        />
+      </div>
 
       <!-- 查询结果预览 -->
       <QueryResults
@@ -75,7 +80,7 @@
 </template>
 
 <script setup lang="ts" name="RdbDatasourceQuery">
-import { onlyMessage } from '@jetlinks-web/utils'
+import { onlyMessage, randomString } from '@jetlinks-web/utils'
 import { getDataSourceTables, queryByPage } from '@datasoureceManager/api/data/datasource'
 import { ColumnSchema, Key, TableSchema } from './type'
 import { useSqlKeywords } from '@datasoureceManager/hooks/useSqlKeywords'
@@ -398,6 +403,7 @@ defineExpose({
   flex-direction: column;
   height: 100%;
   min-height: 500px;
+  margin: 8px;
 
   .segmented-control {
     display: inline-flex;

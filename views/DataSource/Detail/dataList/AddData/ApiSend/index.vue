@@ -56,7 +56,6 @@
       </template>
     </RequestParams>
 
-    <!-- 相应结果组件 -->
     <ResponseResult
       ref="responseResultRef"
       :data="checkTestDataSource"

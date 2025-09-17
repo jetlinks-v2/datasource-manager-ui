@@ -6,7 +6,7 @@
     :maskClosable="false"
     @cancel="handleCancel"
     width="900px"
-    :bodyStyle="{ maxHeight: '80vh', overflowY: 'auto' }"
+    :bodyStyle="{ maxHeight: '80vh', overflow: 'hidden' }"
   >
     <div class="command-info">
       <h3 class="command-title">
@@ -28,13 +28,15 @@
       </div>
     </div>
 
-    <a-divider />
+    <a-divider style="margin: 16px 0" />
 
-    <CommandParams
-      :modelValue="modelValue"
-      :preview="preview"
-      class="command-params"
-    />
+    <div class="command-params-container">
+      <CommandParams
+        :modelValue="modelValue"
+        :preview="preview"
+        class="command-params"
+      />
+    </div>
 
     <template #footer>
       <div class="modal-footer">
@@ -116,6 +118,7 @@ const handleCancel = () => {
 
 .command-params {
   margin-top: 16px;
+  overflow-y: scroll;
 }
 
 .modal-footer {
