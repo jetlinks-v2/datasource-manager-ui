@@ -89,8 +89,8 @@
 </template>
 
 <script setup>
-import { handleSQL_api } from '@datasoureceManager/api/data/datasource'
-import { useSqlKeywords } from '@datasoureceManager/hooks/useSqlKeywords'
+import { handleSQL_api } from '@datasource-manager-ui/api/data/datasource'
+import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import { onlyMessage } from '@jetlinks-web/utils'
 
 const props = defineProps({
@@ -160,23 +160,25 @@ const handleSQL = async () => {
   executionResult.value.length = 0
   errorMessage.value = ''
   initialize.value = false
-  
+
   // 数据拆分
   let sqlArr = queryData.value.trim().split(';')
   // 过滤掉空语句
   sqlArr = sqlArr.filter((sql) => sql.trim() !== '')
 
   const results = []
-  
+
   // 顺序执行每条SQL语句，确保结果顺序正确
   for (let i = 0; i < sqlArr.length; i++) {
     const params = {
-      sqlRequests: [{
-        sql: sqlArr[i],
-        parameter: {}
-      }]
+      sqlRequests: [
+        {
+          sql: sqlArr[i],
+          parameter: {}
+        }
+      ]
     }
-    
+
     try {
       const res = await handleSQL_api(route.params.id, params)
       if (res?.success && res.result?.[0]) {
@@ -193,20 +195,18 @@ const handleSQL = async () => {
       }
     }
   }
-  
+
   executionResult.value = results
-  
+
   // 查找第一个有效的数组结果来生成表头
   let firstValidResult = null
   for (let i = 0; i < results.length; i++) {
-    if (results[i] && 
-        results[i].constructor === Array && 
-        results[i].length > 0) {
+    if (results[i] && results[i].constructor === Array && results[i].length > 0) {
       firstValidResult = results[i][0]
       break
     }
   }
-  
+
   if (firstValidResult) {
     columns.value = Object.keys(firstValidResult).map((key) => ({
       title: key,
@@ -215,7 +215,7 @@ const handleSQL = async () => {
       key: key
     }))
   }
-  
+
   activeKey.value = 1
 }
 
