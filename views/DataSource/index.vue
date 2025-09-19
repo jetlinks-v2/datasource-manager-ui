@@ -62,14 +62,14 @@ import DataSourceList from './DataSourceList.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { Modal } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
-import CategorySelect from '@datasoureceManager/components/CategorySelect/index.vue'
+import CategorySelect from '@datasource-manager-ui/components/CategorySelect/index.vue'
 import {
   deleteDataSourceGroup,
   getDataSourceGroup,
   addDataSourceGroup,
   updateDataSourceGroup
-} from '@datasoureceManager/api/data'
-import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
+} from '@datasource-manager-ui/api/data'
+import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { Rule } from 'ant-design-vue/es/form'
 
 const permission = 'system/DataSource'

@@ -72,7 +72,7 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
 import { convertParamsToObject, transformArray } from './utils'
-import { testAPIDataSource } from '@datasoureceManager/api/data/datasource'
+import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 
 const props = defineProps({

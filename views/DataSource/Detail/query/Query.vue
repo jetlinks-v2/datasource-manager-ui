@@ -89,8 +89,8 @@
 </template>
 
 <script setup>
-import { handleSQL_api } from '@datasoureceManager/api/data/datasource'
-import { useSqlKeywords } from '@datasoureceManager/hooks/useSqlKeywords'
+import { handleSQL_api } from '@datasource-manager-ui/api/data/datasource'
+import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import { onlyMessage } from '@jetlinks-web/utils'
 
 const props = defineProps({

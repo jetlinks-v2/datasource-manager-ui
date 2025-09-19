@@ -69,7 +69,7 @@
 <script setup lang="ts" name="TypeAdd">
 import { typesData } from './table'
 import { cloneDeep } from 'lodash-es'
-import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
+import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
 
 const emit = defineEmits(['close'])
 const props = defineProps({

@@ -103,7 +103,7 @@ import {
   getDataSourceTables,
   refreshTable,
   testDataSource
-} from '@datasoureceManager/api/data/datasource'
+} from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { getSourceClassify } from '../components/table'

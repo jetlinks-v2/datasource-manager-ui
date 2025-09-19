@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts" name="BasicForm">
-import { checkCommandExists } from '@datasoureceManager/api/data/datasource'
+import { checkCommandExists } from '@datasource-manager-ui/api/data/datasource'
 import type { Rule } from 'ant-design-vue/es/form'
 import { convertToTableTreeData } from '../utils'
 import CommandParams from './CommandParams/index.vue'

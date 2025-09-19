@@ -145,9 +145,9 @@
 <script setup lang="ts" name="FormItemRelation">
 import { RelationData } from './type'
 import { DATASOURCE_TYPE, datasourceParseUrl } from './table'
-import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
+import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
 import { cloneDeep } from 'lodash-es'
-import { spaceValidator } from '@datasoureceManager/utils/utils'
+import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 
 const emit = defineEmits(['update:formData', 'testConnection'])
 const props = defineProps({

@@ -257,7 +257,7 @@
   </a-form>
 </template>
 <script lang="ts" name="FormItemUniversal" setup>
-import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
+import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import FormItem from './FormItem.vue'
 
