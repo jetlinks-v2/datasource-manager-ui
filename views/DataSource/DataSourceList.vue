@@ -104,10 +104,10 @@
 import { dataSourceColumns, iconMaps } from './table'
 import TypeAdd from './components/TypeAdd.vue'
 import SourceDetailsAdd from './components/SourceDetailsAdd.vue'
-import { deleteDataSource, disableDataSource, getDataSourceList } from '@datasoureceManager/api/data/datasource'
+import { deleteDataSource, disableDataSource, getDataSourceList } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { DATASOURCE_NAME, DATASOURCE_TYPE } from './components/table'
-import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
+import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 
 const props = defineProps({
   clickItem: {

@@ -24,7 +24,7 @@
 <script setup lang="ts" name="UploadCropper">
 import 'vue-cropper/dist/index.css'
 import { VueCropper } from 'vue-cropper'
-import { fileUpload } from '@datasoureceManager/api/comm'
+import { fileUpload } from '@datasource-manager-ui/api/comm'
 
 const props = defineProps({
   img: {

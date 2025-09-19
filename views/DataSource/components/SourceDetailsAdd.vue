@@ -195,14 +195,14 @@ import {
   updateDataSource,
   addAPIDataSource_api,
   editAPIDataSource_api
-} from '@datasoureceManager/api/data/datasource'
+} from '@datasource-manager-ui/api/data/datasource'
 import { RelationData } from './type'
 import { DATASOURCE_NAME, getSourceClassify, getTypesDataDetail, datasourceParseUrl, DATASOURCE_TYPE } from './table'
 import { cloneDeep } from 'lodash-es'
-import { useSourceDetailStore } from '@datasoureceManager/stores/sourceDetail'
-import { spaceValidator } from '@datasoureceManager/utils/utils'
-import { DEFAULT_CATEGORY_ID } from '@datasoureceManager/utils/const'
-import { addDataSourceGroup, getDataSourceGroup } from '@datasoureceManager/api/data'
+import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
+import { spaceValidator } from '@datasource-manager-ui/utils/utils'
+import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
+import { addDataSourceGroup, getDataSourceGroup } from '@datasource-manager-ui/api/data'
 
 const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList'])
 const props = defineProps({

@@ -62,8 +62,8 @@
 
 <script setup lang="ts">
 import { Rule } from 'ant-design-vue/es/form'
-import { spaceValidator } from '@datasoureceManager/utils/utils'
-import { queryDicItemNoPage } from '@datasoureceManager/api/system/dictionary'
+import { spaceValidator } from '@datasource-manager-ui/utils/utils'
+import { queryDicItemNoPage } from '@datasource-manager-ui/api/system/dictionary'
 
 defineOptions({
   name: 'CategoryModal'
