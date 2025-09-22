@@ -1,6 +1,7 @@
 {
   "name": "datasource-manager-ui",
-  "version": "1.0.0",
+  "id": "datasource-manager",
+  "version": "2.10.0",
   "description": "数据源管理",
   "main": "index.js",
   "repository": {
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/jetlinks-v2/datasource-manager-ui/issues"
   },
-  "homepage": "https://github.com/jetlinks-v2/datasource-manager-ui#readme"
+  "homepage": "https://github.com/jetlinks-v2/datasource-manager-ui#readme",
+  "dependencies": {
+    "jsonc-parser": "^3.3.1",
+    "vue-clipboard3": "^2.0.0"
+  }
 }

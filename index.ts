@@ -1,42 +1,40 @@
+import { moduleRegistry } from '@/utils/module-registry'
+import registerSetting from './register'
+import { name } from './package.json'
+
 const routerModules = import.meta.glob('./views/DataSource/**/index.vue')
 
 const getAsyncRoutesMap = () => {
-    const modules = {}
-    Object.keys(routerModules).forEach(item => {
-        const code = item.replace('./views/', '').replace('/index.vue', '')
-        const key = `system/${code}`
-        modules[key] = routerModules[item]
-    })
-
-    return modules
+  const modules = {}
+  Object.keys(routerModules).forEach((item) => {
+    const code = item.replace('./views/', '').replace('/index.vue', '')
+    const key = `system/${code}`
+    modules[key] = routerModules[item]
+  })
+  return modules
 }
 
 const getExtraRoutesMap = () => {
-    return {
-        // [`${MODULE_CODE}/Product`]: {
-        //     children: [
-        //         {
-        //             code: 'Detail',
-        //             url: '/detail:id',
-        //             name: '详情信息',
-        //             component: () => import('./views/Product/Detail/index.vue')
-        //         }
-        //     ]
-        // }
-        'system/DataSource': {
-            children: [
-                {
-                    code: 'Management',
-                    name: '详情',
-                    url: '/management:id',
-                    component: () => import('./views/DataSource/Management/index.vue')
-                }
-            ]
-        },
+  return {
+    'system/DataSource': {
+      children:[
+        {
+          code: 'Detail',
+          url: '/Detail/:id',
+          name: '数据源详情',
+          component: () => import('./views/DataSource/Detail/index.vue')
+        }
+      ]
     }
+  }
+}
+
+const register = () => {
+  moduleRegistry.register(name, registerSetting)
 }
 
 export default {
-    getAsyncRoutesMap,
-    getExtraRoutesMap
+  getAsyncRoutesMap,
+  getExtraRoutesMap,
+  register
 }
