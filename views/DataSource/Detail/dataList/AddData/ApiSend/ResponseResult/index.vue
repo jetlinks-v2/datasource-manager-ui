@@ -1,6 +1,9 @@
 <template>
   <div class="response-container">
-    <div class="title">响应结果</div>
+    <TitleComponent
+      data="响应结果"
+      :style="{ fontSize: '16px' }"
+    />
 
     <a-tabs
       v-model="activeTab"
@@ -10,13 +13,14 @@
         key="body"
         tab="响应体"
       >
-        <monaco-editor
+        <JsonEditor
           ref="editorRef"
-          v-model:modelValue="jsonData"
-          language="json"
-          style="height: 100%; min-height: 350px"
-          @blur="handleBlur"
-          theme="vs"
+          v-model="jsonData"
+          height="350px"
+          :showFormatBtn="false"
+          formatOnBlur
+          showMinimap
+          @update="handleBlur"
         />
       </a-tab-pane>
       <!-- 请求头 -->
@@ -56,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import JsonEditor from '../../components/JsonEditor.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 
 const props = defineProps({
@@ -144,23 +149,10 @@ defineExpose({
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-
-  .title {
-    font-size: 18px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
-    margin-bottom: 12px;
-  }
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  .time {
-    color: rgba(0, 0, 0, 0.45);
-    font-size: 12px;
-  }
 }
 </style>

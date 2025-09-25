@@ -15,8 +15,8 @@
 </template>
 <script setup lang="ts">
 import { randomString } from '@jetlinks-web/utils'
-import CommandTable from './CommandParams/CommandTable.vue'
-import { defaultParamsColumns } from './setting'
+import CommandTable from '../CommandTable.vue'
+import { defaultParamsColumns } from '../setting'
 import { cloneDeep } from 'lodash-es'
 
 const props = defineProps({
@@ -47,14 +47,14 @@ const getData = () => {
   }
 
   return {
-    properties: formData.properties.filter((ele) => ele.id && ele.name),
+    properties: formData.properties?.filter((ele) => ele.id && ele.name) || [],
     type: 'object'
   }
 }
 
 const setData = (data: object) => {
   Object.assign(formData, cloneDeep(data))
-  if (!formData.properties.length) {
+  if (!formData.properties?.length && !readonly.value) {
     formData.properties = [
       {
         key: randomString(6),

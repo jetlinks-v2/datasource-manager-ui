@@ -2,7 +2,7 @@ import { typesData } from './components/table'
 
 export const iconMaps = {
   api: 'icon-APIlianjiemingchengA',
-  ws_api: 'icon-Websocket',
+  websocket: 'icon-Websocket',
   mysql: 'icon-MySQLlianjiemingcheng',
   mariadb: 'icon-MariaDB',
   postgresql: 'icon-a-PostgreSQL',

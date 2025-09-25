@@ -4,7 +4,6 @@
     :title="title"
     :maskClosable="false"
     width="416px"
-    :bodyStyle="{ padding: '20px 20px 8px 20px' }"
     @cancel="handleCancel"
     @ok="handleOk"
     class="category-modal"

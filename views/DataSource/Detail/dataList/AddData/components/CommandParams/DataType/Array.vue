@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
-import { defaultApiDataTypeOptions } from './setting'
+import { defaultApiDataTypeOptions } from '../setting'
 import IFloat from './Float.vue'
 import IBoolean from './Boolean.vue'
 import IDate from './Date.vue'

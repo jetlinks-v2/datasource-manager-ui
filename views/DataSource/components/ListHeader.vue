@@ -50,7 +50,7 @@ interface Props {
   showActions?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   searchPlaceholder: '请输入关键词',
   showActions: true
 })

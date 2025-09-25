@@ -58,7 +58,6 @@ import AddData from './AddData/index.vue'
 import TableCard from './AddData/components/TableCard.vue'
 import CommandList from './AddData/components/CommandList.vue'
 import CommandModal from './AddData/components/CommandModal.vue'
-
 import {
   deleteDataSourceCommand,
   importDataSource,
@@ -211,7 +210,6 @@ const handleQueryCommand = async () => {
 
   try {
     const res = await getDataSourceCommands(activeItem.value.dataSourceId, activeItem.value.support)
-
     if (res.status === 200) {
       tableData.value = res.result
     }
@@ -270,5 +268,13 @@ onMounted(() => {
 .container {
   padding-left: 20px;
   width: 100%;
+  height: 100%;
+
+  :deep(.j-table-empty) {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>

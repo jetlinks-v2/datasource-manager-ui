@@ -57,7 +57,7 @@
             编辑
           </j-permission-button>
           <j-permission-button
-            v-if="sourceClassify === 'database'"
+            v-if="sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE"
             :hasPermission="`${permission}:state`"
             @click="handleTestDataSource()"
             :loading="loading"
@@ -91,11 +91,11 @@
 </template>
 
 <script lang="ts" name="Detail" setup>
-import Info from './info/Info.vue'
-import Query from './query/Query.vue'
-import Table from './Table.vue'
-import DataList from './dataList/DataList.vue'
-import SourceDetailsAdd from '../components/SourceDetailsAdd.vue'
+import Info from './info/index.vue'
+import Query from './query/index.vue'
+import Table from './table/index.vue'
+import DataList from './dataList/index.vue'
+import SourceDetailsAdd from '../components/dataSourceModal/SourceDetailsAdd.vue'
 import {
   deleteDataSource,
   disableDataSource,
@@ -106,7 +106,7 @@ import {
 } from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
-import { getSourceClassify } from '../components/table'
+import { DATA_TYPE_ITEM, getTypesDataDetail } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
@@ -126,7 +126,7 @@ const tabs = {
 } as Record<string, any>
 const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
-const sourceClassify = ref<'database' | 'common'>('database')
+const sourceClassify = ref<DATA_TYPE_ITEM>()
 const routeLink = computed(() => ({
   path: `/system/DataSource`,
   query: {
@@ -174,7 +174,7 @@ const handleTestDataSource = async () => {
   })
 
   if (res?.result.ok === true) {
-    onlyMessage('连接数据源成功!')
+    onlyMessage('连接数据源成功')
     loading.value = false
   } else {
     onlyMessage(`连接数据源失败,${res?.result?.reason?.cause?.message ?? '请求超时'}`, 'error')
@@ -203,7 +203,7 @@ const getDetailInfo = async () => {
   const res = await getDataSourceDetail(sourceId)
   if (res.status === 200) {
     info.value = res.result
-    sourceClassify.value = getSourceClassify(info.value.searchCode) as 'database' | 'common'
+    sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
     const baseList = [
       {
         key: 'Info',
@@ -211,7 +211,7 @@ const getDetailInfo = async () => {
       }
     ]
 
-    if (sourceClassify.value !== 'common') {
+    if (sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE) {
       baseList.push(
         {
           key: 'Table',
@@ -245,6 +245,8 @@ watch(
 onMounted(async () => {
   await getDetailInfo()
 })
+
+provide('INFO', info)
 </script>
 
 <style lang="less" scoped>
@@ -298,7 +300,7 @@ onMounted(async () => {
   margin-top: 24px;
   padding: 24px;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 :deep(.full-page-warp) {

@@ -5,13 +5,14 @@
       class="monaco-editor-container"
       :style="{ height }"
     ></div>
-    <a-tag
+    <!-- <a-tag
       @click="handleFormat"
       color="gold"
       class="format-btn"
+      v-if="showFormatBtn"
     >
       格式化
-    </a-tag>
+    </a-tag> -->
   </div>
 </template>
 
@@ -61,6 +62,14 @@ const props = defineProps({
   theme: {
     type: String,
     default: 'vs'
+  },
+  showFormatBtn: {
+    type: Boolean,
+    default: true
+  },
+  showMinimap: {
+    type: Boolean,
+    default: false
   }
 })
 const emit = defineEmits(['update:modelValue', 'error', 'update'])
@@ -353,6 +362,34 @@ const registerCustomJsonLanguage = (): void => {
   })
 }
 
+// 处理滚动事件，实现滚动穿透（只在完全到达边界后再继续滚动时才传递）
+const handleWheelEvent = (event: WheelEvent): void => {
+  const instance = monacoInstance.value
+  if (!instance) return
+
+  const scrollTop = instance.getScrollTop()
+  const scrollHeight = instance.getScrollHeight()
+  const containerHeight = instance.getLayoutInfo().height
+
+  // 计算滚动方向
+  const isScrollingUp = event.deltaY < 0
+  const isScrollingDown = event.deltaY > 0
+
+  // 只在到达边界之后继续滚动时才透传
+  const atTop = scrollTop <= 0
+  const atBottom = scrollTop + containerHeight >= scrollHeight
+
+  if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
+    const modalBody = document.querySelector('.ant-modal-body')
+    if (modalBody) {
+      // 透传给外层容器
+      modalBody.scrollTop += event.deltaY
+      // 阻止编辑器消费该事件
+      event.preventDefault()
+    }
+  }
+}
+
 // 初始化编辑器
 const initEditor = (): void => {
   if (!editorContainer.value) return
@@ -365,7 +402,7 @@ const initEditor = (): void => {
     language: 'json-with-variables',
     theme: 'json-with-variables-theme',
     automaticLayout: true,
-    minimap: { enabled: false },
+    minimap: { enabled: props.showMinimap },
     scrollBeyondLastLine: false,
     lineNumbers: 'on',
     readOnly: props.readOnly,
@@ -376,6 +413,12 @@ const initEditor = (): void => {
   })
 
   monacoInstance.value = instance
+
+  // 添加滚动事件监听，处理滚动穿透
+  const domNode = instance.getDomNode()
+  if (domNode) {
+    domNode.addEventListener('wheel', handleWheelEvent, { passive: false })
+  }
 
   // 每次内容变化时同步 v-model 并进行 JSON 验证
   instance.onDidChangeModelContent(() => {
@@ -426,6 +469,11 @@ watch(
 onBeforeUnmount(() => {
   const instance = monacoInstance.value
   if (instance) {
+    // 移除滚动事件监听器
+    const domNode = instance.getDomNode()
+    if (domNode) {
+      domNode.removeEventListener('wheel', handleWheelEvent)
+    }
     instance.dispose()
     monacoInstance.value = null
   }

@@ -12,10 +12,16 @@ import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
 
+export enum DATA_TYPE_ITEM {
+  RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)
+  API_SEND = 'api', // 通用表单 (API)
+  WEBSOCKET_DATASOURCE = 'websocket' // WebSocket表单
+}
+
 //数据源类型
 export const DATASOURCE_TYPE = {
   API: 'api',
-  WEBSOCKET: 'ws_api',
+  WEBSOCKET: 'websocket',
   MYSQL: 'mysql',
   MARIADB: 'mariadb',
   POSTGRESQL: 'postgresql',
@@ -53,13 +59,14 @@ export const typesData = [
       {
         icon: DataApi,
         value: DATASOURCE_TYPE.API,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.API]
+        name: DATASOURCE_NAME[DATASOURCE_TYPE.API],
+        formType: DATA_TYPE_ITEM.API_SEND
       },
       {
         icon: DataWebsocket,
         value: DATASOURCE_TYPE.WEBSOCKET,
         name: DATASOURCE_NAME[DATASOURCE_TYPE.WEBSOCKET],
-        disable: true
+        formType: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE
       },
       {
         icon: DataEsApi,
@@ -92,7 +99,8 @@ export const typesData = [
         headersEnum: ['r2dbc:mysql://', 'jdbc:mysql://'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.MYSQL],
         placeholderPort: '3306',
-        type: 'r2dbc'
+        type: 'r2dbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataPostgresql,
@@ -101,7 +109,8 @@ export const typesData = [
         headersEnum: ['r2dbc:postgresql://', 'jdbc:postgresql://'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.POSTGRESQL],
         placeholderPort: '5432',
-        type: 'r2dbc'
+        type: 'r2dbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataSqlserver,
@@ -110,7 +119,8 @@ export const typesData = [
         headersEnum: ['jdbc:sqlserver://'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.SQLSERVER],
         placeholderPort: '1433',
-        type: 'jdbc'
+        type: 'jdbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataDm,
@@ -119,7 +129,8 @@ export const typesData = [
         headersEnum: ['jdbc:dm://', 'r2dbc:jdbc:dm://'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.DAMENG],
         placeholderPort: '5236',
-        type: 'jdbc'
+        type: 'jdbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataMariadb,
@@ -128,7 +139,8 @@ export const typesData = [
         headersEnum: ['r2dbc:mysql://', 'r2dbc:mariadb://'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.MARIADB],
         placeholderPort: '3306',
-        type: 'r2dbc'
+        type: 'r2dbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataOracle,
@@ -137,7 +149,8 @@ export const typesData = [
         headersEnum: ['jdbc:oracle:thin:@//', 'jdbc:oracle:thin:@', 'jdbc:oracle:thin:user/password@//'],
         name: DATASOURCE_NAME[DATASOURCE_TYPE.ORACLE],
         placeholderPort: '1521',
-        type: 'jdbc'
+        type: 'jdbc',
+        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
       },
       {
         icon: DataMongodb,
@@ -157,18 +170,9 @@ export const typesData = [
   }
 ]
 
-export const getSourceClassify = (value: string): string => {
-  for (const data of typesData) {
-    if (data.types.some((type) => type.value === value)) {
-      return data.value
-    }
-  }
-  return 'common'
-}
-
 //获取数据源详情
 export const getTypesDataDetail = (value: string) => {
-  return typesData.flatMap((data) => data.types).find((type) => type.value === value)
+  return typesData.flatMap((data: any) => data.types).find((type: any) => type.value === value)
 }
 
 /**
@@ -294,7 +298,6 @@ const handleDatabaseFormat = (url: string): { port: string; path: string } => {
 export const datasourceParseUrl = (url: string, active: any) => {
   // 解析协议
   const { protocol, restUrl } = parseProtocol(url, active)
-  console.log(protocol, restUrl, 'protocol, restUrl')
 
   // 分离主机端口部分和路径部分
   const pathStartIndex = restUrl.indexOf('/')

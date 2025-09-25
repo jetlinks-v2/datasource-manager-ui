@@ -136,11 +136,11 @@
 </template>
 
 <script setup lang="ts" name="Table">
-import { fieldColumns } from './table'
-import { SourceDataInfo } from './type'
+import { fieldColumns } from '../table'
+import { SourceDataInfo } from '../type'
 import { getDataSourceTables, queryByPage, refreshTable } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
-import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader/index.vue'
+import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 
 const emit = defineEmits(['update:sourceData'])
 const route = useRoute()
@@ -375,7 +375,6 @@ onMounted(() => {
 .table-item-active {
   background-color: #f0f9ff;
   border-color: #d0ebff;
-  font-weight: 500;
 
   .anticon {
     color: #1890ff;

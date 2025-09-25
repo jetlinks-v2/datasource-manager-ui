@@ -27,7 +27,9 @@
       />
     </a-form-item>
 
-    <template v-if="!isRdb">
+    <template
+      v-if="sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE"
+    >
       <a-form-item
         label="命令标识"
         :name="['configuration', 'commandId']"
@@ -68,7 +70,7 @@
     </a-form-item>
 
     <CommandParams
-      v-if="!isRdb"
+      v-if="sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE"
       ref="commandParamsRef"
       :modelValue="commandModelValue"
     />
@@ -81,6 +83,7 @@ import type { Rule } from 'ant-design-vue/es/form'
 import { convertToTableTreeData } from '../utils'
 import CommandParams from './CommandParams/index.vue'
 import { set } from 'lodash-es'
+import { DATA_TYPE_ITEM } from '../../../../components/table'
 
 const props = defineProps({
   modelValue: {
@@ -95,9 +98,9 @@ const props = defineProps({
     type: [Array, Object],
     default: () => []
   },
-  isRdb: {
-    type: Boolean,
-    default: false
+  sourceClassify: {
+    type: String,
+    default: ''
   },
   isEdit: {
     type: Boolean,
@@ -112,8 +115,14 @@ const commandModelValue = ref<any>({
   output: []
 })
 
-const outputData = computed(() => (props.isRdb ? props.testData : convertToTableTreeData(props.testData)))
-const inputData = computed(() => (props.isRdb ? props.dynamicParams : convertToTableTreeData(props.dynamicParams)))
+const outputData = computed(() =>
+  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ? props.testData : convertToTableTreeData(props.testData)
+)
+const inputData = computed(() =>
+  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE
+    ? props.dynamicParams
+    : convertToTableTreeData(props.dynamicParams)
+)
 
 const validateID = async (rule: Rule, value: string) => {
   if (value && !props.isEdit) {

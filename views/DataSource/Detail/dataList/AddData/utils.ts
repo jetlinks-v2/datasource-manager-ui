@@ -31,40 +31,22 @@ export const getValueType = (value: any) => {
  */
 export const convertToTableTreeData = (data: Object | Array<any>): any => {
   let _data = {} as any
+
   if (isArray(data)) {
-    _data = { ...data[0] }
+    // 数组转为索引对象
+    _data = Object.fromEntries(data.map((item, index) => [index, item]))
+  } else if (!isObject(data)) {
+    return []
   } else {
-    // 单值类型
-    if (!isObject(data)) {
-      return []
-    }
     _data = { ...data }
   }
+
   return Object.keys(_data).map((k) => {
     const value = _data[k]
-
     const type = getValueType(value)
-    if (typeof value === 'object' && value !== null) {
-      return {
-        key: randomString(5),
-        id: k,
-        name: k,
-        dataType: {
-          type,
-          ...(isArray(value)
-            ? {
-                elementType: {
-                  type: getValueType(value[0]),
-                  properties: convertToTableTreeData(cloneDeep(value))
-                }
-              }
-            : {
-                properties: convertToTableTreeData(cloneDeep(value))
-              })
-        },
-        children: convertToTableTreeData(cloneDeep(value))
-      }
-    } else {
+
+    // 基本类型直接返回
+    if (typeof value !== 'object' || value === null) {
       return {
         key: randomString(5),
         id: k,
@@ -72,12 +54,72 @@ export const convertToTableTreeData = (data: Object | Array<any>): any => {
         dataType: { type }
       }
     }
+
+    // 数组类型
+    if (isArray(value)) {
+      const firstElement = value[0]
+      const elementType = getValueType(firstElement)
+
+      // 对象数组 - 只需要第一个元素的结构作为 properties
+      if (firstElement && typeof firstElement === 'object') {
+        return {
+          key: randomString(5),
+          id: k,
+          name: k,
+          dataType: {
+            type: 'array',
+            elementType: {
+              type: elementType,
+              properties: convertToTableTreeData(firstElement)
+            }
+          },
+          // children 应该是第一个元素的展开，不是整个数组
+          children: convertToTableTreeData(firstElement)
+        }
+      }
+
+      // 基本类型数组
+      return {
+        key: randomString(5),
+        id: k,
+        name: k,
+        dataType: {
+          type: 'array',
+          elementType: { type: elementType }
+        }
+      }
+    }
+
+    // 对象类型
+    return {
+      key: randomString(5),
+      id: k,
+      name: k,
+      dataType: {
+        type: 'object',
+        properties: convertToTableTreeData(value)
+      },
+      children: convertToTableTreeData(value)
+    }
   })
 }
 
 export function metadataConvertToTableTree(data: any, typeKey = 'valueType') {
+  const defaultValueType = {
+    properties: [],
+    name: '对象类型',
+    id: 'object',
+    type: 'object',
+    i18nName: '对象类型'
+  }
+
   const result = data.map((node: any) => {
     let { id, name, description, valueType } = node
+
+    // 如果没有valueType，使用默认的object类型
+    if (!valueType) {
+      valueType = defaultValueType
+    }
 
     let children = []
 

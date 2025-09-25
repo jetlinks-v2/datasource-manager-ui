@@ -74,7 +74,7 @@ import type { TableColumnType } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { DEFAULT_PARAM_ITEM, type ParamItem } from './setting'
-import FormItem from '../../../../../components/FormItem.vue'
+import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 
 const props = defineProps<{
   dataSource: ParamItem[]
@@ -149,7 +149,7 @@ const validateAll = () => {
 }
 
 // 处理字段变更
-const handleFieldChange = (value: string, field: ValidatorKey, record: ParamItem, index: number) => {
+const handleFieldChange = (value: string, field: ValidatorKey, record: any, index: number) => {
   // 如果是首次输入值且当前未启用，则自动勾选
   if (
     (field === 'value' && value && !record.value && !record.enable) ||
@@ -165,7 +165,7 @@ const handleFieldChange = (value: string, field: ValidatorKey, record: ParamItem
 }
 
 // 处理启用状态变更
-const handleEnableChange = (record: ParamItem, index: number) => {
+const handleEnableChange = (record: any, index: number) => {
   if (record.enable) {
     validateField('key', record, index)
     validateField('value', record, index)
@@ -204,7 +204,7 @@ watch(
     } else {
       tableData.value = newData.map((item) => item)
     }
-    
+
     nextTick(() => {
       if (props.isValid) {
         validateAll()

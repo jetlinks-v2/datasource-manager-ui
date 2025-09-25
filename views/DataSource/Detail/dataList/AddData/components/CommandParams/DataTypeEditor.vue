@@ -89,7 +89,7 @@
 <script setup lang="ts">
 import useClipboard from 'vue-clipboard3'
 import { onlyMessage } from '@jetlinks-web/utils'
-import { useDataTypeManagement } from '../setting'
+import { useDataTypeManagement } from './setting'
 
 const props = defineProps({
   dataType: {
@@ -354,7 +354,8 @@ watch(
 }
 
 .editor-container {
-  height: 240px;
+  height: 300px;
+  width: 400px;
   border-radius: 4px;
   margin-bottom: 8px;
   overflow: hidden;

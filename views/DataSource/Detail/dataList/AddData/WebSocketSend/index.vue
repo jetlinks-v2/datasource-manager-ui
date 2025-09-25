@@ -1,5 +1,5 @@
 <template>
-  <div class="api-send-container">
+  <div class="websocket-send-container">
     <a-form-item
       label="请求路径"
       :name="['configuration', 'expression', 'uri', 'url']"
@@ -9,15 +9,12 @@
         <a-input-group compact>
           <a-form-item-rest>
             <a-select
-              v-model:value="expression.method"
+              v-model:value="protocol"
               style="width: 10%"
-              @change="handleMethodChange"
+              @change="handleProtocolChange"
             >
-              <a-select-option value="GET">GET</a-select-option>
-              <a-select-option value="POST">POST</a-select-option>
-              <a-select-option value="PUT">PUT</a-select-option>
-              <a-select-option value="PATCH">PATCH</a-select-option>
-              <a-select-option value="DELETE">DELETE</a-select-option>
+              <a-select-option value="ws://">ws://</a-select-option>
+              <a-select-option value="wss://">wss://</a-select-option>
             </a-select>
           </a-form-item-rest>
 
@@ -31,6 +28,7 @@
         </a-input-group>
       </div>
     </a-form-item>
+
     <RequestParams
       ref="requestParamsRef"
       v-model:data="expression"
@@ -64,7 +62,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="ApiSend">
+<script setup lang="ts" name="WebSocketSend">
 import RequestParams from './RequestParams/index.vue'
 import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
@@ -72,8 +70,8 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
 import { convertParamsToObject, transformArray } from '../components/utils'
-import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
-import type { ApiMethod } from '../type'
+import { testWebSocketDataSource } from '@datasource-manager-ui/api/data/datasource'
+import type { WebSocketProtocol } from '../type'
 
 const props = defineProps({
   dataSourceId: {
@@ -92,23 +90,25 @@ const props = defineProps({
 
 const emit = defineEmits(['update:expression'])
 const expression = ref()
+const protocol = ref<WebSocketProtocol>('ws://')
 const checkTestRef = ref()
 const sending = ref(false)
 const requestParamsRef = ref()
 const responseResultRef = ref()
-const checkTestDataSource = ref<any>({ body: {} })
+const checkTestDataSource = ref<any>({})
 const dynamicParams = ref<any>([])
 
-const validateUri = async (_: Rule, value: string) => {
+const validateUri = async (rule: Rule, value: string) => {
   if (!value) {
     return Promise.reject('请输入请求路径')
   }
   if (value) {
-    if (!value.startsWith('/')) {
-      return Promise.reject('请求路径必须以/开头')
-    }
-    if (value.endsWith('/')) {
-      return Promise.reject('请求路径不能以/结尾')
+    // WebSocket路径可以是完整URL或路径
+    const fullUrl = value.startsWith('ws://') || value.startsWith('wss://') ? value : `${protocol.value}${value}`
+    try {
+      new URL(fullUrl)
+    } catch (error) {
+      return Promise.reject('请输入有效的WebSocket路径')
     }
   }
   return Promise.resolve()
@@ -127,8 +127,16 @@ const handleCheckTestSave = (data: any) => {
   dynamicParams.value = data
 }
 
-const handleMethodChange = (value: SelectValue) => {
-  expression.value.method = value as ApiMethod
+const handleProtocolChange = (value: SelectValue) => {
+  protocol.value = value as WebSocketProtocol
+  // 更新完整的URL
+  if (
+    expression.value.uri.url &&
+    !expression.value.uri.url.startsWith('ws://') &&
+    !expression.value.uri.url.startsWith('wss://')
+  ) {
+    expression.value.uri.url = expression.value.uri.url
+  }
 }
 
 const handleUriChange = (e: Event) => {
@@ -138,7 +146,7 @@ const handleUriChange = (e: Event) => {
 }
 
 const handleBlur = (bodyData: any) => {
-  checkTestDataSource.value.body = bodyData
+  checkTestDataSource.value = bodyData
 }
 
 const validateAll = async () => {
@@ -155,7 +163,7 @@ const validateAll = async () => {
       }
 
       const inputs = convertParamsToObject(dynamicParams.value)
-      emit('update:expression', expression.value, checkTestDataSource.value.body, inputs)
+      emit('update:expression', expression.value, checkTestDataSource.value, inputs)
       return true
     })
     .catch(() => {
@@ -166,40 +174,48 @@ const validateAll = async () => {
 
 const handleSend = async () => {
   if (!(await checkTestRef.value?.validateAll())) {
-    requestParamsRef.value?.handleCheckTest()
+    requestParamsRef.value?.handleCheckTest?.()
     onlyMessage('请检查动态参数输入项', 'error')
     return false
   }
 
   try {
-    await props.formRef?.validate([['configuration', 'expression', 'uri', 'url']]).then(async () => {
-      sending.value = true
-      const { uri, method, body, queryParams, headers } = expression.value
+    await props.formRef
+      ?.validate([['configuration', 'expression', 'uri', 'url']])
+      .then(async () => {
+        sending.value = true
+        const { uri, queryParams, headers, message } = expression.value
 
-      const _expression = {
-        uri: {
-          url: uri.url.split('?')[0]
-        },
-        method,
-        body,
-        queryParams: transformArray(queryParams),
-        headers: transformArray(headers)
-      }
-      const dynamicParamsData = convertParamsToObject(dynamicParams.value)
+        // 构建完整的WebSocket URL
+        const fullUrl =
+          uri.url.startsWith('ws://') || uri.url.startsWith('wss://') ? uri.url : `${protocol.value}${uri.url}`
 
-      const sendParams = {
-        inputs: dynamicParamsData,
-        expression: _expression
-      }
+        const _expression = {
+          uri: {
+            url: fullUrl
+          },
+          queryParams: transformArray(queryParams),
+          headers: transformArray(headers),
+          message: message || {}
+        }
+        const dynamicParamsData = convertParamsToObject(dynamicParams.value)
 
-      const res = await testAPIDataSource(props.dataSourceId, sendParams)
+        const sendParams = {
+          inputs: dynamicParamsData,
+          expression: _expression
+        }
 
-      if (res.status === 200) {
-        checkTestDataSource.value = res.result || {}
-        onlyMessage('请求发送成功')
-        emit('update:expression', expression.value, checkTestDataSource.value.body, dynamicParamsData)
-      }
-    })
+        const res = await testWebSocketDataSource(props.dataSourceId, sendParams)
+
+        if (res.status === 200) {
+          checkTestDataSource.value = res.result?.payload || {}
+          onlyMessage('WebSocket请求发送成功')
+          emit('update:expression', expression.value, checkTestDataSource.value, dynamicParamsData)
+        }
+      })
+      .catch((e: any) => {
+        onlyMessage(e.errorFields[0].errors[0], 'error')
+      })
   } finally {
     sending.value = false
   }
@@ -209,9 +225,25 @@ watch(
   () => props.data,
   () => {
     expression.value = props.data.expression
+    // 从URL中提取协议
+    if (expression.value?.uri?.url) {
+      if (expression.value.uri.url.startsWith('wss://')) {
+        protocol.value = 'wss://'
+        expression.value.uri.url = expression.value.uri.url.replace('wss://', '')
+      } else if (expression.value.uri.url.startsWith('ws://')) {
+        protocol.value = 'ws://'
+        expression.value.uri.url = expression.value.uri.url.replace('ws://', '')
+      }
+    }
   },
   { immediate: true, deep: true }
 )
+
+onMounted(() => {
+  nextTick(() => {
+    requestParamsRef.value?.handleUriChange()
+  })
+})
 
 defineExpose({
   validateAll
@@ -219,7 +251,7 @@ defineExpose({
 </script>
 
 <style scoped lang="less">
-.api-send-container {
+.websocket-send-container {
   height: 100%;
   width: 100%;
   padding: 15px;

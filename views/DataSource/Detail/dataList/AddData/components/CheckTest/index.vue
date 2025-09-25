@@ -19,7 +19,7 @@
             :error="formErrors[index]?.value"
             :value="record.value"
             placeholder="请输入参数值"
-            @change="(val) => handleFieldChange(val, 'value', record, index)"
+            @change="(val) => handleFieldChange(val, 'value', record)"
           />
         </template>
       </template>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import FormItem from '../../../../../components/FormItem.vue'
+import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 
 interface ParamItem {
   name: string
@@ -129,7 +129,7 @@ const validateAll = () => {
   return isValid
 }
 
-const handleFieldChange = (value: string, field: ValidatorKey, record: ParamItem, index: number) => {
+const handleFieldChange = (value: string, field: ValidatorKey, record: any) => {
   record[field] = value
   emit('update:data', dynamicParams.value)
 }
@@ -142,6 +142,7 @@ const init = () => {
       [
         ...(props.queryParams.query || []),
         ...(props.queryParams.headers || []),
+        ...(props.queryParams.message || []),
         ...(props.queryParams.body || []),
         ...(props.queryParams.uri || [])
       ].map((param) => [param.key, param])

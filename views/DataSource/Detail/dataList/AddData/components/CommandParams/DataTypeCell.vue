@@ -37,6 +37,7 @@
       :disabled="disabled"
       @blur="$emit('verify')"
       @change="handleDataTypeChange"
+      :size="disabled ? 'small' : 'middle'"
     />
 
     <!-- 弹窗遮罩 -->
@@ -65,7 +66,7 @@
         v-if="isEditableDataType(record.dataType.type, mode)"
         :style="{
           marginLeft: '12px',
-          color: `var(${hasError ? '--ant-error-color' : '--ant-primary-color'})`,
+          color: hasError ? 'red' : '#1677ff',
           cursor: 'pointer'
         }"
       />
@@ -74,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDataTypeManagement } from '../setting'
+import { useDataTypeManagement } from './setting'
 import DataTypeEditor from './DataTypeEditor.vue'
 
 const props = defineProps({

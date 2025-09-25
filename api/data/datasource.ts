@@ -40,12 +40,6 @@ export const getDataSourceTables = (id: string) => request.get(`datasource/rdb/$
 export const handleSQL_api = (datasourceId: string, data: any) =>
   request.post(`datasource/rdb/${datasourceId}/ExecuteSql`, data)
 
-// 新增API数据源
-export const addAPIDataSource_api = (data: any) => request.post(`/datasource/config`, data)
-
-// 编辑API数据源
-export const editAPIDataSource_api = (data: any) => request.patch(`/datasource/config`, data)
-
 //执行分页查询命令
 export const queryByPage = (id: string, data: any) => request.post(`datasource/rdb/${id}/QueryPager`, data)
 
@@ -86,3 +80,12 @@ export const getDatasource = (data: any) => request.post('/datasource/_query/no-
 //根据功能查询下面支持的命令cmd
 export const getDataSourceCommands = (dataSourceId: string, support: string) =>
   request.get(`/datasource/${dataSourceId}/commands?support=${support}`)
+
+/**
+ * 测试WebSocket数据源
+ * @param datasourceId 数据源ID
+ * @param data 测试数据
+ * @returns 测试结果
+ */
+export const testWebSocketDataSource = (datasourceId: string, data: any) =>
+  request.post(`/datasource/websocket/${datasourceId}/WebSocketExprRequest`, data)

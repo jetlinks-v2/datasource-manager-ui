@@ -39,9 +39,10 @@
                     :hasPermission="`${permission}:delete`"
                     type="link"
                     size="small"
+                    danger
                     @click="$emit('delete', item)"
                   >
-                    <a-space style="color: #ff4d4f">
+                    <a-space>
                       <a-icon type="DeleteOutlined" />
                       <span>删除</span>
                     </a-space>
@@ -94,6 +95,7 @@ const getItemLabel = (item: Record<string, any>): string => {
   cursor: pointer;
   padding: 8px 12px;
   margin-right: 4px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;

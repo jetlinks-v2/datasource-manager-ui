@@ -57,8 +57,8 @@
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
-import FormItem from '../../../../components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
+import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 
 const props = defineProps({
   data: {

@@ -1,6 +1,7 @@
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+export type WebSocketProtocol = 'ws://' | 'wss://'
+export type PayloadType = 'STRING' | 'JSON' | 'BINARY'
 export type ParamType = 'fixed' | 'dynamic'
-export type DatasourceType = 'api' | 'rdb'
 
 interface ParamsSpec {
   id: string

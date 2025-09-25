@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :open="true"
+    open
     title="新增数据源连接"
     @cancel="emit('close')"
     centered
@@ -8,7 +8,7 @@
     :bodyStyle="{ maxHeight: '75vh', padding: '8px' }"
   >
     <a-row class="data-source-modal">
-      <TitleComponent data="类型" />
+      <!-- <TitleComponent data="类型" /> -->
       <a-col :span="24">
         <div
           v-for="(dataTypeItem, index) in dataType"
@@ -36,6 +36,13 @@
                   class="type-image"
                   draggable="false"
                 />
+                <!-- 敬请期待 -->
+                <div
+                  class="type-image-mask"
+                  v-if="item.disable"
+                >
+                  <span>敬请期待</span>
+                </div>
                 <!-- 选中标记 -->
                 <div
                   v-if="item.value === activeType.value"
@@ -67,9 +74,9 @@
 </template>
 
 <script setup lang="ts" name="TypeAdd">
-import { typesData } from './table'
+import { typesData } from '../table'
 import { cloneDeep } from 'lodash-es'
-import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
+import { useSourceDetailStore } from '../../sourceDetail'
 
 const emit = defineEmits(['close'])
 const props = defineProps({
@@ -78,13 +85,14 @@ const props = defineProps({
     default: {}
   }
 })
-const sourceDetailStore = useSourceDetailStore()
 const dataType = ref(cloneDeep(typesData))
 const activeType = ref(props.active)
+const sourceDetailStore = useSourceDetailStore()
+
 const handleSelect = (item: any) => {
   if (!item.disable) {
     activeType.value = {
-      group: activeType.value.group,
+      group: props.active.group,
       ...item
     }
   }
@@ -141,13 +149,27 @@ const handleClickNext = () => {
 
     &.is-disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: 0.8;
     }
 
     .type-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .type-image-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fefefe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .selected-mark {

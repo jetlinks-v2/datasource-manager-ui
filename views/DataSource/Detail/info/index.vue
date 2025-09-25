@@ -1,6 +1,9 @@
 <template>
   <div style="margin-bottom: 20px">
-    <div class="title">基础信息</div>
+    <TitleComponent
+      data="基础信息"
+      :style="{ fontSize: '16px' }"
+    />
     <a-descriptions
       :column="3"
       bordered
@@ -24,25 +27,31 @@
       </a-descriptions-item>
     </a-descriptions>
   </div>
-  <DataConnection
+  <!-- 动态数据连接组件 -->
+  <component
+    :is="connectionComponent"
     :info="info"
-    :sourceClassify="sourceClassify"
-  ></DataConnection>
+    v-if="connectionComponent && isShowConnection"
+  />
 </template>
 
 <script setup lang="ts" name="Info">
 import dayjs from 'dayjs'
-import DataConnection from './DataConnection.vue'
-import { DATASOURCE_NAME } from '../../components/table'
+import DatabaseConnection from './DatabaseConnection.vue'
+import ApiConnection from './ApiConnection.vue'
+import WebSocketConnection from './WebSocketConnection.vue'
+import { DATASOURCE_NAME, DATA_TYPE_ITEM } from '../../components/table'
 import { SourceDataInfo } from '../type'
 
-const props = defineProps<{ info: SourceDataInfo; sourceClassify: 'database' | 'common'; sourceData?: any }>()
-const { info } = toRefs(props)
+const props = defineProps<{ info: SourceDataInfo; sourceClassify: any; sourceData?: any }>()
+const { info, sourceClassify } = toRefs(props)
+
 const sourceType = computed(() => {
   if (info.value) {
     return getDataSourceName(info.value.searchCode)
   }
 })
+
 const getDataSourceName = (value: string) => {
   for (let key in DATASOURCE_NAME) {
     if (key === value) {
@@ -50,14 +59,27 @@ const getDataSourceName = (value: string) => {
     }
   }
 }
+
+// 判断是否显示数据连接
+const isShowConnection = computed(() => {
+  return info.value.shareConfig && Object.keys(info.value.shareConfig).length > 0
+})
+
+// 动态选择连接组件
+const connectionComponent = computed(() => {
+  if (!sourceClassify.value) return null
+
+  switch (sourceClassify.value) {
+    case DATA_TYPE_ITEM.RDB_DATASOURCE:
+      return DatabaseConnection
+    case DATA_TYPE_ITEM.API_SEND:
+      return ApiConnection
+    case DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE:
+      return WebSocketConnection
+    default:
+      return null
+  }
+})
 </script>
 
-<style scoped lang="less">
-.title {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.5715;
-  font-family: AliRegular !important;
-  margin-bottom: 20px;
-}
-</style>
+<style scoped lang="less"></style>

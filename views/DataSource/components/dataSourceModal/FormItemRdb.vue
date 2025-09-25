@@ -142,10 +142,10 @@
   </a-form>
 </template>
 
-<script setup lang="ts" name="FormItemRelation">
-import { RelationData } from './type'
-import { DATASOURCE_TYPE, datasourceParseUrl } from './table'
-import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
+<script setup lang="ts" name="FormItemRdb">
+import { RelationData } from '../type'
+import { DATASOURCE_TYPE, datasourceParseUrl } from '../table'
+import { useSourceDetailStore } from '../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 
@@ -352,7 +352,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  // 缓存数据
   sourceDetailStore.saveRelationData({ ...formData.value })
 })
 

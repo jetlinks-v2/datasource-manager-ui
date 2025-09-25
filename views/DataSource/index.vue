@@ -80,7 +80,6 @@ const categoryList = ref([] as any)
 const categoryListDeep = ref([] as any)
 const clickItem = ref<any>({})
 const router = useRouter()
-console.log(router.getRoutes(), '=====')
 
 const labelRules: Rule[] = [
   {
@@ -178,10 +177,7 @@ const handleClickDelete = async (id: string) => {
       : '将同步删除该分类下的所有数据，删除后可能导致错误或异常。谨慎操作，此操作不可撤销'
   Modal.confirm({
     title: '确定删除吗？',
-    okType: 'danger',
     content: text,
-    okText: '删除',
-    centered: true,
     onOk: async () => {
       const res = await deleteDataSourceGroup(id)
       onlyMessage('操作成功')
