@@ -39,10 +39,12 @@
             </template>
           </CategorySelect>
         </div>
+
         <a-divider
           type="vertical"
           style="height: calc(100% - 20px); margin: 0"
-        ></a-divider>
+        />
+
         <div style="flex: 1">
           <DataSourceList
             v-model:value="listLength"
