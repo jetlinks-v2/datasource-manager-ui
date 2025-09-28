@@ -1,275 +1,201 @@
 <template>
-  <div>
-    <TitleComponent
-      data="数据连接"
-      :style="{ fontSize: '16px' }"
+  <DescriptionItemList
+    title="数据连接"
+    :column="3"
+    :items="descriptionItems"
+  />
+
+  <div v-if="isOAuth2">
+    <KeyValueTable
+      title="请求头"
+      :data-source="requestHeaderData"
     />
-    <a-descriptions
-      :column="3"
-      bordered
-    >
-      <a-descriptions-item label="API地址">
-        <j-ellipsis>{{ commonData?.baseUrl || '--' }}</j-ellipsis>
-      </a-descriptions-item>
-      <a-descriptions-item label="鉴权方式">
-        <j-ellipsis>{{ authTypeText || '--' }}</j-ellipsis>
-      </a-descriptions-item>
-
-      <!-- 鉴权配置信息 -->
-      <template
-        v-for="(auth, index) in authTypes"
-        :key="index"
-      >
-        <template
-          v-for="(item, itemIndex) in auth.items"
-          :key="itemIndex"
-        >
-          <a-descriptions-item :label="item.label">
-            <template v-if="item.label === '密码'">
-              <a-space>
-                <j-ellipsis>
-                  <span :class="{ 'password-mask': !item.showEye && commonData.authConfig.basic.password }">
-                    {{ item.showEye ? item.value : '********' }}
-                  </span>
-                </j-ellipsis>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="item.showEye = !item.showEye"
-                >
-                  <template #icon>
-                    <AIcon
-                      :type="item.showEye ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
-                      v-if="commonData.authConfig.basic.password"
-                    />
-                  </template>
-                </a-button>
-              </a-space>
-            </template>
-            <template v-else-if="item.label === 'Scope'">
-              <a-space v-if="item.value">
-                <j-ellipsis>
-                  <span :class="{ 'password-mask': !item.showEye && item.value }">
-                    {{ item.showEye ? item.value : '********' }}
-                  </span>
-                </j-ellipsis>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="item.showEye = !item.showEye"
-                >
-                  <template #icon>
-                    <AIcon
-                      :type="item.showEye ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
-                      v-if="item.value"
-                    />
-                  </template>
-                </a-button>
-              </a-space>
-              <span v-else>--</span>
-            </template>
-            <j-ellipsis v-else>{{ item.value }}</j-ellipsis>
-          </a-descriptions-item>
-        </template>
-
-        <!-- OAuth2 特殊字段 -->
-        <a-descriptions-item v-if="authType === 'OAuth2'">
-          <template #label>
-            <a-space>
-              <span style="white-space: nowrap">Client ID</span>
-              <a-tooltip>
-                <template #title>应用唯一标识</template>
-                <AIcon
-                  type="QuestionCircleFilled"
-                  style="color: #777"
-                />
-              </a-tooltip>
-            </a-space>
-          </template>
-          <j-ellipsis>
-            {{ commonData.authConfig.oauth2.clientId || '--' }}
-          </j-ellipsis>
-        </a-descriptions-item>
-        <a-descriptions-item v-if="authType === 'OAuth2'">
-          <template #label>
-            <a-space>
-              <div style="white-space: nowrap">Client Secret</div>
-              <a-tooltip>
-                <template #title>应用唯一标识的密钥</template>
-                <AIcon
-                  type="QuestionCircleFilled"
-                  style="color: #777"
-                />
-              </a-tooltip>
-            </a-space>
-          </template>
-          <a-space>
-            <j-ellipsis>
-              <span :class="{ 'password-mask': !showSecret && commonData.authConfig.oauth2.clientSecret }">
-                {{ showSecret ? commonData.authConfig.oauth2.clientSecret || '--' : '********' }}
-              </span>
-            </j-ellipsis>
-            <a-button
-              type="text"
-              size="small"
-              @click="showSecret = !showSecret"
-            >
-              <template #icon>
-                <AIcon
-                  :type="showSecret ? 'EyeOutlined' : 'EyeInvisibleOutlined'"
-                  v-if="commonData.authConfig.oauth2.clientSecret"
-                />
-              </template>
-            </a-button>
-          </a-space>
-        </a-descriptions-item>
-      </template>
-    </a-descriptions>
-
-    <!-- OAuth2 请求头和参数表格 -->
-    <div v-if="authType === 'OAuth2'">
-      <a-table
-        :bordered="true"
-        :columns="columns"
-        :data-source="requestHeaderData"
-        :pagination="false"
-        :scroll="{ y: 240 }"
-        style="margin-top: 12px"
-      >
-        <template #title><div class="title">请求头</div></template>
-      </a-table>
-
-      <a-table
-        :bordered="true"
-        :columns="columns"
-        :data-source="argumentData"
-        :pagination="false"
-        :scroll="{ y: 240 }"
-        style="margin-top: 12px"
-      >
-        <template #title><div class="title">参数</div></template>
-      </a-table>
-    </div>
+    <KeyValueTable
+      title="参数"
+      :data-source="argumentData"
+    />
   </div>
 </template>
 
 <script lang="ts" name="ApiConnection" setup>
+import DescriptionItemList, { type DescriptionItem, type DescriptionLabel } from './components/DescriptionItemList.vue'
+import MaskDisplay from './components/MaskDisplay.vue'
+import KeyValueTable from './components/KeyValueTable.vue'
+
+interface KeyValueItem {
+  key?: string
+  value?: string
+}
+
+interface BasicAuthConfig {
+  username?: string
+  password?: string
+}
+
+interface BearerAuthConfig {
+  token?: string
+}
+
+interface OAuth2AuthConfig {
+  clientId?: string
+  clientSecret?: string
+  grantType?: string
+  tokenUrl?: string
+  tokenRequestType?: string
+  scope?: string
+}
+
+type AuthType = 'basic' | 'bearer' | 'OAuth2' | 'none' | ''
+
+interface AuthConfig {
+  authType?: AuthType
+  basic?: BasicAuthConfig
+  bearer?: BearerAuthConfig
+  oauth2?: OAuth2AuthConfig
+}
+
+interface ApiShareConfig {
+  baseUrl?: string
+  headers?: KeyValueItem[]
+  parameters?: KeyValueItem[]
+  authConfig?: AuthConfig
+}
+
+const AUTH_TYPE_TEXT: Record<string, string> = {
+  basic: '基本认证',
+  bearer: 'Bearer认证',
+  OAuth2: 'OAuth2认证',
+  none: '不鉴权'
+}
+
+const TOKEN_REQUEST_TYPE_TEXT: Record<string, string> = {
+  POST_URI: 'URL参数',
+  POST_BODY: '请求体'
+}
+
+const OAUTH_GRANT_TYPE_TEXT: Record<string, string> = {
+  client_credentials: '客户端凭证'
+}
+
 const props = defineProps<{ info: any }>()
 const { info } = toRefs(props)
 
-const authType = ref('')
-const authTypeText = ref('')
-const showSecret = ref(false)
-const requestHeaderData = ref([{ key: '', value: '' }])
-const argumentData = ref([{ key: '', value: '' }])
+const shareConfig = computed<ApiShareConfig>(() => info.value?.shareConfig ?? {})
 
-const columns = [
-  { title: 'Key', dataIndex: 'key', width: '50%' },
-  { title: 'Value', dataIndex: 'value', width: '50%' }
+const authConfig = computed<AuthConfig>(() => shareConfig.value.authConfig ?? {})
+
+const authType = computed<AuthType>(() => authConfig.value.authType ?? 'none')
+
+const isOAuth2 = computed(() => authType.value === 'OAuth2')
+
+const authTypeText = computed(() => AUTH_TYPE_TEXT[authType.value] ?? '--')
+
+const baseItems = computed<DescriptionItem[]>(() => [
+  {
+    key: 'baseUrl',
+    label: 'API地址',
+    value: shareConfig.value.baseUrl || '--'
+  },
+  {
+    key: 'authType',
+    label: '鉴权方式',
+    value: authTypeText.value
+  }
+])
+
+const createBasicItems = (basic: BasicAuthConfig = {}): DescriptionItem[] => [
+  {
+    key: 'username',
+    label: '用户名',
+    value: basic.username || '--'
+  },
+  {
+    key: 'password',
+    label: '密码',
+    component: MaskDisplay,
+    componentProps: {
+      value: basic.password,
+      placeholder: '--'
+    }
+  }
 ]
 
-const authTypeDic = {
-  basic: '基本认证',
-  bearer: 'bearer认证',
-  OAuth2: 'OAuth2认证',
-  none: '不鉴权'
-} as Record<string, string>
+const createBearerItems = (bearer: BearerAuthConfig = {}): DescriptionItem[] => [
+  {
+    key: 'token',
+    label: 'Token',
+    value: bearer.token || '--'
+  }
+]
 
-const commonData = reactive({
-  baseUrl: '',
-  headers: [],
-  parameters: [],
-  authConfig: {
-    authType: '',
-    basic: {
-      username: '',
-      password: ''
+const createOAuthLabel = (text: string, tooltip?: string): DescriptionLabel => ({
+  text,
+  tooltip
+})
+
+const createOAuthItems = (oauth2: OAuth2AuthConfig = {}): DescriptionItem[] => {
+  const scopeValue = oauth2.scope === '*' ? '' : oauth2.scope
+
+  return [
+    {
+      key: 'grantType',
+      label: '模式',
+      value: (oauth2.grantType && OAUTH_GRANT_TYPE_TEXT[oauth2.grantType]) || '--'
     },
-    bearer: {
-      token: ''
+    {
+      key: 'tokenUrl',
+      label: 'Token地址',
+      value: oauth2.tokenUrl || '--'
     },
-    oauth2: {
-      clientId: '',
-      clientSecret: '',
-      grantType: '',
-      tokenUrl: '',
-      tokenRequestType: '',
-      scope: ''
+    {
+      key: 'tokenRequestType',
+      label: '请求方式',
+      value: (oauth2.tokenRequestType && TOKEN_REQUEST_TYPE_TEXT[oauth2.tokenRequestType]) || '请求体'
+    },
+    {
+      key: 'scope',
+      label: 'Scope',
+      component: MaskDisplay,
+      componentProps: {
+        value: scopeValue,
+        placeholder: '--'
+      }
+    },
+    {
+      key: 'clientId',
+      label: createOAuthLabel('Client ID', '应用唯一标识'),
+      value: oauth2.clientId || '--'
+    },
+    {
+      key: 'clientSecret',
+      label: createOAuthLabel('Client Secret', '应用唯一标识的密钥'),
+      component: MaskDisplay,
+      componentProps: {
+        value: oauth2.clientSecret,
+        placeholder: '--'
+      }
     }
+  ]
+}
+
+const authItems = computed<DescriptionItem[]>(() => {
+  switch (authType.value) {
+    case 'basic':
+      return createBasicItems(authConfig.value.basic)
+    case 'bearer':
+      return createBearerItems(authConfig.value.bearer)
+    case 'OAuth2':
+      return createOAuthItems(authConfig.value.oauth2)
+    default:
+      return []
   }
 })
 
-const authTypes = ref<any[]>([])
+const descriptionItems = computed<DescriptionItem[]>(() => [...baseItems.value, ...authItems.value])
 
-const handleAuthType = () => {
-  const basic = {
-    type: 'basic',
-    items: [
-      { label: '用户名', value: commonData.authConfig.basic.username || '--' },
-      { label: '密码', value: commonData.authConfig.basic.password || '--', showEye: false }
-    ]
-  }
+const requestHeaderData = computed<KeyValueItem[]>(() => shareConfig.value.headers ?? [])
 
-  const bearer = {
-    type: 'bearer',
-    items: [{ label: 'Token', value: commonData.authConfig.bearer.token || '--' }]
-  }
-
-  const oauth2 = {
-    type: 'OAuth2',
-    items: [
-      {
-        label: '模式',
-        value: commonData.authConfig.oauth2.grantType === 'client_credentials' ? '客户端凭证' : '--'
-      },
-      {
-        label: 'Token地址',
-        value: commonData.authConfig.oauth2.tokenUrl || '--'
-      },
-      {
-        label: '请求方式',
-        value: commonData.authConfig.oauth2.tokenRequestType === 'POST_URI' ? 'URL参数' : '请求体'
-      },
-      {
-        label: 'Scope',
-        value: commonData.authConfig.oauth2.scope === '*' ? '' : commonData.authConfig.oauth2.scope,
-        showEye: false
-      }
-    ]
-  }
-
-  if (authType.value === 'basic') authTypes.value = [basic]
-  if (authType.value === 'bearer') authTypes.value = [bearer]
-  if (authType.value === 'OAuth2') authTypes.value = [oauth2]
-}
-
-watch(
-  info,
-  () => {
-    if (Object.keys(info.value).length > 0 && info.value.shareConfig) {
-      const { authConfig, baseUrl, headers, parameters } = info.value.shareConfig
-      Object.assign(commonData.authConfig, authConfig)
-      commonData.baseUrl = baseUrl
-      commonData.headers = headers
-      commonData.parameters = parameters
-      authType.value = commonData.authConfig.authType
-      authTypeText.value = authTypeDic[commonData.authConfig.authType]
-      requestHeaderData.value = commonData.headers
-      argumentData.value = commonData.parameters
-      handleAuthType()
-    }
-  },
-  { deep: true, immediate: true }
-)
+const argumentData = computed<KeyValueItem[]>(() => shareConfig.value.parameters ?? [])
 </script>
 
-<style lang="less" scoped>
-.password-mask {
-  -webkit-text-security: disc;
-  font-family: 'PingFang SC';
-}
-
-.title {
-  font-weight: bold;
-}
-</style>
+<style lang="less" scoped></style>
