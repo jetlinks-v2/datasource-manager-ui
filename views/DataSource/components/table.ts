@@ -71,8 +71,7 @@ export const typesData = [
       {
         icon: DataEsApi,
         value: DATASOURCE_TYPE.ESAPI,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.ESAPI],
-        disable: true
+        name: DATASOURCE_NAME[DATASOURCE_TYPE.ESAPI]
       },
       {
         icon: DataExcel,

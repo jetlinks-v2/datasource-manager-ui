@@ -98,15 +98,23 @@ const responseResultRef = ref()
 const checkTestDataSource = ref<any>({})
 const dynamicParams = ref<any>([])
 
-const validateUri = async (rule: Rule, value: string) => {
+const getUrl = (value: string) => {
+  return value.startsWith(protocol.value) ? value : `${protocol.value}${value}`
+}
+
+const validateUri = async (_: Rule, value: string) => {
   if (!value) {
     return Promise.reject('请输入请求路径')
   }
   if (value) {
-    // WebSocket路径可以是完整URL或路径
-    const fullUrl = value.startsWith('ws://') || value.startsWith('wss://') ? value : `${protocol.value}${value}`
+    if (value.startsWith('/')) {
+      return Promise.reject('请求路径不能以/开头')
+    }
+    if (value.endsWith('/')) {
+      return Promise.reject('请求路径不能以/结尾')
+    }
     try {
-      new URL(fullUrl)
+      new URL(getUrl(value))
     } catch (error) {
       return Promise.reject('请输入有效的WebSocket路径')
     }
@@ -162,6 +170,7 @@ const validateAll = async () => {
         return false
       }
 
+      expression.value.uri.url = getUrl(expression.value.uri.url)
       const inputs = convertParamsToObject(dynamicParams.value)
       emit('update:expression', expression.value, checkTestDataSource.value, inputs)
       return true
@@ -186,13 +195,9 @@ const handleSend = async () => {
         sending.value = true
         const { uri, queryParams, headers, message } = expression.value
 
-        // 构建完整的WebSocket URL
-        const fullUrl =
-          uri.url.startsWith('ws://') || uri.url.startsWith('wss://') ? uri.url : `${protocol.value}${uri.url}`
-
         const _expression = {
           uri: {
-            url: fullUrl
+            url: getUrl(uri.url)
           },
           queryParams: transformArray(queryParams),
           headers: transformArray(headers),
@@ -221,20 +226,21 @@ const handleSend = async () => {
   }
 }
 
+const initProtocol = () => {
+  const url = expression.value?.uri?.url
+  const match = url?.match(/^(wss?:\/\/)(.*)$/)
+
+  if (match) {
+    protocol.value = match[1]
+    expression.value.uri.url = match[2]
+  }
+}
+
 watch(
   () => props.data,
   () => {
     expression.value = props.data.expression
-    // 从URL中提取协议
-    if (expression.value?.uri?.url) {
-      if (expression.value.uri.url.startsWith('wss://')) {
-        protocol.value = 'wss://'
-        expression.value.uri.url = expression.value.uri.url.replace('wss://', '')
-      } else if (expression.value.uri.url.startsWith('ws://')) {
-        protocol.value = 'ws://'
-        expression.value.uri.url = expression.value.uri.url.replace('ws://', '')
-      }
-    }
+    initProtocol()
   },
   { immediate: true, deep: true }
 )

@@ -17,3 +17,28 @@ interface ParamsSpec {
   sort?: number
   isSpecialRow?: boolean
 }
+
+interface FormData {
+  id?: string
+  dataSourceId: string
+  support: string
+  name: string
+  dataSourceTypeId: string
+  description: string
+  configuration: {
+    commandId: string
+    commandName: string
+    output: any
+    input: any[]
+    expression: {
+      uri: { url: string }
+      method?: string
+      body?: { contentType: string; content: string }
+      queryParams: any[]
+      headers: any[]
+      message?: any
+    }
+    rdbDefinition?: any
+    provider?: string
+  }
+}

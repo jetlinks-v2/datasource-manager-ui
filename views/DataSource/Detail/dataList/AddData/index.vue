@@ -1,36 +1,38 @@
 <template>
   <a-modal
     open
-    :title="isEdit ? '编辑功能' : '新增功能'"
+    :title="modalTitle"
     centered
-    :maskClosable="false"
-    @cancel="emit('cancel')"
-    :destroyOnClose="true"
-    :width="sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE && currentStep === 1 ? '600px' : '1200px'"
-    :bodyStyle="{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '8px', marginRight: '-8px' }"
+    :mask-closable="false"
+    :destroy-on-close="true"
+    :width="modalWidth"
+    :body-style="modalBodyStyle"
+    @cancel="handleCancel"
   >
     <a-form
-      :model="formData"
       ref="formRef"
+      :model="formData"
       layout="vertical"
     >
+      <!-- 步骤条 -->
       <a-steps
         :current="currentStep"
-        class="mb-6"
+        class="steps-container"
       >
         <a-step title="详细配置" />
         <a-step title="命令生成" />
       </a-steps>
 
+      <!-- 步骤内容 -->
       <div v-show="currentStep === 0">
         <component
+          :is="currentComponent"
           ref="componentRef"
-          :is="components[sourceClassify]"
-          :isEdit="isEdit"
-          :dataSourceId="info.id"
-          :formRef="formRef"
+          :is-edit="isEdit"
+          :data-source-id="info.id"
+          :form-ref="formRef"
           :data="formData.configuration"
-          @update:expression="updateExpressionData"
+          @update:expression="handleExpressionUpdate"
           @update:configuration="handleConfigUpdate"
         />
       </div>
@@ -38,37 +40,40 @@
       <div v-show="currentStep === 1">
         <BasicForm
           ref="basicFormRef"
-          :modelValue="formData"
-          :testData="checkTestDataSource"
-          :dynamicParams="dynamicParams"
-          :isEdit="isEdit"
-          :sourceClassify="sourceClassify"
+          :model-value="formData"
+          :test-data="testDataSource"
+          :dynamic-params="dynamicParams"
+          :is-edit="isEdit"
+          :source-classify="sourceClassify"
           @update="handleFormUpdate"
         />
       </div>
     </a-form>
 
+    <!-- 底部按钮 -->
     <template #footer>
       <div class="footer-wrapper">
-        <div>
-          <a-button
-            v-if="currentStep > 0"
-            @click="prev"
-          >
-            上一步
-          </a-button>
-        </div>
+        <a-button
+          v-if="currentStep > 0"
+          class="prev-btn"
+          @click="handlePrevStep"
+        >
+          上一步
+        </a-button>
 
         <a-button
           v-if="currentStep < 1"
           type="primary"
-          @click="next"
+          :loading="loading"
+          @click="handleNextStep"
         >
           下一步
         </a-button>
+
         <a-button
           v-else
           type="primary"
+          :loading="loading"
           @click="handleSave"
         >
           保存
@@ -79,42 +84,49 @@
 </template>
 
 <script setup lang="ts">
+import { Modal, message } from 'ant-design-vue'
+import { cloneDeep, isArray, isObject } from 'lodash-es'
+
 import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
 import ApiSend from './ApiSend/index.vue'
 import BasicForm from './components/BasicForm.vue'
 import WebSocketSend from './WebSocketSend/index.vue'
+
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
-import { onlyMessage } from '@jetlinks-web/utils'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
 import { transformArray } from './components/utils'
-import { isArray, isObject, cloneDeep } from 'lodash-es'
-import { Modal } from 'ant-design-vue'
-import { TypeId } from '../../type'
-import { DATA_TYPE_ITEM } from '../../../components/table'
 
-const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({})
-  },
-  info: {
-    type: Object,
-    default: () => ({})
-  }
+import type { TypeId } from '../../type'
+import { DATA_TYPE_ITEM } from '../../../components/table'
+import { FormData } from './type'
+
+interface Props {
+  data?: Record<string, any>
+  info?: Record<string, any>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  data: () => ({}),
+  info: () => ({})
 })
-const emit = defineEmits(['cancel', 'ok'])
+
+const emit = defineEmits<{
+  cancel: []
+  ok: []
+}>()
 
 const route = useRoute()
 const formRef = ref()
 const componentRef = ref()
 const basicFormRef = ref()
 
-const data = ref<any>({})
 const currentStep = ref(0)
-const checkTestDataSource = ref<any>()
+const loading = ref(false)
+const testDataSource = ref<any>()
 const dynamicParams = ref<any[]>([])
-const formData = reactive<any>({
-  id: data.value.id,
+
+const formData = reactive<FormData>({
+  id: props.data?.id,
   dataSourceId: props.info.id,
   support: '',
   name: '',
@@ -126,256 +138,337 @@ const formData = reactive<any>({
     output: {},
     input: [],
     expression: {
-      uri: {
-        url: ''
-      },
+      uri: { url: '' },
       method: 'GET',
-      body: {
-        contentType: '',
-        content: ''
-      },
+      body: { contentType: '', content: '' },
       queryParams: [],
       headers: []
     }
   }
 })
 
-const isEdit = computed(() => {
-  if (data.value.id) {
-    currentStep.value = 1
-    return true
-  }
-  currentStep.value = 0
-  return false
-})
+const COMPONENT_MAP = {
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: RdbDatasourceQuery,
+  [DATA_TYPE_ITEM.API_SEND]: ApiSend,
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend
+} as const
 
-const sourceClassify = computed(() => {
-  return route.query.typeId as TypeId
-})
+const isEdit = computed(() => !!props.data?.id)
+const sourceClassify = computed(() => route.query.typeId as TypeId)
+const currentComponent = computed(() => COMPONENT_MAP[sourceClassify.value])
 
-const updateExpressionData = (expression: any, testData: any, dynamicParamsData: any) => {
+const modalTitle = computed(() => (isEdit.value ? '编辑功能' : '新增功能'))
+const modalWidth = computed(() =>
+  sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE && currentStep.value === 1 ? '600px' : '1200px'
+)
+
+const modalBodyStyle = computed(() => ({
+  maxHeight: '80vh',
+  overflowY: 'auto' as any,
+  paddingRight: '8px',
+  marginRight: '-8px'
+}))
+
+const handleCancel = () => {
+  emit('cancel')
+}
+
+const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsData: any) => {
   formData.configuration.expression = expression
-  checkTestDataSource.value = testData
+  testDataSource.value = testData
   dynamicParams.value = dynamicParamsData
 }
 
 const handleConfigUpdate = (config: any) => {
   formData.configuration = {
+    ...formData.configuration,
     rdbDefinition: config,
     provider: 'definition'
   }
-}
-
-const next = async (): Promise<void> => {
-  try {
-    const componentValid = await componentRef.value?.validateAll()
-    if (componentValid) {
-      currentStep.value++
-      scrollToTop()
-    } else {
-      console.log('验证失败', { componentValid })
-    }
-  } catch (e) {
-    console.error('Validation error:', e)
-  }
-}
-
-const prev = () => {
-  currentStep.value--
-  scrollToTop()
-}
-
-const scrollToTop = () => {
-  const el = document.querySelector('.ant-modal-body')
-  if (el) {
-    el.scrollTop = 0
-  }
-}
-
-const components: any = {
-  [DATA_TYPE_ITEM.RDB_DATASOURCE]: RdbDatasourceQuery,
-  [DATA_TYPE_ITEM.API_SEND]: ApiSend,
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend
 }
 
 const handleFormUpdate = (newData: any) => {
   Object.assign(formData, newData)
 }
 
-const handleSave = async () => {
+const handleNextStep = async () => {
   try {
-    // 通用数据源处理
-    if (sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE) {
-      const valid = await formRef.value?.validate()
-      if (!valid) return
+    loading.value = true
+    const isValid = await componentRef.value?.validateAll()
+    if (!isValid) return
 
-      const componentValid = await componentRef.value?.validateAll()
-      if (!componentValid) return
-
-      await onSaveData(formData)
-      return
-    }
-
-    // API和WebSocket通用验证
-    const valid = await formRef.value?.validate().catch((e: any) => {
-      onlyMessage(e.errorFields[0].errors[0], 'error')
-      return false
-    })
-    if (!valid) return
-
-    const _formData = await basicFormRef.value?.getFormData()
-    if (!_formData) return
-
-    // 构建参数
-    const params = buildDataSourceParams(_formData)
-
-    // 检查输出配置并保存
-    if (!_formData.configuration.output.length) {
-      Modal.confirm({
-        title: '提示',
-        content: '命令返回响应配置为空，是否继续保存',
-        cancelText: '取消',
-        okText: '确定',
-        onOk: () => onSaveData(params)
-      })
-    } else {
-      await onSaveData(params)
-    }
-  } catch (e) {
-    console.error('保存失败:', e)
+    currentStep.value++
+    scrollToTop()
+  } catch (error) {
+    console.error('验证错误:', error)
+    message.error('请检查表单填写是否完整')
+  } finally {
+    loading.value = false
   }
 }
 
-// 构建数据源参数
-const buildDataSourceParams = (formData: any) => {
-  const isDataSourceArray = isEdit.value
-    ? data.value.configuration.output.type === 'array'
-    : isArray(checkTestDataSource.value)
+const handlePrevStep = () => {
+  currentStep.value--
+  scrollToTop()
+}
 
-  const { queryParams, headers, uri, message, method } = formData.configuration.expression
+const handleSave = async () => {
+  try {
+    loading.value = true
 
-  // 构建基础配置
-  const baseExpression = {
-    queryParams: transformArray(queryParams),
-    headers: transformArray(headers),
-    uri: {
-      url: sourceClassify.value === DATA_TYPE_ITEM.API_SEND ? uri.url.split('?')[0] : uri.url
+    // RDB 数据源特殊处理
+    if (sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE) {
+      await saveRdbDataSource()
+      return
     }
-  } as any
 
-  // WebSocket需要添加message
-  if (sourceClassify.value === DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE) {
-    baseExpression.message = message || {}
+    // API 和 WebSocket 通用处理
+    await saveCommonDataSource()
+  } catch (error: any) {
+    console.error('保存失败:', error)
+    message.error(error.message || '操作失败')
+  } finally {
+    loading.value = false
   }
+}
 
-  // API需要添加method
-  if (sourceClassify.value === DATA_TYPE_ITEM.API_SEND) {
-    baseExpression.method = method
+// 保存 RDB 数据源
+const saveRdbDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const isComponentValid = await componentRef.value?.validateAll()
+  if (!isComponentValid) return
+
+  await saveDataSource(formData)
+}
+
+// 保存通用数据源
+const saveCommonDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const formDataFromRef = await basicFormRef.value?.getFormData()
+  if (!formDataFromRef) return
+
+  const params = buildDataSourceParams(formDataFromRef)
+
+  // 检查输出配置
+  if (!formDataFromRef.configuration.output?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
   }
+}
+
+// 验证表单
+const validateForm = async (): Promise<boolean> => {
+  try {
+    await formRef.value?.validate()
+    return true
+  } catch (error: any) {
+    const errorMessage = error.errorFields?.[0]?.errors?.[0] || '表单验证失败'
+    message.error(errorMessage)
+    return false
+  }
+}
+
+// 确认保存无输出配置
+const confirmSaveWithoutOutput = (params: any) => {
+  return new Promise((resolve) => {
+    Modal.confirm({
+      title: '提示',
+      content: '命令返回响应配置为空，是否继续保存',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        await saveDataSource(params)
+        resolve(true)
+      },
+      onCancel: () => resolve(false)
+    })
+  })
+}
+
+// 构建数据源参数
+const buildDataSourceParams = (formData: any): FormData => {
+  const isDataSourceArray = isEdit.value
+    ? props.data?.configuration?.output?.type === 'array'
+    : isArray(testDataSource.value)
+
+  const { expression, input, output } = formData.configuration
+
+  // 构建表达式配置
+  const baseExpression = buildExpression(expression)
 
   // 构建输出配置
-  const outputConfig = {
-    name: isDataSourceArray ? '数组' : '对象',
-    id: isDataSourceArray ? 'array' : 'object',
-    type: isDataSourceArray ? 'array' : 'object',
-    ...(isDataSourceArray
-      ? {
-          elementType: {
-            type: 'object',
-            properties: parseTableTreeToMetadata(formData.configuration.output)
-          }
-        }
-      : {
-          properties: parseTableTreeToMetadata(formData.configuration.output)
-        })
-  }
+  const outputConfig = buildOutputConfig(output, isDataSourceArray)
 
   return {
     ...formData,
     configuration: {
       ...formData.configuration,
       expression: baseExpression,
-      input: parseTableTreeToMetadata(formData.configuration.input),
+      input: parseTableTreeToMetadata(input),
       output: outputConfig,
       provider: 'expression'
     }
   }
 }
 
-// 保存数据
-const onSaveData = async (formData: any) => {
-  try {
-    const res = isEdit.value ? await editDataSourceCommand(formData) : await addDataSourceCommand(formData)
+// 构建表达式
+const buildExpression = (expression: any) => {
+  const { queryParams, headers, uri, message, method } = expression
 
-    if (res.success) {
-      onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
-      emit('ok')
-      emit('cancel')
-    } else {
-      throw new Error(isEdit.value ? '编辑失败' : '新增失败')
+  const baseExpression: any = {
+    queryParams: transformArray(queryParams),
+    headers: transformArray(headers),
+    uri: {
+      url: sourceClassify.value === DATA_TYPE_ITEM.API_SEND ? uri.url.split('?')[0] : uri.url
     }
-  } catch (error: any) {
-    onlyMessage(error.message || '操作失败', 'error')
+  }
+
+  // WebSocket 添加 message
+  if (sourceClassify.value === DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE) {
+    baseExpression.message = message || {}
+  }
+
+  // API 添加 method
+  if (sourceClassify.value === DATA_TYPE_ITEM.API_SEND) {
+    baseExpression.method = method
+  }
+
+  return baseExpression
+}
+
+// 构建输出配置
+const buildOutputConfig = (output: any, isArray: boolean) => {
+  const baseConfig = {
+    name: isArray ? '数组' : '对象',
+    id: isArray ? 'array' : 'object',
+    type: isArray ? 'array' : 'object'
+  }
+
+  if (isArray) {
+    return {
+      ...baseConfig,
+      elementType: {
+        type: 'object',
+        properties: parseTableTreeToMetadata(output)
+      }
+    }
+  }
+
+  return {
+    ...baseConfig,
+    properties: parseTableTreeToMetadata(output)
   }
 }
 
-// 合并表单数据
-const mergeFormData = () => {
-  Object.keys(formData).forEach((key) => {
-    if (!data.value.hasOwnProperty(key)) return
+// 保存数据源
+const saveDataSource = async (params: any) => {
+  const api = isEdit.value ? editDataSourceCommand : addDataSourceCommand
+  const response = await api(params)
 
-    const isComplexObject = isObject(formData[key]) && !isArray(formData[key])
-    isComplexObject ? Object.assign(formData[key], data.value[key]) : (formData[key] = data.value[key])
+  if (!response.success) {
+    throw new Error(isEdit.value ? '编辑失败' : '新增失败')
+  }
+
+  message.success(isEdit.value ? '编辑成功' : '新增成功')
+  emit('ok')
+  emit('cancel')
+}
+
+// 滚动到顶部
+const scrollToTop = () => {
+  nextTick(() => {
+    const modalBody = document.querySelector('.ant-modal-body')
+    if (modalBody) {
+      modalBody.scrollTop = 0
+    }
+  })
+}
+
+// 初始化数据
+const initializeFormData = () => {
+  const data = cloneDeep(props.data)
+  if (!data || !Object.keys(data).length) return
+
+  // 合并表单数据
+  mergeFormData(data)
+
+  const DATA_SOURCE_HANDLERS = {
+    [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
+    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
+    [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit
+  }
+
+  const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
+  handler?.(data)
+}
+
+// 合并表单数据
+const mergeFormData = (data: any) => {
+  Object.keys(formData).forEach((key) => {
+    if (!data.hasOwnProperty(key)) return
+
+    const value = data[key]
+    const currentValue = (formData as any)[key]
+
+    if (isObject(currentValue) && !isArray(currentValue)) {
+      Object.assign(currentValue, value)
+    } else {
+      ;(formData as any)[key] = value
+    }
   })
 }
 
 // 处理表达式参数转换
-const transformExpressionParams = (params: any[]) => {
+const transformExpressionParams = (params: any[] = []) => {
   return params.map((item) => ({
     ...item,
-    key: item.key.value,
-    value: item.value.value
+    key: item.key?.value ?? item.key,
+    value: item.value?.value ?? item.value
   }))
 }
 
 // 处理输入输出配置
-const processInputOutput = () => {
-  const { input, output } = data.value.configuration
+const processInputOutput = (data: any) => {
+  const { input, output } = data.configuration
 
-  // 处理输入
-  formData.configuration.input = metadataConvertToTableTree(input, 'dataType')
+  if (input) {
+    formData.configuration.input = metadataConvertToTableTree(input, 'dataType')
+  }
 
-  // 处理输出
-  if (output.type === 'array') {
-    formData.configuration.output = metadataConvertToTableTree(output.elementType.properties, 'dataType')
-  } else if (output.type === 'object') {
+  if (output?.type === 'array') {
+    formData.configuration.output = metadataConvertToTableTree(output.elementType?.properties, 'dataType')
+  } else if (output?.type === 'object') {
     formData.configuration.output = metadataConvertToTableTree(output.properties, 'dataType')
   }
 }
 
 // 构建查询字符串
-const buildQueryString = (queryParams: any[]) => {
-  return (
-    queryParams
-      ?.filter((item) => item.enable)
-      .map((item) => `${item.key}=${item.value}`)
-      .join('&') || ''
-  )
+const buildQueryString = (queryParams: any[] = []) => {
+  return queryParams
+    .filter((item) => item.enable !== false)
+    .map((item) => `${encodeURIComponent(item.key)}=${encodeURIComponent(item.value)}`)
+    .join('&')
 }
 
-// 处理API发送类型数据
-const handleApiSendData = () => {
-  const { queryParams, headers, uri } = data.value.configuration.expression
+// API 发送类型
+const handleApiSendInit = (data: any) => {
+  const { expression } = data.configuration
+  if (!expression) return
 
-  // 转换表达式参数
+  const { queryParams, headers, uri } = expression
+
   formData.configuration.expression = {
-    ...data.value.configuration.expression,
+    ...expression,
     queryParams: transformExpressionParams(queryParams),
     headers: transformExpressionParams(headers)
   }
 
-  // 构建带查询参数的URL
-  if (uri) {
+  if (uri?.url) {
     const queryString = buildQueryString(formData.configuration.expression.queryParams)
     if (queryString) {
       const separator = uri.url.includes('?') ? '&' : '?'
@@ -383,65 +476,77 @@ const handleApiSendData = () => {
     }
   }
 
-  // 处理输入输出
-  processInputOutput()
+  processInputOutput(data)
 }
 
-// 处理WebSocket类型数据
-const handleWebSocketData = () => {
-  const { queryParams, headers, uri, message } = data.value.configuration.expression
+// WebSocket 类型
+const handleWebSocketInit = (data: any) => {
+  const { expression } = data.configuration
+  if (!expression) return
 
-  // 转换表达式参数
+  const { queryParams, headers, message } = expression
+
   formData.configuration.expression = {
-    ...data.value.configuration.expression,
+    ...expression,
     queryParams: transformExpressionParams(queryParams),
     headers: transformExpressionParams(headers),
     message: message || {}
   }
 
-  // 保持原始URL
-  if (uri) {
-    formData.configuration.expression.uri.url = uri.url
-  }
-
-  // 处理输入输出
-  processInputOutput()
+  processInputOutput(data)
 }
 
-// 处理RDB类型数据
-const handleRdbData = () => {
-  formData.configuration.rdbDefinition = data.value.configuration.rdbDefinition
+// RDB 类型
+const handleRdbInit = (data: any) => {
+  if (data.configuration?.rdbDefinition) {
+    formData.configuration.rdbDefinition = data.configuration.rdbDefinition
+  }
 }
 
 onMounted(() => {
-  data.value = cloneDeep(props.data)
-  if (!data.value || !Object.keys(data.value).length) return
-
-  // 合并表单数据
-  mergeFormData()
-
-  // 根据数据源类型处理配置
-  const handlers = {
-    [DATA_TYPE_ITEM.API_SEND]: handleApiSendData,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketData,
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbData
+  if (isEdit.value) {
+    currentStep.value = 1
   }
 
-  const handler = handlers[sourceClassify.value]
-  handler()
+  initializeFormData()
 })
 </script>
 
 <style scoped lang="less">
-.mb-6 {
+.steps-container {
   width: 70%;
-  margin: 0 auto 16px;
+  margin: 0 auto 24px;
 }
 
 .footer-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   width: 100%;
+  gap: 8px;
+
+  .prev-btn {
+    margin-right: auto;
+  }
+}
+
+:deep(.ant-modal-body) {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+
+    &:hover {
+      background: #555;
+    }
+  }
 }
 </style>

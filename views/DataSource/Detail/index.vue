@@ -111,22 +111,40 @@ import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/i
 import { Modal } from 'ant-design-vue'
 
 const permission = 'system/DataSource'
-const loading = ref(false)
+
 const route = useRoute()
 const router = useRouter()
 const sourceId = route.params.id as string
+
+const loading = ref(false)
 const sourceData = ref()
 const info = ref({} as SourceDataInfo)
 const list = ref<{ key: string; tab: string }[]>([])
+
 const tabs = {
   Info,
   Table,
   Query,
   DataList
 } as Record<string, any>
+
 const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
+
 const sourceClassify = ref<DATA_TYPE_ITEM>()
+
+const baseTabs = [{ key: 'Info', tab: '基本信息' }]
+const endTabs = [{ key: 'DataList', tab: '功能列表' }]
+
+const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
+    { key: 'Table', tab: '表结构' },
+    { key: 'Query', tab: '查询' }
+  ],
+  [DATA_TYPE_ITEM.API_SEND]: [],
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: []
+}
+
 const routeLink = computed(() => ({
   path: `/system/DataSource`,
   query: {
@@ -201,35 +219,13 @@ const handleDeleteOk = async () => {
 
 const getDetailInfo = async () => {
   const res = await getDataSourceDetail(sourceId)
+
   if (res.status === 200) {
     info.value = res.result
     sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
-    const baseList = [
-      {
-        key: 'Info',
-        tab: '基本信息'
-      }
-    ]
 
-    if (sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE) {
-      baseList.push(
-        {
-          key: 'Table',
-          tab: '表结构'
-        },
-        {
-          key: 'Query',
-          tab: '查询'
-        }
-      )
-    }
-    list.value = [
-      ...baseList,
-      {
-        key: 'DataList',
-        tab: '功能列表'
-      }
-    ]
+    const dynamicTabs = dataSourceTabs[sourceClassify.value] || []
+    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
   }
 }
 

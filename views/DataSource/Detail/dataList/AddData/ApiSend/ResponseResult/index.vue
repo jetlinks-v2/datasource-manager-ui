@@ -51,7 +51,10 @@
       </a-tab-pane>
 
       <template #rightExtra>
-        <div class="meta">
+        <div
+          class="meta"
+          v-if="data.status"
+        >
           <a-tag :color="data.status === 200 ? 'success' : 'error'">{{ data.status }}</a-tag>
         </div>
       </template>
