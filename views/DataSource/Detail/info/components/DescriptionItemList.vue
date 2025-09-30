@@ -1,6 +1,7 @@
 <template>
   <div class="description-item-list">
     <TitleComponent
+      v-if="title"
       :data="title"
       class="title"
     />
@@ -27,7 +28,15 @@
           </a-space>
         </template>
 
+        <!-- 如果有对应的插槽，使用插槽 -->
+        <slot
+          v-if="$slots[item.key]"
+          :name="item.key"
+          :item="item"
+        ></slot>
+        <!-- 否则使用默认渲染 -->
         <component
+          v-else
           :is="item.component || 'j-ellipsis'"
           v-bind="item.componentProps"
         >

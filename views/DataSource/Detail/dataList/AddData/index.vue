@@ -91,6 +91,7 @@ import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
 import ApiSend from './ApiSend/index.vue'
 import BasicForm from './components/BasicForm.vue'
 import WebSocketSend from './WebSocketSend/index.vue'
+import EsDatasourceQuery from './EsDatasourceQuery/index.vue'
 
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
@@ -150,7 +151,8 @@ const formData = reactive<FormData>({
 const COMPONENT_MAP = {
   [DATA_TYPE_ITEM.RDB_DATASOURCE]: RdbDatasourceQuery,
   [DATA_TYPE_ITEM.API_SEND]: ApiSend,
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend,
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery
 } as const
 
 const isEdit = computed(() => !!props.data?.id)
@@ -158,9 +160,17 @@ const sourceClassify = computed(() => route.query.typeId as TypeId)
 const currentComponent = computed(() => COMPONENT_MAP[sourceClassify.value])
 
 const modalTitle = computed(() => (isEdit.value ? '编辑功能' : '新增功能'))
-const modalWidth = computed(() =>
-  sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE && currentStep.value === 1 ? '600px' : '1200px'
-)
+const modalWidth = computed(() => {
+  if (currentStep.value === 1) {
+    if (
+      sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+    ) {
+      return '600px'
+    }
+  }
+  return '1200px'
+})
 
 const modalBodyStyle = computed(() => ({
   maxHeight: '80vh',
@@ -180,10 +190,21 @@ const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsDat
 }
 
 const handleConfigUpdate = (config: any) => {
-  formData.configuration = {
-    ...formData.configuration,
-    rdbDefinition: config,
-    provider: 'definition'
+  switch (sourceClassify.value) {
+    case DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE:
+      formData.configuration = {
+        ...formData.configuration,
+        elasticsearchConfig: config
+      }
+      break
+    case DATA_TYPE_ITEM.RDB_DATASOURCE:
+      formData.configuration = {
+        ...formData.configuration,
+        rdbDefinition: config
+      }
+      break
+    default:
+      break
   }
 }
 
@@ -222,6 +243,12 @@ const handleSave = async () => {
       return
     }
 
+    // Elasticsearch 数据源特殊处理
+    if (sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE) {
+      await saveEsDataSource()
+      return
+    }
+
     // API 和 WebSocket 通用处理
     await saveCommonDataSource()
   } catch (error: any) {
@@ -240,7 +267,29 @@ const saveRdbDataSource = async () => {
   const isComponentValid = await componentRef.value?.validateAll()
   if (!isComponentValid) return
 
-  await saveDataSource(formData)
+  await saveDataSource({
+    ...formData,
+    configuration: {
+      rdbDefinition: formData.configuration.rdbDefinition,
+      provider: 'definition'
+    }
+  })
+}
+
+// 保存 ES 数据源
+const saveEsDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const isComponentValid = await componentRef.value?.validateAll()
+  if (!isComponentValid) return
+
+  await saveDataSource({
+    ...formData,
+    configuration: {
+      elasticsearchConfig: formData.configuration.elasticsearchConfig
+    }
+  })
 }
 
 // 保存通用数据源
@@ -400,7 +449,8 @@ const initializeFormData = () => {
   const DATA_SOURCE_HANDLERS = {
     [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit
+    [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit
   }
 
   const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
@@ -500,6 +550,13 @@ const handleWebSocketInit = (data: any) => {
 const handleRdbInit = (data: any) => {
   if (data.configuration?.rdbDefinition) {
     formData.configuration.rdbDefinition = data.configuration.rdbDefinition
+  }
+}
+
+// ES 类型
+const handleEsInit = (data: any) => {
+  if (data.configuration?.elasticsearchConfig) {
+    formData.configuration.elasticsearchConfig = data.configuration.elasticsearchConfig
   }
 }
 

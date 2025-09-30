@@ -13,7 +13,7 @@ export const iconMaps = {
   json: 'icon-Json',
   dm: 'icon-damengshujuku',
   redis: 'icon-REdis',
-  es_api: 'icon-ES-API'
+  elasticsearch: 'icon-ES-API'
 } as Record<string, string>
 
 const getDataTypeOptions = () => {

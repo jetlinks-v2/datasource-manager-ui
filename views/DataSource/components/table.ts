@@ -15,7 +15,8 @@ import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
 export enum DATA_TYPE_ITEM {
   RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)
   API_SEND = 'api', // 通用表单 (API)
-  WEBSOCKET_DATASOURCE = 'websocket' // WebSocket表单
+  WEBSOCKET_DATASOURCE = 'websocket', // WebSocket表单
+  ELASTICSEARCH_DATASOURCE = 'elasticsearch' // Elasticsearch表单
 }
 
 //数据源类型
@@ -32,7 +33,7 @@ export const DATASOURCE_TYPE = {
   JSON: 'json',
   DAMENG: 'dm',
   REDIS: 'redis',
-  ESAPI: 'es_api'
+  ELASTICSEARCH: 'elasticsearch'
 }
 
 export const DATASOURCE_NAME = {
@@ -48,7 +49,7 @@ export const DATASOURCE_NAME = {
   [DATASOURCE_TYPE.JSON]: 'JSON',
   [DATASOURCE_TYPE.DAMENG]: '达梦数据库',
   [DATASOURCE_TYPE.REDIS]: 'Redis',
-  [DATASOURCE_TYPE.ESAPI]: 'ES API'
+  [DATASOURCE_TYPE.ELASTICSEARCH]: 'Elasticsearch'
 }
 
 export const typesData = [
@@ -70,8 +71,9 @@ export const typesData = [
       },
       {
         icon: DataEsApi,
-        value: DATASOURCE_TYPE.ESAPI,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.ESAPI]
+        value: DATASOURCE_TYPE.ELASTICSEARCH,
+        name: DATASOURCE_NAME[DATASOURCE_TYPE.ELASTICSEARCH],
+        formType: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
       },
       {
         icon: DataExcel,

@@ -17,6 +17,7 @@ import dayjs from 'dayjs'
 import RdbConnection from './RdbConnection.vue'
 import ApiConnection from './ApiConnection.vue'
 import WebSocketConnection from './WebSocketConnection.vue'
+import EsConnection from './EsConnection.vue'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import { DATASOURCE_NAME, DATA_TYPE_ITEM } from '../../components/table'
 import { SourceDataInfo } from '../type'
@@ -87,6 +88,8 @@ const connectionComponent = computed(() => {
       return ApiConnection
     case DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE:
       return WebSocketConnection
+    case DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE:
+      return EsConnection
     default:
       return null
   }

@@ -49,3 +49,10 @@ export interface WebSocketData {
   reconnectionIntervals: number
   payloadType: 'STRING' | 'JSON' | 'BINARY'
 }
+
+export interface ElasticsearchData {
+  uri: string
+  pathPrefix: string
+  username: string
+  password: string
+}

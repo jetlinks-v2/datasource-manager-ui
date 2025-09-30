@@ -44,6 +44,14 @@
       :editData="formData.websocketData"
     />
 
+    <FormItemEs
+      v-else-if="formType === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE"
+      ref="formItemEsRef"
+      v-model="formData.elasticsearchData"
+      :editData="formData.elasticsearchData"
+      @test-connection="handleTestESConnection"
+    />
+
     <template #footer>
       <div
         :class="isEditor ? 'editor-footer' : 'add-footer'"
@@ -74,19 +82,20 @@ import BaseFormInfo from './BaseFormInfo.vue'
 import FormItemApi from './FormItemApi.vue'
 import FormItemRdb from './FormItemRdb.vue'
 import FormItemWebSocket from './FormItemWebSocket.vue'
+import FormItemEs from './FormItemEs.vue'
 
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
 import {
   addDataSource,
-  testDataSource,
   disableDataSource,
   enableDataSource,
   updateDataSource
 } from '@datasource-manager-ui/api/data/datasource'
-import { RelationData, WebSocketData, BaseFormData, UniversalData } from '../type'
+import { RelationData, WebSocketData, BaseFormData, UniversalData, ElasticsearchData } from '../type'
 import { DATASOURCE_NAME, getTypesDataDetail, datasourceParseUrl, DATASOURCE_TYPE, DATA_TYPE_ITEM } from '../table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '../../sourceDetail'
+import { useTestConnection } from '../../composables/useTestConnection'
 
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { getDataSourceGroup } from '@datasource-manager-ui/api/data'
@@ -115,8 +124,10 @@ const baseFormRef = ref<any>()
 const FormItemApiRef = ref<any>()
 const FormItemRdbRef = ref<any>()
 const formItemWebSocketRef = ref<any>()
+const formItemEsRef = ref<any>()
 
 const sourceDetailStore = useSourceDetailStore()
+const { testConnection } = useTestConnection()
 
 // 基础表单数据
 const baseFormData = ref<BaseFormData>({
@@ -129,7 +140,13 @@ const baseFormData = ref<BaseFormData>({
 const formData = ref<any>({
   relationData: {} as RelationData,
   universalData: {} as UniversalData,
-  websocketData: {} as WebSocketData
+  websocketData: {} as WebSocketData,
+  elasticsearchData: {
+    uri: '',
+    pathPrefix: '',
+    username: '',
+    password: ''
+  } as ElasticsearchData
 })
 
 const formType = ref<any>(DATA_TYPE_ITEM.API_SEND)
@@ -180,40 +197,30 @@ const getCategoryList = async () => {
   }
 }
 
+// RDB 数据源测试连接
 const handleTestConnection = async (_relationData: any) => {
-  const setLoading = (loading: boolean) => FormItemRdbRef.value.setLoading(loading)
+  const setLoading = (loading: boolean) => FormItemRdbRef.value?.setLoading(loading)
 
-  try {
-    setLoading(true)
+  setLoading(true)
+  const { name } = baseFormData.value
+  const { type } = activeType.value
 
-    const { name } = baseFormData.value
-    const { url, username, password, schema } = _relationData
-    const { type } = activeType.value
+  await testConnection(DATA_TYPE_ITEM.RDB_DATASOURCE, name, _relationData, { type })
 
-    const res = await testDataSource({
-      typeId: DATA_TYPE_ITEM.RDB_DATASOURCE,
-      name,
-      shareConfig: {
-        type,
-        url,
-        username,
-        password,
-        schema,
-        others: {}
-      },
-      shareCluster: true
-    })
+  setLoading(false)
+}
 
-    if (res?.result.ok === true) {
-      onlyMessage('连接数据源成功')
-    } else {
-      onlyMessage(`连接数据源失败`, 'error')
-    }
-  } catch (err) {
-    onlyMessage('连接数据源失败', 'error')
-  } finally {
-    setLoading(false)
-  }
+// Elasticsearch 数据源测试连接
+const handleTestESConnection = async (_esData: any) => {
+  const setLoading = (loading: boolean) => formItemEsRef.value?.setLoading(loading)
+
+  setLoading(true)
+  const { name } = baseFormData.value
+  const { type } = activeType.value
+
+  await testConnection(DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE, name, _esData, { type })
+
+  setLoading(false)
 }
 
 const handleClick = () => {
@@ -233,7 +240,8 @@ const getFormItemRefByType = (type: string) => {
   const refMap: Record<string, any> = {
     [DATA_TYPE_ITEM.API_SEND]: FormItemApiRef,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: FormItemRdbRef,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formItemWebSocketRef
+    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formItemWebSocketRef,
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formItemEsRef
   }
   return refMap[type]?.value || null
 }
@@ -243,7 +251,8 @@ const getDataHandlerByType = (type: string) => {
   const handlerMap: Record<string, Function> = {
     [DATA_TYPE_ITEM.API_SEND]: universalDataAdd,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: relationDataAdd,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: websocketDataAdd
+    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: websocketDataAdd,
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: elasticsearchDataAdd
   }
   return handlerMap[type]
 }
@@ -416,6 +425,25 @@ const websocketDataAdd = async () => {
   await submitDataSource(params)
 }
 
+const elasticsearchDataAdd = async () => {
+  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
+  const { elasticsearchData } = formData.value
+  const { value: activeValue } = activeType.value
+
+  const params = {
+    id: id || `data_source_${randomString(4)}`,
+    name,
+    typeId: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE,
+    group,
+    shareConfig: { ...elasticsearchData },
+    shareCluster: true,
+    description,
+    searchCode: activeValue
+  }
+
+  await submitDataSource(params)
+}
+
 // 解析不同数据源类型的配置
 const parseDataSourceConfig = (searchCode: string, shareConfig: any) => {
   const parsers: Record<string, () => any> = {
@@ -479,6 +507,14 @@ const parseDataSourceConfig = (searchCode: string, shareConfig: any) => {
         maxMessageSize: shareConfig.maxMessageSize,
         reconnectionIntervals: shareConfig.reconnectionIntervals,
         payloadType: shareConfig.payloadType
+      }
+    }),
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: () => ({
+      elasticsearchData: {
+        uri: shareConfig.uri || '',
+        pathPrefix: shareConfig.pathPrefix || '',
+        username: shareConfig.username || '',
+        password: shareConfig.password || ''
       }
     })
   }

@@ -39,6 +39,7 @@ interface FormData {
       message?: any
     }
     rdbDefinition?: any
+    elasticsearchConfig?: any
     provider?: string
   }
 }

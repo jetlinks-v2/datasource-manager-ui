@@ -27,9 +27,7 @@
       />
     </a-form-item>
 
-    <template
-      v-if="sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE"
-    >
+    <template v-if="sourceClassify === DATA_TYPE_ITEM.API_SEND">
       <a-form-item
         label="命令标识"
         :name="['configuration', 'commandId']"
@@ -70,7 +68,9 @@
     </a-form-item>
 
     <CommandParams
-      v-if="sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE"
+      v-if="
+        sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+      "
       ref="commandParamsRef"
       :modelValue="commandModelValue"
     />
@@ -116,10 +116,14 @@ const commandModelValue = ref<any>({
 })
 
 const outputData = computed(() =>
-  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ? props.testData : convertToTableTreeData(props.testData)
+  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+    ? props.testData
+    : convertToTableTreeData(props.testData)
 )
 const inputData = computed(() =>
-  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE
+  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
     ? props.dynamicParams
     : convertToTableTreeData(props.dynamicParams)
 )

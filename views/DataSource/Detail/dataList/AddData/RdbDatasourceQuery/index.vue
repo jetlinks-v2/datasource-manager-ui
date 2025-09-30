@@ -24,13 +24,16 @@
         v-show="activeTab === 'visual'"
       >
         <div class="visual-query-container">
-          <TableSelector
-            :tables="tables"
-            :selectedTable="selectedTable"
-            :loading="initLoading"
-            @select="selectTable"
-            @refresh="refreshTable"
-          />
+          <TableList
+            :showFieldCount="true"
+            :initialSelectedTable="initialTableName"
+            @click="selectTable"
+            @loaded="handleTablesLoaded"
+          >
+            <template #header>
+              <h3 style="margin: 0; font-size: 15px">数据库表</h3>
+            </template>
+          </TableList>
 
           <FieldSelector
             :fields="fieldsData"
@@ -81,10 +84,10 @@
 
 <script setup lang="ts" name="RdbDatasourceQuery">
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
-import { getDataSourceTables, queryByPage } from '@datasource-manager-ui/api/data/datasource'
+import { queryByPage } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnSchema, Key, TableSchema } from './type'
 import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
-import TableSelector from './components/TableSelector.vue'
+import TableList from '@datasource-manager-ui/views/DataSource/Detail/table/components/TableList.vue'
 import FieldSelector from './components/FieldSelector.vue'
 import SqlEditor from './components/SqlEditor.vue'
 import QueryResults from './components/QueryResults.vue'
@@ -109,52 +112,41 @@ const selectedTable = ref('')
 const resultColumns = ref<any[]>([])
 const selectedRowKeys = ref<Key[]>([])
 
-const refreshLoading = ref(false)
 const testQueryLoading = ref(false)
 const initLoading = ref(false)
 
-// 数据库表
-const tables = ref<TableSchema[]>([])
 // 当前表的字段
 const fieldsData = ref<ColumnSchema[]>([])
-
-//刷新表
-const refreshTable = async () => {
-  refreshLoading.value = true
-  await getDataSourceTablesData()
-    .then(() => {
-      onlyMessage('刷新成功', 'success')
-    })
-    .catch(() => {
-      onlyMessage('刷新失败', 'error')
-    })
-    .finally(() => {
-      refreshLoading.value = false
-    })
-}
-
-// 获取数据库表数据
-const getDataSourceTablesData = async () => {
-  initLoading.value = true
-  try {
-    const res = await getDataSourceTables(props.dataSourceId)
-    if (res.status === 200) {
-      tables.value = res.result || []
-      selectedTable.value = tables.value[0]?.name || ''
-      fieldsData.value = tables.value[0]?.columns || []
-      selectAllRows()
-      handleRegistrationTips()
-    }
-  } catch (error) {
-    console.error('获取数据库表数据失败', error)
-  } finally {
-    initLoading.value = false
-  }
-}
+// 保存的表名（用于回显）
+const initialTableName = ref('')
+// 保存的字段名（用于回显）
+const initialColumnNames = ref<string[]>([])
+// 所有表数据
+const allTablesData = ref<TableSchema[]>([])
+// 是否正在初始化回显
+const isInitializing = ref(false)
 
 const selectAllRows = () => {
   selectedRowKeys.value = fieldsData.value.map((field: any) => field.name)
   onSelectChange(selectedRowKeys.value)
+}
+
+// 表数据加载完成
+const handleTablesLoaded = (tables: TableSchema[]) => {
+  allTablesData.value = tables
+
+  // 如果有保存的字段配置，在表选中后回显字段
+  if (initialColumnNames.value.length > 0 && initialTableName.value) {
+    // 等待一下让 selectTable 完成
+    nextTick(() => {
+      selectedRowKeys.value = initialColumnNames.value
+      onSelectChange(selectedRowKeys.value)
+      isInitializing.value = false
+    })
+  } else {
+    // 没有需要回显的配置，重置初始化状态
+    isInitializing.value = false
+  }
 }
 
 const onSelectChange = (keys: Key[]) => {
@@ -197,19 +189,24 @@ const resultQueryParams = ref<any>({
 })
 
 // 选择表
-const selectTable = (table: TableSchema) => {
-  selectedTable.value = table.name
-  fieldsData.value = table.columns
-  selectAllRows()
+const selectTable = (data: { clickItem: TableSchema; sourceData: TableSchema[] }) => {
+  const { clickItem, sourceData } = data
+  selectedTable.value = clickItem.name
+  fieldsData.value = clickItem.columns
+
+  // 如果不是初始化回显，则自动选中所有字段
+  if (!isInitializing.value) {
+    selectAllRows()
+  }
+
   resultQueryParams.value = {
     ...resultQueryParams.value,
     table: selectedTable.value,
     columns: selectedRowKeys.value
   }
-}
 
-const handleRegistrationTips = () => {
-  tips.value = sqlKeywords.getTableSuggestions(tables.value)
+  // 更新 SQL 提示
+  tips.value = sqlKeywords.getTableSuggestions(sourceData)
 }
 
 const validateSql = () => {
@@ -364,27 +361,18 @@ onMounted(() => {
       if (props.data.rdbDefinition) {
         const { table, sql } = props.data.rdbDefinition
         if (table) {
+          // 保存回显配置
+          isInitializing.value = true
+          initialTableName.value = table.name
+          initialColumnNames.value = table.columns.map((column: any) => column.name)
           selectedTable.value = table.name
-          selectedRowKeys.value = table.columns.map((column: any) => column.name)
-
-          const res = await getDataSourceTables(props.dataSourceId)
-          if (res.status === 200) {
-            tables.value = res.result || []
-            const _table = tables.value.find((item: any) => item.name === selectedTable.value) as TableSchema
-            selectedTable.value = _table?.name || ''
-            fieldsData.value = _table?.columns || []
-
-            onSelectChange(selectedRowKeys.value)
-          }
         }
         if (sql) {
-          await getDataSourceTablesData()
+          // SQL 查询模式
           sqlValue.value = sql
           handleActiveTabChange('sql')
           testQuery()
         }
-      } else {
-        await getDataSourceTablesData()
       }
     } catch (error) {
       console.error('初始化数据失败', error)

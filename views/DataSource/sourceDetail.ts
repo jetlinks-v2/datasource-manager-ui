@@ -6,6 +6,7 @@ let cachedData: any = null
 let relationData: any = null
 let genericLibraryData: any = null
 let headerParams: any = null
+let elasticsearchData: any = null
 
 export function useSourceDetailStore() {
   // 缓存基本信息
@@ -33,6 +34,11 @@ export function useSourceDetailStore() {
     headerParams = cloneDeep(detail)
   }
 
+  // 缓存ES数据
+  const saveElasticsearchData = (detail: any) => {
+    elasticsearchData = cloneDeep(detail)
+  }
+
   // 清除缓存
   const clearCache = () => {
     cachedData = null
@@ -40,6 +46,7 @@ export function useSourceDetailStore() {
     relationData = null
     genericLibraryData = null
     headerParams = null
+    elasticsearchData = null
   }
 
   return {
@@ -48,11 +55,13 @@ export function useSourceDetailStore() {
     relationData,
     genericLibraryData,
     headerParams,
+    elasticsearchData,
     saveCache,
     saveType,
     saveRelationData,
     saveGenericData,
     saveHeaderData,
+    saveElasticsearchData,
     clearCache
   }
 }
