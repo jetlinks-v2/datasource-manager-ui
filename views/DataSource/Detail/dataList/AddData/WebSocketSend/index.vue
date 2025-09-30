@@ -66,12 +66,13 @@
 import RequestParams from './RequestParams/index.vue'
 import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
-import { onlyMessage } from '@jetlinks-web/utils'
-import { Rule } from 'ant-design-vue/es/form'
-import { SelectValue } from 'ant-design-vue/lib/select'
-import { convertParamsToObject, transformArray } from '../components/utils'
-import { testWebSocketDataSource } from '@datasource-manager-ui/api/data/datasource'
-import type { WebSocketProtocol } from '../type'
+import {onlyMessage} from '@jetlinks-web/utils'
+import {Rule} from 'ant-design-vue/es/form'
+import {SelectValue} from 'ant-design-vue/lib/select'
+import {convertParamsToObject, transformArray} from '../components/utils'
+import {testWebSocketDataSource} from '@datasource-manager-ui/api/data/datasource'
+import type {WebSocketProtocol} from '../type'
+import {cloneDeep} from 'lodash-es'
 
 const props = defineProps({
   dataSourceId: {
@@ -106,19 +107,20 @@ const validateUri = async (_: Rule, value: string) => {
   if (!value) {
     return Promise.reject('请输入请求路径')
   }
-  if (value) {
-    if (value.startsWith('/')) {
-      return Promise.reject('请求路径不能以/开头')
-    }
-    if (value.endsWith('/')) {
-      return Promise.reject('请求路径不能以/结尾')
-    }
-    try {
-      new URL(getUrl(value))
-    } catch (error) {
-      return Promise.reject('请输入有效的WebSocket路径')
-    }
+
+  if (value.startsWith('/')) {
+    return Promise.reject('请求路径不能以/开头')
   }
+  if (value.endsWith('/')) {
+    return Promise.reject('请求路径不能以/结尾')
+  }
+
+  try {
+    new URL(getUrl(value))
+  } catch (error) {
+    return Promise.reject('请输入有效的WebSocket路径')
+  }
+
   return Promise.resolve()
 }
 
@@ -137,19 +139,10 @@ const handleCheckTestSave = (data: any) => {
 
 const handleProtocolChange = (value: SelectValue) => {
   protocol.value = value as WebSocketProtocol
-  // 更新完整的URL
-  if (
-    expression.value.uri.url &&
-    !expression.value.uri.url.startsWith('ws://') &&
-    !expression.value.uri.url.startsWith('wss://')
-  ) {
-    expression.value.uri.url = expression.value.uri.url
-  }
 }
 
 const handleUriChange = (e: Event) => {
-  const value = (e.target as HTMLInputElement).value
-  expression.value.uri.url = value
+  expression.value.uri.url = (e.target as HTMLInputElement).value
   requestParamsRef.value?.handleUriChange()
 }
 
@@ -228,7 +221,9 @@ const handleSend = async () => {
 
 const initProtocol = () => {
   const url = expression.value?.uri?.url
-  const match = url?.match(/^(wss?:\/\/)(.*)$/)
+  if (!url) return
+
+  const match = url.match(/^(wss?:\/\/)(.*)$/)
 
   if (match) {
     protocol.value = match[1]
@@ -237,10 +232,12 @@ const initProtocol = () => {
 }
 
 watch(
-  () => props.data,
-  () => {
-    expression.value = props.data.expression
-    initProtocol()
+  () => props.data?.expression,
+  (newExpression) => {
+    if (newExpression) {
+      expression.value = cloneDeep(newExpression)
+      initProtocol()
+    }
   },
   { immediate: true, deep: true }
 )
