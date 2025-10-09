@@ -193,7 +193,9 @@ onMounted(() => {
   nextTick(async () => {
     try {
       if (props.data?.elasticsearchConfig) {
-        await selectIndex(props.data.elasticsearchConfig)
+        await selectIndex({
+          index: props.data.elasticsearchConfig.index[0]
+        })
       }
     } catch (error) {
       console.error('初始化数据失败', error)
