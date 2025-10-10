@@ -15,7 +15,7 @@
         :min="0"
         placeholder="如果设置为0，表示永不超时，不填默认为0"
         style="width: 100%"
-        addon-after="毫秒"
+        addon-after="ms"
       />
     </a-form-item>
 
@@ -73,21 +73,20 @@
         :min="0"
         placeholder="不填默认为5000毫秒"
         style="width: 100%"
-        addon-after="毫秒"
+        addon-after="ms"
       />
     </a-form-item>
 
     <a-form-item
       label="数据类型"
       name="payloadType"
-      :rules="[{ required: true, message: '请选择数据类型', trigger: 'change' }]"
     >
       <a-select
         v-model:value="formData.payloadType"
         placeholder="请选择数据类型"
       >
-        <a-select-option value="STRING">STRING（文本）</a-select-option>
         <a-select-option value="JSON">JSON</a-select-option>
+        <a-select-option value="STRING">STRING（文本）</a-select-option>
         <a-select-option value="BINARY">BINARY（二进制）</a-select-option>
       </a-select>
     </a-form-item>

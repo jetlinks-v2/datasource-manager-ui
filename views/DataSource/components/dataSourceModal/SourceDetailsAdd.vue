@@ -140,7 +140,7 @@ const baseFormData = ref<BaseFormData>({
 const formData = ref<any>({
   relationData: {} as RelationData,
   universalData: {} as UniversalData,
-  websocketData: {} as WebSocketData,
+  websocketData: cloneDeep(activeType.value.defaultConfig) as WebSocketData,
   elasticsearchData: {
     uri: '',
     pathPrefix: '',
@@ -409,14 +409,21 @@ const relationDataAdd = async () => {
 const websocketDataAdd = async () => {
   const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
   const { websocketData } = formData.value
-  const { value: activeValue } = activeType.value
+  const { value: activeValue, defaultConfig } = activeType.value
 
   const params = {
     id: id || `data_source_${randomString(4)}`,
     name,
     typeId: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
     group,
-    shareConfig: { ...websocketData },
+    shareConfig: {
+      ...defaultConfig,
+      ...Object.fromEntries(
+        Object.entries(websocketData).filter(([_, value]) => {
+          return value !== null && value !== undefined && value !== ''
+        })
+      )
+    },
     shareCluster: true,
     description,
     searchCode: activeValue

@@ -103,7 +103,8 @@ const getUrl = (value: string) => {
   return value.startsWith(protocol.value) ? value : `${protocol.value}${value}`
 }
 
-const validateUri = async (_: Rule, value: string) => {
+const validateUri = async (_: Rule) => {
+  const value = expression.value?.uri?.url
   if (!value) {
     return Promise.reject('请输入请求路径')
   }

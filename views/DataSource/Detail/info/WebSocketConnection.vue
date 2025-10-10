@@ -33,22 +33,17 @@ const webSocketData = reactive<WebSocketConfig>({
   reconnectionAttempts: undefined,
   maxMessageSize: 2,
   reconnectionIntervals: 5000,
-  payloadType: ''
+  payloadType: 'JSON'
 })
 
 const PAYLOAD_TYPE_MAP = {
-  STRING: 'STRING（文本）',
   JSON: 'JSON',
+  STRING: 'STRING（文本）',
   BINARY: 'BINARY（二进制）'
 } as const
 
-const DEFAULT_VALUES = {
-  maxMessageSize: 2,
-  reconnectionIntervals: 5000
-} as const
-
 const formatTimeout = (timeout?: number): string => {
-  return timeout ? `${timeout}毫秒` : '永不超时'
+  return timeout ? `${timeout}ms` : '永不超时'
 }
 
 const formatReconnection = (attempts?: number): string => {
@@ -59,15 +54,15 @@ const formatReconnection = (attempts?: number): string => {
 }
 
 const formatMessageSize = (size?: number): string => {
-  return `${size || DEFAULT_VALUES.maxMessageSize}MB`
+  return `${size}MB`
 }
 
 const formatInterval = (interval?: number): string => {
-  return `${interval || DEFAULT_VALUES.reconnectionIntervals}毫秒`
+  return `${interval}ms`
 }
 
 const formatPayloadType = (type?: string): string => {
-  return type ? PAYLOAD_TYPE_MAP[type as keyof typeof PAYLOAD_TYPE_MAP] || '--' : '--'
+  return PAYLOAD_TYPE_MAP[type as keyof typeof PAYLOAD_TYPE_MAP]
 }
 
 const descriptionFields = computed(() => [

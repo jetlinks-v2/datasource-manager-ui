@@ -1,7 +1,7 @@
 <template>
   <div class="index-content">
     <a-tabs
-      v-if="selectedItem"
+      v-if="selectedItem && Object.keys(selectedItem).length > 0"
       v-model:activeKey="activeKey"
       :tabBarStyle="{ margin: '0 0 0 25px' }"
       type="card"
@@ -19,7 +19,10 @@
           >
             <template #health>
               <a-space>
-                <a-badge :color="getHealthColor(selectedItem?.health)" />
+                <a-badge
+                  v-if="selectedItem?.health"
+                  :color="getHealthColor(selectedItem?.health)"
+                />
                 <span>{{ selectedItem?.health || '--' }}</span>
               </a-space>
             </template>
@@ -46,7 +49,7 @@
           v-else
           class="empty-table"
         >
-          <j-empty description="暂无字段数据" />
+          <j-empty description="暂无数据" />
         </div>
       </a-tab-pane>
 
@@ -55,7 +58,7 @@
         key="data"
         tab="数据列表"
       >
-        <template v-if="showDataTable">
+        <template v-if="showDataTable && dataColumns.length > 0">
           <j-pro-table
             :columns="dataColumns"
             :params="dataQueryParams"
@@ -81,7 +84,7 @@
       v-else
       class="empty-content"
     >
-      <j-empty description="请选择索引查看详情" />
+      <j-empty description="暂无数据" />
     </div>
   </div>
 </template>
