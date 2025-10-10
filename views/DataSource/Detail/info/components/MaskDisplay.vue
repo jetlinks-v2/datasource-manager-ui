@@ -1,8 +1,8 @@
 <template>
   <a-space v-if="showToggle">
     <j-ellipsis>
-      <span :class="{ 'mask-display__masked': !visible && hasValue }">
-        {{ maskedText }}
+      <span :class="{ 'mask-display__masked': !visible }">
+        {{ displayText }}
       </span>
     </j-ellipsis>
     <a-button
@@ -15,37 +15,31 @@
       </template>
     </a-button>
   </a-space>
-  <j-ellipsis v-else>{{ plainText }}</j-ellipsis>
+  <j-ellipsis v-else>{{ displayText }}</j-ellipsis>
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(
-  defineProps<{
-    value?: string
-    placeholder?: string
-    maskText?: string
-    enableToggle?: boolean
-  }>(),
-  {
-    placeholder: '--',
-    maskText: '********',
-    enableToggle: true
-  }
-)
+interface Props {
+  value?: string //要显示的值
+  placeholder?: string //空值时的占位符
+  maskText?: string // 隐藏时显示的文本
+  enableToggle?: boolean // 是否启用切换功能
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  placeholder: '--',
+  maskText: '********',
+  enableToggle: true
+})
 
 const visible = ref(false)
 
-const hasValue = computed(() => (props.value ?? '') !== '')
+const hasValue = computed(() => !!props.value)
 
-const maskedText = computed(() => {
-  if (!hasValue.value) {
-    return props.placeholder
-  }
-  return visible.value ? props.value ?? '' : props.maskText
-})
-
-const plainText = computed(() => {
-  return hasValue.value ? props.value ?? '' : props.placeholder
+const displayText = computed(() => {
+  if (!hasValue.value) return props.placeholder
+  if (!props.enableToggle || visible.value) return props.value
+  return props.maskText
 })
 
 const showToggle = computed(() => props.enableToggle && hasValue.value)
@@ -58,6 +52,6 @@ const toggleVisible = () => {
 <style lang="less" scoped>
 .mask-display__masked {
   -webkit-text-security: disc;
-  font-family: 'PingFang SC';
+  font-family: 'PingFang SC',serif;
 }
 </style>
