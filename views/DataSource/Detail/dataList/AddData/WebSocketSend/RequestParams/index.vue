@@ -18,8 +18,8 @@
               size="small"
               disabled
             >
-              <a-select-option value="STRING">STRING</a-select-option>
               <a-select-option value="JSON">JSON</a-select-option>
+              <a-select-option value="STRING">STRING</a-select-option>
               <a-select-option value="BINARY">BINARY</a-select-option>
             </a-select>
           </div>

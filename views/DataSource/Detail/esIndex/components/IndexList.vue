@@ -12,45 +12,50 @@
         </slot>
       </template>
     </ListHeader>
+
     <div
-      class="index-list"
-      ref="scrollContainerRef"
-      @scroll="handleScroll"
+      v-if="loading"
+      class="loading-more"
     >
-      <a-list
+      <a-spin size="small" />
+      <span style="margin-left: 8px">加载中...</span>
+    </div>
+
+    <template v-else>
+      <div
         v-if="allData.length > 0"
-        size="small"
-        :data-source="allData"
-        :split="false"
+        class="index-list"
+        ref="scrollContainerRef"
+        @scroll="handleScroll"
       >
-        <template #renderItem="{ item }">
-          <a-list-item
-            class="index-item"
-            @click="handleClick(item)"
-            :class="selectedIndex === item.index ? 'index-item-active' : ''"
-          >
-            <a-space>
-              <AIcon type="DatabaseOutlined" />
-              <j-ellipsis>{{ item.index }}</j-ellipsis>
-            </a-space>
-          </a-list-item>
-        </template>
-      </a-list>
+        <a-list
+          size="small"
+          :data-source="allData"
+          :split="false"
+        >
+          <template #renderItem="{ item }">
+            <a-list-item
+              class="index-item"
+              @click="handleClick(item)"
+              :class="selectedIndex === item.index ? 'index-item-active' : ''"
+            >
+              <a-space>
+                <AIcon type="DatabaseOutlined" />
+                <j-ellipsis>{{ item.index }}</j-ellipsis>
+              </a-space>
+            </a-list-item>
+          </template>
+        </a-list>
+      </div>
+
       <div
         v-else
         class="empty-index"
         style="height: 100%"
       >
-        <j-empty description="暂无索引" />
+        <j-empty description="暂无数据" />
       </div>
-      <div
-        v-if="loading"
-        class="loading-more"
-      >
-        <a-spin size="small" />
-        <span style="margin-left: 8px">加载中...</span>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -158,9 +163,9 @@ onMounted(() => {
 
 <style scoped lang="less">
 .index-sidebar {
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -210,7 +215,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  flex: 1;
 }
 
 .loading-more {
@@ -219,5 +224,6 @@ onMounted(() => {
   align-items: center;
   padding: 12px;
   color: #999;
+  flex: 1;
 }
 </style>

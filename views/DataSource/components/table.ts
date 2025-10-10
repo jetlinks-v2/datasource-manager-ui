@@ -11,7 +11,7 @@ import DataOracle from '@datasource-manager-ui/assets/svg/data-orcale.svg'
 import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
-import {isArray} from 'lodash-es'
+import { isArray } from 'lodash-es'
 
 export enum DATA_TYPE_ITEM {
   RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)
@@ -68,13 +68,14 @@ export const typesData = [
         icon: DataWebsocket,
         value: DATASOURCE_TYPE.WEBSOCKET,
         name: DATASOURCE_NAME[DATASOURCE_TYPE.WEBSOCKET],
-        formType: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE
-      },
-      {
-        icon: DataEsApi,
-        value: DATASOURCE_TYPE.ELASTICSEARCH,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.ELASTICSEARCH],
-        formType: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+        formType: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
+        defaultConfig: {
+          handshakeTimeout: 0,
+          reconnectionAttempts: 0,
+          maxMessageSize: 2,
+          reconnectionIntervals: 5000,
+          payloadType: 'JSON'
+        }
       },
       {
         icon: DataExcel,
@@ -167,6 +168,12 @@ export const typesData = [
         jdbcHeaders: '',
         name: DATASOURCE_NAME[DATASOURCE_TYPE.REDIS],
         disable: true
+      },
+      {
+        icon: DataEsApi,
+        value: DATASOURCE_TYPE.ELASTICSEARCH,
+        name: DATASOURCE_NAME[DATASOURCE_TYPE.ELASTICSEARCH],
+        formType: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
       }
     ]
   }

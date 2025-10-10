@@ -11,7 +11,7 @@
     >
       <a-input
         v-model:value="formData.uri"
-        placeholder="请输入URI地址，例：http://192.168.33.79:29200"
+        placeholder="请输入URI地址，例：http://localhost:9100"
       />
     </a-form-item>
 
