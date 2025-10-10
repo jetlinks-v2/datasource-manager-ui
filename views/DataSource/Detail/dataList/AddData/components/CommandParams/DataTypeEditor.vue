@@ -90,6 +90,7 @@
 import useClipboard from 'vue-clipboard3'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from './setting'
+import {isArray} from 'lodash-es'
 
 const props = defineProps({
   dataType: {
@@ -140,7 +141,7 @@ const validateJsonData = (jsonString: string) => {
         return null
       }
 
-      if (!Array.isArray(parsedData.properties)) {
+      if (!isArray(parsedData.properties)) {
         onlyMessage('JSON数据object中properties字段必须为数组', 'error')
         return null
       }
@@ -152,7 +153,7 @@ const validateJsonData = (jsonString: string) => {
         return null
       }
 
-      if (!Array.isArray(parsedData.elements)) {
+      if (!isArray(parsedData.elements)) {
         onlyMessage('JSON数据enum中elements字段必须为数组', 'error')
         return null
       }
@@ -180,7 +181,7 @@ const validateJsonData = (jsonString: string) => {
           return null
         }
 
-        if (!Array.isArray(parsedData.elementType.elements)) {
+        if (!isArray(parsedData.elementType.elements)) {
           onlyMessage('JSON数据enum中elements字段必须为数组', 'error')
           return null
         }
@@ -192,7 +193,7 @@ const validateJsonData = (jsonString: string) => {
           return null
         }
 
-        if (!Array.isArray(parsedData.elementType.properties)) {
+        if (!isArray(parsedData.elementType.properties)) {
           onlyMessage('JSON数据object中properties字段必须为数组', 'error')
           return null
         }

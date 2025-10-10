@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import { parse, parseTree, format, applyEdits, ParseError } from 'jsonc-parser'
+import {isArray} from 'lodash-es'
 
 interface ErrorMessagesMap {
   [key: number]: string
@@ -166,7 +167,7 @@ const checkDuplicateKeysInTree = (node: any): { error: number; offset: number; l
 
   let errors: { error: number; offset: number; length: number }[] = []
 
-  if (node.type === 'object' && Array.isArray(node.children)) {
+  if (node.type === 'object' && isArray(node.children)) {
     const seen = new Map<string, boolean>()
     for (const prop of node.children) {
       if (prop.type === 'property' && prop.children?.[0]) {
@@ -186,7 +187,7 @@ const checkDuplicateKeysInTree = (node: any): { error: number; offset: number; l
   }
 
   // 递归检查所有子节点
-  if (Array.isArray(node.children)) {
+  if (isArray(node.children)) {
     for (const child of node.children) {
       errors = errors.concat(checkDuplicateKeysInTree(child))
     }

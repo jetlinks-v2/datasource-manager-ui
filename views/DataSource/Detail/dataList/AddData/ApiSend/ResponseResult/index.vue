@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import JsonEditor from '../../components/JsonEditor.vue'
 import {onlyMessage} from '@jetlinks-web/utils'
+import {isArray} from 'lodash-es'
 
 const props = defineProps({
   data: {
@@ -95,7 +96,7 @@ const headersData = computed(() => convertHeadersToKeyValueArray(props.data.head
 const requestData = computed(() => convertHeadersToKeyValueArray(props.data.requestHeaders))
 
 const convertHeadersToKeyValueArray = (data: any) => {
-  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+  if (!data || typeof data !== 'object' || isArray(data)) {
     return []
   }
 
@@ -104,7 +105,7 @@ const convertHeadersToKeyValueArray = (data: any) => {
   return entries.map(([key, valueArray]) => {
     let processedValue
 
-    if (Array.isArray(valueArray)) {
+    if (isArray(valueArray)) {
       processedValue = valueArray.join(', ')
     } else {
       processedValue = String(valueArray)

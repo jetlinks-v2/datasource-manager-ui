@@ -11,6 +11,7 @@ import DataOracle from '@datasource-manager-ui/assets/svg/data-orcale.svg'
 import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
+import {isArray} from 'lodash-es'
 
 export enum DATA_TYPE_ITEM {
   RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)
@@ -180,7 +181,7 @@ export const getTypesDataDetail = (value: string) => {
  * 解析URL协议部分
  */
 const parseProtocol = (url: string, active: any): { protocol: string; restUrl: string } => {
-  const headersEnum: string[] = Array.isArray(active?.headersEnum) ? active.headersEnum : []
+  const headersEnum: string[] = isArray(active?.headersEnum) ? active.headersEnum : []
   // 优先精确匹配
   let header = headersEnum.find((h) => url.startsWith(h))
   if (header) {

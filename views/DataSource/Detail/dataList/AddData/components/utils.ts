@@ -1,3 +1,5 @@
+import {isArray} from 'lodash-es'
+
 interface ParamItem {
   key: string
   value: string
@@ -41,7 +43,7 @@ export const extractUniqueParamsFromString = (text: string): Set<string> => {
 export const findQueryParams = (queryParams: any[]): Array<object> => {
   const allParamNames = new Set<string>() // 用于收集所有唯一的参数名
 
-  if (!Array.isArray(queryParams)) {
+  if (!isArray(queryParams)) {
     console.warn('queryParams 不是一个有效的数组')
     return []
   }

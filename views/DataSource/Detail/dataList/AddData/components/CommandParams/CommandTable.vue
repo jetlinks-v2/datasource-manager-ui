@@ -360,7 +360,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
     }
   }
 
-  if (Array.isArray(record.children)) {
+  if (isArray(record.children)) {
     record.children.forEach((child: any) => {
       if (validateRecord(child, currentPath)) {
         hasErr = true
@@ -486,7 +486,7 @@ const handleDataType = (item: any) => {
 watch(
   () => props.dataSource,
   (newData) => {
-    if (!Array.isArray(newData)) return
+    if (!isArray(newData)) return
     tableData.value = cloneDeep(newData).map((item: any) => {
       const rec: any = {
         ...item,

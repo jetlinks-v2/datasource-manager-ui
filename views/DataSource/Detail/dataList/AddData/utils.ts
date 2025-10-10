@@ -16,7 +16,7 @@ export const getValueType = (value: any) => {
     return 'string'
   } else if (typeof value === 'boolean') {
     return 'boolean'
-  } else if (Array.isArray(value)) {
+  } else if (isArray(value)) {
     return 'array'
   } else if (typeof value === 'object' && value !== null) {
     return 'object'
