@@ -6,12 +6,12 @@
       </span>
     </j-ellipsis>
     <a-button
-      type="text"
-      size="small"
-      @click="toggleVisible"
+        type="text"
+        size="small"
+        @click="toggleVisible"
     >
       <template #icon>
-        <AIcon :type="visible ? 'EyeOutlined' : 'EyeInvisibleOutlined'" />
+        <AIcon :type="visible ? 'EyeOutlined' : 'EyeInvisibleOutlined'"/>
       </template>
     </a-button>
   </a-space>
@@ -52,6 +52,6 @@ const toggleVisible = () => {
 <style lang="less" scoped>
 .mask-display__masked {
   -webkit-text-security: disc;
-  font-family: 'PingFang SC',serif;
+  font-family: serif;
 }
 </style>
