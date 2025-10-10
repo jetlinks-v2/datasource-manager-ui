@@ -1,31 +1,35 @@
 <template>
   <div class="command-config-container">
-    <!-- 命令入参配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令入参配置</h3>
+      <TitleComponent
+          data="命令入参配置"
+          :style="{ fontSize: '16px' }"
+      />
       <CommandTable
-        ref="CommandTableInputRef"
-        class="config-table"
-        :scroll="{ y: 372 }"
-        :columns="inputColumns"
-        :dataSource="inputDataSource"
-        :preview="preview"
-        @update="handleInputSelectedChange"
+          ref="CommandTableInputRef"
+          class="config-table"
+          :scroll="{ y: 372 }"
+          :columns="inputColumns"
+          :dataSource="inputDataSource"
+          :preview="preview"
+          @update="handleInputSelectedChange"
       />
     </div>
 
-    <!-- 命令返回响应配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令返回响应配置</h3>
+      <TitleComponent
+          data="命令返回响应配置"
+          :style="{ fontSize: '16px' }"
+      />
       <CommandTable
-        ref="CommandTableOutputRef"
-        class="config-table"
-        :scroll="{ y: 372 }"
-        :columns="outputColumns"
-        :dataSource="outputDataSource"
-        :preview="preview"
-        :multiple="true && !preview"
-        @update="handleOutputExpandChange"
+          ref="CommandTableOutputRef"
+          class="config-table"
+          :scroll="{ y: 372 }"
+          :columns="outputColumns"
+          :dataSource="outputDataSource"
+          :preview="preview"
+          :multiple="!preview"
+          @update="handleOutputExpandChange"
       />
     </div>
   </div>
@@ -33,8 +37,8 @@
 
 <script setup lang="ts" name="CommandParams">
 import CommandTable from './CommandTable.vue'
-import { onlyMessage } from '@jetlinks-web/utils'
-import { cloneDeep, isArray } from 'lodash-es'
+import {onlyMessage} from '@jetlinks-web/utils'
+import {cloneDeep, isArray} from 'lodash-es'
 
 const props = defineProps({
   preview: {
@@ -59,7 +63,8 @@ const columns = [
   {
     title: '类型',
     dataIndex: 'dataType',
-    key: 'dataType'
+    key: 'dataType',
+    className: props.preview ? 'small-padding-cell' : ''
   },
   {
     title: '参数名字',
@@ -88,7 +93,7 @@ const handleOutputExpandChange = (data: any[]) => {
 }
 
 const validateCommandParams = async () => {
-  let hasError = false
+  let hasError
   hasError = CommandTableInputRef.value.validateAllData()
   if (hasError) {
     onlyMessage('请检查命令入参配置', 'error')
@@ -108,19 +113,19 @@ const validateCommandParams = async () => {
 }
 
 watch(
-  () => props.modelValue,
-  (newVal) => {
-    if (newVal) {
-      inputDataSource.value = isArray(newVal.input) ? newVal.input : []
-      outputDataSource.value = isArray(newVal.output) ? newVal.output : []
+    () => props.modelValue,
+    (newVal) => {
+      if (newVal) {
+        inputDataSource.value = isArray(newVal.input) ? newVal.input : []
+        outputDataSource.value = isArray(newVal.output) ? newVal.output : []
 
-      // 只在初始化时全选
-      nextTick(() => {
-        CommandTableOutputRef.value?.selectAll()
-      })
-    }
-  },
-  { deep: true, immediate: true }
+        // 只在初始化时全选
+        nextTick(() => {
+          CommandTableOutputRef.value?.selectAll()
+        })
+      }
+    },
+    {deep: true, immediate: true}
 )
 
 defineExpose({
@@ -145,15 +150,8 @@ defineExpose({
   padding: 16px;
 }
 
-.section-title {
-  margin: 0 0 16px 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: 500;
-  padding-bottom: 8px;
-}
-
 .config-table {
   border-radius: 4px;
+  margin-top: 16px;
 }
 </style>

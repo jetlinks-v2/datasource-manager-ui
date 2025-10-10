@@ -5,21 +5,22 @@
       color="#ff4d4f"
       placement="topRight"
     >
-      <a-input
-        v-model:value="localValue"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        :class="{ 'form-error': error }"
-        @change="handleChangeEvent"
-        @blur="handleBlurEvent"
-      />
+      <a-badge
+        :dot="error ? true : false"
+        status="error"
+        class="error-badge"
+      >
+        <a-input
+          v-model:value="localValue"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          :class="{ 'form-error': error }"
+          @change="handleChangeEvent"
+          @blur="handleBlurEvent"
+          style="width: 100%"
+        />
+      </a-badge>
     </a-tooltip>
-    <a-badge
-      v-if="error"
-      dot
-      status="error"
-      class="error-badge"
-    />
   </div>
 </template>
 
@@ -48,7 +49,7 @@ const handleBlurEvent = () => {
 watch(
   () => props.value,
   (newValue) => {
-    localValue.value = newValue
+    localValue.value = newValue || ''
   },
   { immediate: true }
 )
@@ -58,7 +59,6 @@ watch(
 .form-item {
   width: 100%;
   min-width: 100px;
-  position: relative;
 }
 
 .form-error {
@@ -72,8 +72,6 @@ watch(
 }
 
 .error-badge {
-  position: absolute;
-  right: -10px;
-  top: -10px;
+  width: 100%;
 }
 </style>

@@ -1,53 +1,60 @@
 <template>
   <div class="response-container">
-    <div class="title">响应结果</div>
+    <TitleComponent
+        data="响应结果"
+        :style="{ fontSize: '16px' }"
+    />
 
     <a-tabs
-      v-model="activeTab"
-      type="card"
+        v-model="activeTab"
+        type="card"
     >
       <a-tab-pane
-        key="body"
-        tab="响应体"
+          key="body"
+          tab="响应体"
       >
-        <monaco-editor
-          ref="editorRef"
-          v-model:modelValue="jsonData"
-          language="json"
-          style="height: 100%; min-height: 350px"
-          @blur="handleBlur"
-          theme="vs"
+        <JsonEditor
+            ref="editorRef"
+            v-model="jsonData"
+            height="350px"
+            :showFormatBtn="false"
+            formatOnBlur
+            showMinimap
+            @update="handleBlur"
         />
       </a-tab-pane>
       <!-- 请求头 -->
       <a-tab-pane
-        key="request"
-        tab="请求头"
+          key="request"
+          tab="请求头"
       >
         <a-table
-          :columns="columns"
-          :data-source="requestData"
-          size="small"
-          bordered
-          :scroll="{ y: 250 }"
+            :columns="columns"
+            :data-source="requestData"
+            size="small"
+            bordered
+            :scroll="{ y: 250 }"
         />
       </a-tab-pane>
 
       <a-tab-pane
-        key="headers"
-        tab="响应头"
+          key="headers"
+          tab="响应头"
       >
         <a-table
-          :columns="columns"
-          :data-source="headersData"
-          size="small"
-          bordered
-          :scroll="{ y: 250 }"
+            :columns="columns"
+            :data-source="headersData"
+            size="small"
+            bordered
+            :scroll="{ y: 250 }"
         />
       </a-tab-pane>
 
       <template #rightExtra>
-        <div class="meta">
+        <div
+            class="meta"
+            v-if="data.status"
+        >
           <a-tag :color="data.status === 200 ? 'success' : 'error'">{{ data.status }}</a-tag>
         </div>
       </template>
@@ -56,7 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { onlyMessage } from '@jetlinks-web/utils'
+import JsonEditor from '../../components/JsonEditor.vue'
+import {onlyMessage} from '@jetlinks-web/utils'
 
 const props = defineProps({
   data: {
@@ -93,8 +101,8 @@ const convertHeadersToKeyValueArray = (data: any) => {
 
   const entries = Object.entries(data)
 
-  const keyValueArray = entries.map(([key, valueArray]) => {
-    let processedValue = ''
+  return entries.map(([key, valueArray]) => {
+    let processedValue
 
     if (Array.isArray(valueArray)) {
       processedValue = valueArray.join(', ')
@@ -107,8 +115,6 @@ const convertHeadersToKeyValueArray = (data: any) => {
       value: processedValue
     }
   })
-
-  return keyValueArray
 }
 
 const handleBlur = () => {
@@ -122,15 +128,15 @@ const handleBlur = () => {
 }
 
 watch(
-  () => props.data.body,
-  (newVal) => {
-    try {
-      jsonData.value = JSON.stringify(newVal, null, 2)
-    } catch (error) {
-      jsonData.value = '{}'
-      onlyMessage('响应体解析失败', 'error')
+    () => props.data.body,
+    (newVal) => {
+      try {
+        jsonData.value = JSON.stringify(newVal, null, 2)
+      } catch (error) {
+        jsonData.value = '{}'
+        onlyMessage('响应体解析失败', 'error')
+      }
     }
-  }
 )
 
 defineExpose({
@@ -144,23 +150,10 @@ defineExpose({
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-
-  .title {
-    font-size: 18px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
-    margin-bottom: 12px;
-  }
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  .time {
-    color: rgba(0, 0, 0, 0.45);
-    font-size: 12px;
-  }
 }
 </style>

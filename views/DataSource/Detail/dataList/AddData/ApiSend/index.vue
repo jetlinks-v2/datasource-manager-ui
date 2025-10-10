@@ -66,14 +66,14 @@
 
 <script setup lang="ts" name="ApiSend">
 import RequestParams from './RequestParams/index.vue'
-import CheckTest from './CheckTest/index.vue'
+import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
-import { onlyMessage } from '@jetlinks-web/utils'
-import { Rule } from 'ant-design-vue/es/form'
-import { SelectValue } from 'ant-design-vue/lib/select'
-import { convertParamsToObject, transformArray } from './utils'
-import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
-import type { ApiMethod } from '../type'
+import {onlyMessage} from '@jetlinks-web/utils'
+import {Rule} from 'ant-design-vue/es/form'
+import {SelectValue} from 'ant-design-vue/lib/select'
+import {convertParamsToObject, transformArray} from '../components/utils'
+import {testAPIDataSource} from '@datasource-manager-ui/api/data/datasource'
+import type {ApiMethod} from '../type'
 
 const props = defineProps({
   dataSourceId: {
@@ -99,7 +99,7 @@ const responseResultRef = ref()
 const checkTestDataSource = ref<any>({ body: {} })
 const dynamicParams = ref<any>([])
 
-const validateUri = async (rule: Rule, value: string) => {
+const validateUri = async (_: Rule, value: string) => {
   if (!value) {
     return Promise.reject('请输入请求路径')
   }
@@ -132,8 +132,7 @@ const handleMethodChange = (value: SelectValue) => {
 }
 
 const handleUriChange = (e: Event) => {
-  const value = (e.target as HTMLInputElement).value
-  expression.value.uri.url = value
+  expression.value.uri.url = (e.target as HTMLInputElement).value
   requestParamsRef.value?.handleUriChange()
 }
 
@@ -155,7 +154,7 @@ const validateAll = async () => {
       }
 
       const inputs = convertParamsToObject(dynamicParams.value)
-      emit('update:expression', expression.value, checkTestDataSource.value, inputs)
+      emit('update:expression', expression.value, checkTestDataSource.value.body, inputs)
       return true
     })
     .catch(() => {
@@ -185,19 +184,19 @@ const handleSend = async () => {
         queryParams: transformArray(queryParams),
         headers: transformArray(headers)
       }
-      const inputs = convertParamsToObject(dynamicParams.value)
+      const dynamicParamsData = convertParamsToObject(dynamicParams.value)
 
       const sendParams = {
-        inputs,
+        inputs: dynamicParamsData,
         expression: _expression
       }
 
       const res = await testAPIDataSource(props.dataSourceId, sendParams)
 
       if (res.status === 200) {
-        checkTestDataSource.value = res.result
+        checkTestDataSource.value = res.result || {}
         onlyMessage('请求发送成功')
-        emit('update:expression', expression.value, checkTestDataSource.value, inputs)
+        emit('update:expression', expression.value, checkTestDataSource.value.body, dynamicParamsData)
       }
     })
   } finally {
@@ -212,12 +211,6 @@ watch(
   },
   { immediate: true, deep: true }
 )
-
-onMounted(() => {
-  nextTick(() => {
-    requestParamsRef.value?.handleUriChange()
-  })
-})
 
 defineExpose({
   validateAll

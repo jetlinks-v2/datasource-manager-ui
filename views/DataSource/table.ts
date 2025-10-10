@@ -2,7 +2,7 @@ import { typesData } from './components/table'
 
 export const iconMaps = {
   api: 'icon-APIlianjiemingchengA',
-  ws_api: 'icon-Websocket',
+  websocket: 'icon-Websocket',
   mysql: 'icon-MySQLlianjiemingcheng',
   mariadb: 'icon-MariaDB',
   postgresql: 'icon-a-PostgreSQL',
@@ -13,7 +13,7 @@ export const iconMaps = {
   json: 'icon-Json',
   dm: 'icon-damengshujuku',
   redis: 'icon-REdis',
-  es_api: 'icon-ES-API'
+  elasticsearch: 'icon-ES-API'
 } as Record<string, string>
 
 const getDataTypeOptions = () => {

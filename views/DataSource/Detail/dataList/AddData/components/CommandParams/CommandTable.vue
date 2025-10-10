@@ -93,9 +93,9 @@
 import { cloneDeep, isArray } from 'lodash-es'
 import { ParamsSpec } from '../../type'
 import DataTypeCell from './DataTypeCell.vue'
-import FormItem from '../../../../../components/FormItem.vue'
+import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
-import { useDataTypeManagement } from '../setting'
+import { useDataTypeManagement } from './setting'
 
 const props = defineProps({
   mode: {
@@ -152,6 +152,11 @@ const rowSelection = computed(() => ({
   selectedRowKeys: selectedKeys.value,
   onChange: (keys: (string | number)[], rows: any[]) => {
     selectedKeys.value = keys
+    formItemErrors.value = {}
+    firstErrorInfo.value = null
+    selectedOutputTreeData.value.forEach((record) => {
+      validateRecord(record, [])
+    })
   }
 }))
 
@@ -215,7 +220,7 @@ const validateField = (field: string, value: string): string => {
   return ''
 }
 
-const handleFieldChange = (value: string, field: 'id' | 'name', record: any) => {
+const handleFieldChange = (value: string, field: any, record: any) => {
   record[field] = value
   const err = validateField(field, value)
   const hasErr = updateFormError(record.key, field, err)
@@ -224,7 +229,7 @@ const handleFieldChange = (value: string, field: 'id' | 'name', record: any) => 
   }
 }
 
-const handleInputChange = (record: any, dataIndex: string) => {
+const handleInputChange = (record: any, dataIndex: any) => {
   updateFormError(record.key, dataIndex)
   emit('update', tableData.value)
 }
@@ -273,9 +278,9 @@ const updatePopoverVisible = (recordKey: string, visible: boolean) => {
 }
 
 const validateRecord = (record: any, path: string[] = []): boolean => {
-  if (!record.id && !record.name && !record.description) {
-    return false
-  }
+  // if (!record.id && !record.name && !record.description) {
+  //   return false
+  // }
 
   let hasErr = false
   const currentPath = [...path, record.key]
@@ -519,22 +524,6 @@ defineExpose({ tableData, validateAllData, selectedOutputTreeData, selectAll })
   text-align: center;
 }
 
-.form-error {
-  border-color: var(--ant-error-color) !important;
-
-  :deep(.ant-select-selector) {
-    border-color: var(--ant-error-color) !important;
-
-    &:hover {
-      border-color: var(--ant-error-color) !important;
-    }
-  }
-
-  &:hover {
-    border-color: var(--ant-error-color) !important;
-  }
-}
-
 .add-button-wrapper {
   margin-top: 10px;
 }
@@ -553,5 +542,9 @@ defineExpose({ tableData, validateAllData, selectedOutputTreeData, selectAll })
   100% {
     background-color: transparent;
   }
+}
+
+:deep(.small-padding-cell) {
+  padding: 6px 8px !important;
 }
 </style>
