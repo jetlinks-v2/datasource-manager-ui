@@ -1,6 +1,7 @@
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+export type WebSocketProtocol = 'ws://' | 'wss://'
+export type PayloadType = 'STRING' | 'JSON' | 'BINARY'
 export type ParamType = 'fixed' | 'dynamic'
-export type DatasourceType = 'api' | 'rdb'
 
 interface ParamsSpec {
   id: string
@@ -15,4 +16,30 @@ interface ParamsSpec {
   enable?: boolean
   sort?: number
   isSpecialRow?: boolean
+}
+
+interface FormData {
+  id?: string
+  dataSourceId: string
+  support: string
+  name: string
+  dataSourceTypeId: string
+  description: string
+  configuration: {
+    commandId: string
+    commandName: string
+    output: any
+    input: any[]
+    expression: {
+      uri: { url: string }
+      method?: string
+      body?: { contentType: string; content: string }
+      queryParams: any[]
+      headers: any[]
+      message?: any
+    }
+    rdbDefinition?: any
+    elasticsearchConfig?: any
+    provider?: string
+  }
 }

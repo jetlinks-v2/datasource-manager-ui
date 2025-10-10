@@ -75,7 +75,8 @@
             ref="jsonEditorRef"
             v-if="bodyFormat === 'application/json'"
             v-model="requestBody"
-            height="100%"
+            height="300px"
+            formatOnBlur
             @update="handleJsonUpdate"
           />
         </div>
@@ -97,11 +98,11 @@
 <script setup lang="ts" name="RequestParams">
 import { cloneDeep } from 'lodash-es'
 import { onlyMessage } from '@jetlinks-web/utils'
-import ParamConfigTable from '../Components/ParamConfigTable.vue'
-import JsonEditor from '../Components/JsonEditor.vue'
-import { paramColumns, type ParamItem } from '../Components/setting'
+import ParamConfigTable from '../../components/ParamConfigTable.vue'
+import JsonEditor from '../../components/JsonEditor.vue'
+import { paramColumns, type ParamItem } from '../../components/setting'
 import { useAllParams } from '../../utils'
-import { convertParamsToObject, findBodyJsonParams, findQueryParams, findUriParams } from '../utils'
+import { convertParamsToObject, findBodyJsonParams, findQueryParams, findUriParams } from '../../components/utils'
 type BodyFormatType = 'none' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'application/json'
 
 const props = defineProps({
@@ -392,7 +393,7 @@ defineExpose({
 .request-body-container {
   display: flex;
   flex-direction: column;
-  height: 280px;
+  min-height: 280px;
   gap: 16px;
 
   .body-format-selector {

@@ -1,8 +1,9 @@
 <template>
   <div class="query-result">
-    <div class="title">
-      <h3>查询结果预览</h3>
-    </div>
+    <TitleComponent
+      data="查询结果预览"
+      :style="{ fontSize: '16px', marginBottom: '0' }"
+    />
     <j-pro-table
       :columns="columns"
       :params="params"
@@ -31,17 +32,4 @@ defineProps({
 })
 </script>
 
-<style scoped lang="less">
-.query-result {
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    h3 {
-      margin: 0;
-      font-size: 15px;
-    }
-  }
-}
-</style>
+<style scoped lang="less"></style>
