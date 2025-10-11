@@ -23,7 +23,7 @@
           mode="TABLE"
           :scroll="{ y: 'calc(100vh - 500px)' }"
           size="small"
-          style="padding: 0 16px"
+          style="padding: 0 0 0 16px"
         />
         <div
           v-else
@@ -97,7 +97,7 @@ const filteredFields = computed(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 0 0 16px;
 
     h3 {
       margin: 0;

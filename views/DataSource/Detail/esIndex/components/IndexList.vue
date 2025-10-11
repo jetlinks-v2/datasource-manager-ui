@@ -42,7 +42,7 @@
         class="empty-index"
         style="height: 100%"
       >
-        <j-empty description="暂无索引" />
+        <j-empty description="暂无数据" />
       </div>
     </div>
   </div>
