@@ -32,4 +32,9 @@ defineProps({
 })
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+:deep(::-webkit-scrollbar) {
+  width: 7px;
+  height: 7px;
+}
+</style>

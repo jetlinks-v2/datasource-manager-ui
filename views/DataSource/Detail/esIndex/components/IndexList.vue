@@ -1,7 +1,7 @@
 <template>
   <div class="index-sidebar">
     <ListHeader
-      search-placeholder="请输入索引名"
+      search-placeholder="index-name-*"
       @search="handleSearch"
     >
       <template #count>
@@ -14,40 +14,29 @@
     </ListHeader>
 
     <div
-      v-if="loading"
-      class="loading-more"
+      class="index-list"
+      ref="scrollContainerRef"
+      @scroll="handleScroll"
     >
-      <a-spin size="small" />
-      <span style="margin-left: 8px">加载中...</span>
-    </div>
-
-    <template v-else>
-      <div
+      <a-list
         v-if="allData.length > 0"
-        class="index-list"
-        ref="scrollContainerRef"
-        @scroll="handleScroll"
+        size="small"
+        :data-source="allData"
+        :split="false"
       >
-        <a-list
-          size="small"
-          :data-source="allData"
-          :split="false"
-        >
-          <template #renderItem="{ item }">
-            <a-list-item
-              class="index-item"
-              @click="handleClick(item)"
-              :class="selectedIndex === item.index ? 'index-item-active' : ''"
-            >
-              <a-space>
-                <AIcon type="DatabaseOutlined" />
-                <j-ellipsis>{{ item.index }}</j-ellipsis>
-              </a-space>
-            </a-list-item>
-          </template>
-        </a-list>
-      </div>
-
+        <template #renderItem="{ item }">
+          <a-list-item
+            class="index-item"
+            @click="handleClick(item)"
+            :class="selectedIndex === item.index ? 'index-item-active' : ''"
+          >
+            <a-space>
+              <AIcon type="DatabaseOutlined" />
+              <j-ellipsis>{{ item.index }}</j-ellipsis>
+            </a-space>
+          </a-list-item>
+        </template>
+      </a-list>
       <div
         v-else
         class="empty-index"
@@ -55,7 +44,7 @@
       >
         <j-empty description="暂无数据" />
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -90,7 +79,7 @@ const loadIndexData = async (append = false) => {
     // 构建请求参数
     const params: any = {
       pageIndex: pageIndex.value,
-      pageSize
+      pageSize: append ? pageSize : 50
     }
 
     // 如果有搜索值，添加 indexPattern 参数

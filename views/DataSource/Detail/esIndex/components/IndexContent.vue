@@ -1,7 +1,7 @@
 <template>
   <div class="index-content">
     <a-tabs
-      v-if="selectedItem && Object.keys(selectedItem).length > 0"
+      v-if="selectedItem"
       v-model:activeKey="activeKey"
       :tabBarStyle="{ margin: '0 0 0 25px' }"
       type="card"
@@ -12,7 +12,10 @@
         key="basic"
         tab="基本信息"
       >
-        <div class="info-section">
+        <div
+          class="info-section"
+          v-if="Object.keys(selectedItem).length > 0"
+        >
           <DescriptionItemList
             :column="2"
             :items="basicInfoItems"
@@ -27,6 +30,12 @@
               </a-space>
             </template>
           </DescriptionItemList>
+        </div>
+        <div
+          v-else
+          class="empty-content custom-table"
+        >
+          <j-empty description="暂无数据" />
         </div>
       </a-tab-pane>
 
@@ -44,10 +53,10 @@
           :scroll="{ y: 'calc(100vh - 440px)' }"
           size="small"
           style="padding: 0 0 24px 24px"
-        ></j-pro-table>
+        />
         <div
           v-else
-          class="empty-table"
+          class="empty-content custom-table"
         >
           <j-empty description="暂无数据" />
         </div>
@@ -58,26 +67,21 @@
         key="data"
         tab="数据列表"
       >
-        <template v-if="showDataTable && dataColumns.length > 0">
-          <j-pro-table
-            :columns="dataColumns"
-            :params="dataQueryParams"
-            :request="handleRequest"
-            mode="TABLE"
-            size="small"
-            class="custom-table"
-            style="padding: 0 0 24px 24px"
-          >
-            <template #emptyText>
-              <div></div>
-            </template>
-          </j-pro-table>
-        </template>
-        <template v-else>
-          <div class="empty-table">
-            <j-empty description="暂无数据" />
-          </div>
-        </template>
+        <j-pro-table
+          :columns="dataColumns"
+          :params="dataQueryParams"
+          :request="handleRequest"
+          mode="TABLE"
+          size="small"
+          class="custom-table"
+          style="padding: 0 0 24px 24px"
+        >
+          <template #emptyText>
+            <div class="empty-table">
+              <j-empty description="暂无数据" />
+            </div>
+          </template>
+        </j-pro-table>
       </a-tab-pane>
     </a-tabs>
     <div
@@ -101,7 +105,6 @@ const route = useRoute()
 const activeKey = ref('basic')
 const fieldData = ref<any[]>([])
 const dataColumns = ref<any[]>([])
-const showDataTable = ref(false)
 const dataQueryParams = ref<any>({
   pageIndex: 0,
   pageSize: 12
@@ -271,10 +274,8 @@ const handleColumns = (arr: any) => {
       ellipsis: true,
       width: 150
     }))
-    showDataTable.value = true
   } else {
     dataColumns.value = []
-    showDataTable.value = false
   }
 }
 
@@ -283,7 +284,6 @@ const handleTabChange = (key: any) => {
   if (key === 'fields') {
     loadIndexMetadata()
   } else if (key === 'data') {
-    showDataTable.value = true
     dataQueryParams.value = {
       index: props.selectedItem.index,
       pageIndex: 0,
@@ -300,7 +300,6 @@ watch(
     activeKey.value = 'basic'
     fieldData.value = []
     dataColumns.value = []
-    showDataTable.value = false
   }
 )
 </script>
@@ -333,11 +332,16 @@ watch(
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 360px);
+  height: calc(100vh - 460px);
 }
 
 :deep(.ant-descriptions-item-label) {
   background-color: #fafafa;
   font-weight: 500;
+}
+
+:deep(::-webkit-scrollbar) {
+  width: 6px;
+  height: 6px;
 }
 </style>
