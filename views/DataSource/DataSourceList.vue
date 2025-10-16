@@ -6,83 +6,80 @@
       @search="onSearch"
     />
     <FullPage>
-      <template v-if="showDataTable">
-        <j-pro-table
-          ref="tableRef"
-          :columns="dataSourceColumns"
-          :params="queryParams"
-          :request="handleSearch"
-          mode="TABLE"
-        >
-          <template #name="slotProps">
-            <router-link :to="`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
-              <a-space>
-                <AIcon :type="iconMaps[slotProps.searchCode]" />
-                <j-ellipsis>
-                  <span>{{ slotProps.name }}</span>
-                </j-ellipsis>
-              </a-space>
-            </router-link>
-          </template>
-          <template #searchCode="{ searchCode }">
-            <span>{{ getDataSourceName(searchCode) }}</span>
-          </template>
-          <template #id="slotProps">
-            <j-ellipsis>
-              <span>{{ slotProps.id }}</span>
-            </j-ellipsis>
-          </template>
-          <template #description="slotProps">
-            <j-ellipsis>
-              <span>{{ slotProps.description || '--' }}</span>
-            </j-ellipsis>
-          </template>
-          <template #action="slotProps">
-            <!-- 编辑按钮 -->
-            <j-permission-button
-              style="padding: 4px 8px"
-              :hasPermission="`${permission}:update`"
-              :tooltip="{ title: '编辑' }"
-              type="link"
-              @click="handleEdit(slotProps)"
-            >
-              <AIcon type="EditOutlined" />
-            </j-permission-button>
-            <!-- 删除按钮 -->
-            <j-permission-button
-              style="padding: 4px 8px"
-              :hasPermission="`${permission}:delete`"
-              :popConfirm="{
-                title: '确定删除吗？',
-                okText: '删除',
-                cancelText: '取消',
-                content: '删除该数据源后，相关数据将被删除，请谨慎操作',
-                onConfirm: () => handleDelete(slotProps.id)
-              }"
-              :tooltip="{ title: '删除' }"
-              danger
-              type="link"
-            >
-              <AIcon type="DeleteOutlined" />
-            </j-permission-button>
-          </template>
+      <j-pro-table
+        ref="tableRef"
+        :columns="dataSourceColumns"
+        :params="queryParams"
+        :request="handleSearch"
+        mode="TABLE"
+        :class="{ 'empty-table-cell': !showDataTable }"
+      >
+        <template #name="slotProps">
+          <router-link :to="`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
+            <a-space>
+              <AIcon :type="iconMaps[slotProps.searchCode]" />
+              <j-ellipsis>
+                <span>{{ slotProps.name }}</span>
+              </j-ellipsis>
+            </a-space>
+          </router-link>
+        </template>
+        <template #searchCode="{ searchCode }">
+          <span>{{ getDataSourceName(searchCode) }}</span>
+        </template>
+        <template #id="slotProps">
+          <j-ellipsis>
+            <span>{{ slotProps.id }}</span>
+          </j-ellipsis>
+        </template>
+        <template #description="slotProps">
+          <j-ellipsis>
+            <span>{{ slotProps.description || '--' }}</span>
+          </j-ellipsis>
+        </template>
+        <template #action="slotProps">
+          <!-- 编辑按钮 -->
+          <j-permission-button
+            style="padding: 4px 8px"
+            :hasPermission="`${permission}:update`"
+            :tooltip="{ title: '编辑' }"
+            type="link"
+            @click="handleEdit(slotProps)"
+          >
+            <AIcon type="EditOutlined" />
+          </j-permission-button>
+          <!-- 删除按钮 -->
+          <j-permission-button
+            style="padding: 4px 8px"
+            :hasPermission="`${permission}:delete`"
+            :popConfirm="{
+              title: '确定删除吗？',
+              okText: '删除',
+              cancelText: '取消',
+              content: '删除该数据源后，相关数据将被删除，请谨慎操作',
+              onConfirm: () => handleDelete(slotProps.id)
+            }"
+            :tooltip="{ title: '删除' }"
+            danger
+            type="link"
+          >
+            <AIcon type="DeleteOutlined" />
+          </j-permission-button>
+        </template>
 
-          <template #emptyText></template>
-        </j-pro-table>
-      </template>
-
-      <template v-else>
-        <div class="empty-table">
-          <j-empty>
-            <template #description>
-              <a-space direction="vertical">
-                <span style="font-size: 18px">暂无数据</span>
-                <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">点击右上角「新增数据源」</span>
-              </a-space>
-            </template>
-          </j-empty>
-        </div>
-      </template>
+        <template #emptyText>
+          <div class="empty-table">
+            <j-empty>
+              <template #description>
+                <a-space direction="vertical">
+                  <span style="font-size: 18px">暂无数据</span>
+                  <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">点击右上角「新增数据源」</span>
+                </a-space>
+              </template>
+            </j-empty>
+          </div>
+        </template>
+      </j-pro-table>
     </FullPage>
   </div>
 
@@ -299,7 +296,13 @@ onBeforeUnmount(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 360px);
+    height: calc(100vh - 368px);
+  }
+
+  .empty-table-cell {
+    :deep(.ant-table-cell) {
+      border: none !important;
+    }
   }
 }
 

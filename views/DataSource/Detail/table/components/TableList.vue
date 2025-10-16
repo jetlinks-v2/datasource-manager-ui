@@ -57,7 +57,6 @@
         <div
           v-else
           class="empty-table"
-          style="height: 100%"
         >
           <j-empty />
         </div>
@@ -203,6 +202,9 @@ onMounted(() => {
 .table-list {
   flex: 1;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 
   :deep(.ant-list) {
     padding-right: 4px;
@@ -253,6 +255,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  flex: 1;
+  min-height: 300px;
 }
 </style>

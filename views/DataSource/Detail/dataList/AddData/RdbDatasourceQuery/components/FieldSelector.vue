@@ -90,6 +90,7 @@ watch(
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  border-left: 1px solid #e8e8e8;
 
   .title {
     display: flex;

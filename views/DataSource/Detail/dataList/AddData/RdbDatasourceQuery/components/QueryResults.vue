@@ -10,7 +10,7 @@
       :request="request"
       mode="TABLE"
       :bodyStyle="{ padding: 0 }"
-      :scroll="{ y: 200 }"
+      :scroll="{ y: 300 }"
     />
   </div>
 </template>

@@ -28,7 +28,7 @@
           type="simple"
           target="es-datasource-query"
           @search="handleSearch"
-          style="padding: 24px 0 16px 0"
+          style="padding: 24px 0 8px 0"
         />
       </div>
 
@@ -95,7 +95,7 @@ const updateResultColumns = () => {
     title: field.name || field.id,
     dataIndex: field.id,
     key: field.id,
-    width: 150,
+    width: 100,
     ellipsis: true,
     search: {
       type: 'string'
