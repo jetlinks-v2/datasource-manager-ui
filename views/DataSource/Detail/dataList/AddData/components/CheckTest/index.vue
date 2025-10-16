@@ -48,6 +48,10 @@ const props = defineProps({
       body: [],
       uri: []
     }
+  },
+  historyParams: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -158,7 +162,7 @@ const init = () => {
 
   dynamicParams.value = mergedUniqueParams.map((param) => ({
     name: param.key,
-    value: existingValues.get(param.key) ?? ''
+    value: existingValues.get(param.key) ?? props.historyParams?.[param.key] ?? ''
   })) as ParamItem[]
 
   emit('update:data', dynamicParams.value)

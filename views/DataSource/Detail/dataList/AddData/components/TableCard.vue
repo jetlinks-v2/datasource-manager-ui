@@ -4,10 +4,21 @@
     @click.stop="handlePreview"
   >
     <header>
-      <AIcon type="CodeOutlined" />
-      <j-ellipsis>
-        <div class="title">{{ data.name }}</div>
-      </j-ellipsis>
+      <a-space>
+        <AIcon type="CodeOutlined" />
+        <j-ellipsis>
+          <div class="title">{{ data.name }}</div>
+        </j-ellipsis>
+      </a-space>
+      <!-- 操作按钮 -->
+      <a-button
+        type="text"
+        size="small"
+        class="action-btn"
+        @click.stop="handleDebug"
+      >
+        <AIcon type="BugOutlined" />
+      </a-button>
     </header>
 
     <div class="badge-wrapper">
@@ -50,11 +61,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'debug'])
 
 const formatTime = computed(() => dayjs(props.createTime).format('YYYY-MM-DD HH:mm:ss'))
 
 const handlePreview = () => emit('click', props.data)
+
+const handleDebug = () => emit('debug', props.data)
 </script>
 
 <style lang="less" scoped>
@@ -78,6 +91,7 @@ const handlePreview = () => emit('click', props.data)
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
+    justify-content: space-between;
 
     .anticon {
       font-size: 16px;
@@ -87,6 +101,25 @@ const handlePreview = () => emit('click', props.data)
     .title {
       font-size: 16px;
       font-weight: 500;
+      flex: 1;
+    }
+
+    .action-btn {
+      flex-shrink: 0;
+      color: #8c8c8c;
+      border: none;
+      padding: 4px 8px;
+      height: auto;
+      transition: all 0.2s;
+
+      &:hover {
+        color: #1890ff;
+        background-color: rgba(24, 144, 255, 0.1);
+      }
+
+      .anticon {
+        font-size: 14px;
+      }
     }
   }
 

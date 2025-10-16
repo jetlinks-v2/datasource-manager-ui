@@ -12,13 +12,12 @@
       </a-button>
     </div>
     <MonacoEditor
-      ref="editorRef"
       v-model:modelValue="sqlValue"
       :registrationTips="registrationTips"
       language="sql"
       theme="vs-white"
       style="height: 300px; width: 100%"
-      @blur="handleChange"
+      @change="handleChange"
     />
   </div>
 </template>
@@ -42,7 +41,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'run', 'change'])
 
 const sqlValue = ref(props.modelValue)
-const editorRef = ref()
 
 const handleChange = () => {
   emit('update:modelValue', sqlValue.value)

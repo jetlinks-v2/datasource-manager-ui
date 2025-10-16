@@ -15,7 +15,6 @@
 
     <div class="response-content">
       <JsonEditor
-        ref="editorRef"
         v-model="jsonData"
         height="400px"
         :showFormatBtn="false"

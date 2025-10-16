@@ -40,6 +40,7 @@
           ref="checkTestRef"
           :formData="expression"
           :queryParams="params"
+          :historyParams="data.param"
           @update:data="handleCheckTestSave"
         >
           <template #sendOutButton>
@@ -68,12 +69,12 @@
 import RequestParams from './RequestParams/index.vue'
 import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
-import {onlyMessage} from '@jetlinks-web/utils'
-import {Rule} from 'ant-design-vue/es/form'
-import {SelectValue} from 'ant-design-vue/lib/select'
-import {convertParamsToObject, transformArray} from '../components/utils'
-import {testAPIDataSource} from '@datasource-manager-ui/api/data/datasource'
-import type {ApiMethod} from '../type'
+import { onlyMessage } from '@jetlinks-web/utils'
+import { Rule } from 'ant-design-vue/es/form'
+import { SelectValue } from 'ant-design-vue/lib/select'
+import { convertParamsToObject, transformArray } from '../components/utils'
+import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
+import type { ApiMethod } from '../type'
 
 const props = defineProps({
   dataSourceId: {

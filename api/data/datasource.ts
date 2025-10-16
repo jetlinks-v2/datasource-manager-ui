@@ -94,7 +94,7 @@ export const getDataSourceCommands = (dataSourceId: string, support: string) =>
  * @returns 测试结果
  */
 export const testWebSocketDataSource = (datasourceId: string, data: any) =>
-    request.post(`/datasource/websocket/${datasourceId}/WebSocketExprRequest`, data)
+  request.post(`/datasource/websocket/${datasourceId}/WebSocketExprRequest`, data)
 
 /**
  * 分页查询 Elasticsearch 索引
@@ -103,7 +103,7 @@ export const testWebSocketDataSource = (datasourceId: string, data: any) =>
  * @returns 索引列表
  */
 export const queryEsIndexPager = (datasourceId: string, data: any) =>
-    request.post(`/datasource/elasticsearch/${datasourceId}/QueryIndexPager`, data)
+  request.post(`/datasource/elasticsearch/${datasourceId}/QueryIndexPager`, data)
 
 /**
  * 查询 Elasticsearch 索引元数据
@@ -112,7 +112,7 @@ export const queryEsIndexPager = (datasourceId: string, data: any) =>
  * @returns 索引元数据
  */
 export const queryEsMetadata = (datasourceId: string, data: any) =>
-    request.post(`/datasource/elasticsearch/${datasourceId}/QueryMetadata`, data)
+  request.post(`/datasource/elasticsearch/${datasourceId}/QueryMetadata`, data)
 
 /**
  * 分页查询 Elasticsearch 索引数据
@@ -121,4 +121,12 @@ export const queryEsMetadata = (datasourceId: string, data: any) =>
  * @returns 索引数据
  */
 export const queryEsPager = (datasourceId: string, data: any) =>
-    request.post(`/datasource/elasticsearch/${datasourceId}/QueryPager`, data)
+  request.post(`/datasource/elasticsearch/${datasourceId}/QueryPager`, data)
+
+/**
+ * 命令查询
+ * @param data 查询参数
+ * @returns 查询结果
+ */
+export const queryDataSourceCm1 = (data: any) =>
+  request.post('/datasource/data_source_a8X2/cm1/QueryList/execute', data)

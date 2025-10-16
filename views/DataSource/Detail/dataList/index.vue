@@ -29,6 +29,7 @@
             :data="slotProps"
             :createTime="activeItem?.createTime || ''"
             @click="handleCardClick"
+            @debug="handleDebugClick"
           />
         </template>
       </JProTable>
@@ -49,6 +50,13 @@
     :preview="commandModal.preview"
     @cancel="closeCommandModal"
   />
+
+  <DebugModal
+    v-if="debugModal.visible"
+    :data="debugModal.data"
+    :info="info"
+    @cancel="closeDebugModal"
+  />
 </template>
 
 <script lang="ts" name="DataList" setup>
@@ -58,6 +66,7 @@ import AddData from './AddData/index.vue'
 import TableCard from './AddData/components/TableCard.vue'
 import CommandList from './AddData/components/CommandList.vue'
 import CommandModal from './AddData/components/CommandModal.vue'
+import DebugModal from './AddData/components/DebugModal.vue'
 import {
   deleteDataSourceCommand,
   importDataSource,
@@ -108,6 +117,11 @@ const commandModal = ref<any>({
   data: {}
 })
 
+const debugModal = ref<any>({
+  visible: false,
+  data: {}
+})
+
 // 模态框控制
 const closeAddDataModal = () => {
   addDataModal.value.visible = false
@@ -115,6 +129,10 @@ const closeAddDataModal = () => {
 
 const closeCommandModal = () => {
   commandModal.value.visible = false
+}
+
+const closeDebugModal = () => {
+  debugModal.value.visible = false
 }
 
 // 刷新数据的通用方法
@@ -166,6 +184,14 @@ const handleCardClick = (data: any) => {
   commandModal.value = {
     visible: true,
     preview: true,
+    data
+  }
+}
+
+// 调试按钮点击处理
+const handleDebugClick = (data: any) => {
+  debugModal.value = {
+    visible: true,
     data
   }
 }

@@ -96,11 +96,7 @@ import Table from './table/index.vue'
 import DataList from './dataList/index.vue'
 import EsIndex from './esIndex/index.vue'
 import SourceDetailsAdd from '../components/dataSourceModal/SourceDetailsAdd.vue'
-import {
-  deleteDataSource,
-  disableDataSource,
-  getDataSourceDetail
-} from '@datasource-manager-ui/api/data/datasource'
+import { deleteDataSource, disableDataSource, getDataSourceDetail } from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { DATA_TYPE_ITEM, getTypesDataDetail } from '../components/table'
@@ -230,6 +226,7 @@ provide('INFO', info)
 .page-header {
   display: flex;
   align-items: center;
+  white-space: normal;
   gap: 16px;
 
   .back-btn {

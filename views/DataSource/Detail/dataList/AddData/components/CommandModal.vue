@@ -5,7 +5,7 @@
     centered
     @cancel="handleCancel"
     width="900px"
-    :bodyStyle="{ height: '80vh' }"
+    :body-style="modalBodyStyle"
   >
     <!-- 命令信息头部 -->
     <header class="info-header">
@@ -61,6 +61,13 @@ const props = defineProps({
 
 const emit = defineEmits(['cancel', 'update'])
 
+const modalBodyStyle = computed(() => ({
+  maxHeight: '80vh',
+  overflowY: 'auto' as any,
+  paddingRight: '8px',
+  marginRight: '-8px'
+}))
+
 const modelValue = computed(() => ({
   input: metadataConvertToTableTree(props.data.inputs, 'dataType'),
   output:
@@ -114,7 +121,6 @@ const handleCancel = () => emit('cancel')
 
 .params-section {
   max-height: 500px;
-  overflow-y: auto;
   padding: 4px 0;
 }
 

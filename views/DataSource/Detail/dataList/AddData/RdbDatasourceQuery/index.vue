@@ -68,7 +68,7 @@
           type="simple"
           target="rdb-datasource-query"
           @search="handleSearch"
-          style="padding: 24px 0 16px 0"
+          style="padding: 24px 0 8px 0"
         />
       </div>
 
@@ -115,15 +115,10 @@ const selectedRowKeys = ref<Key[]>([])
 const testQueryLoading = ref(false)
 const initLoading = ref(false)
 
-// 当前表的字段
 const fieldsData = ref<ColumnSchema[]>([])
-// 保存的表名（用于回显）
 const initialTableName = ref('')
-// 保存的字段名（用于回显）
 const initialColumnNames = ref<string[]>([])
-// 所有表数据
 const allTablesData = ref<TableSchema[]>([])
-// 是否正在初始化回显
 const isInitializing = ref(false)
 
 const selectAllRows = () => {
@@ -131,20 +126,17 @@ const selectAllRows = () => {
   onSelectChange(selectedRowKeys.value)
 }
 
-// 表数据加载完成
 const handleTablesLoaded = (tables: TableSchema[]) => {
   allTablesData.value = tables
 
   // 如果有保存的字段配置，在表选中后回显字段
   if (initialColumnNames.value.length > 0 && initialTableName.value) {
-    // 等待一下让 selectTable 完成
     nextTick(() => {
       selectedRowKeys.value = initialColumnNames.value
       onSelectChange(selectedRowKeys.value)
       isInitializing.value = false
     })
   } else {
-    // 没有需要回显的配置，重置初始化状态
     isInitializing.value = false
   }
 }
@@ -156,7 +148,8 @@ const onSelectChange = (keys: Key[]) => {
     table: selectedTable.value,
     columns: selectedRowKeys.value
   }
-  resultColumns.value = keys.map((key: any) => ({
+
+  const buildColumn = (key: any) => ({
     title: key,
     dataIndex: key,
     key: key,
@@ -165,7 +158,13 @@ const onSelectChange = (keys: Key[]) => {
     search: {
       type: 'string'
     }
-  }))
+  })
+
+  if (keys.length > 0) {
+    resultColumns.value = keys.map((key: any) => buildColumn(key))
+  } else if (activeTab.value === 'visual') {
+    resultColumns.value = fieldsData.value.map((field: any) => buildColumn(field.name))
+  }
 
   updateConfiguration()
 }
@@ -266,16 +265,19 @@ const handleRequest = (request: any) =>
       queryByPage(props.dataSourceId, request)
         .then((resp: any) => {
           if (activeTab.value === 'sql') {
-            const _columns = Object.keys(resp.result.data[0] || {}).map((key: any) => ({
-              title: key,
-              dataIndex: key,
-              key: key,
-              width: 100,
-              search: { type: 'string' }
-            }))
+            const resultData = resp.result?.data || []
+            if (resultData.length > 0) {
+              const _columns = Object.keys(resultData[0] || {}).map((key: any) => ({
+                title: key,
+                dataIndex: key,
+                key: key,
+                width: 100,
+                search: { type: 'string' }
+              }))
 
-            if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
-              resultColumns.value = _columns
+              if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
+                resultColumns.value = _columns
+              }
             }
           }
           resolve({
