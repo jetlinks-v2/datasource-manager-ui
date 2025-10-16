@@ -164,7 +164,7 @@ const onSelectChange = (keys: Key[]) => {
     table: selectedTable.value,
     columns: selectedRowKeys.value
   }
-  resultColumns.value = keys.map((key: any) => ({
+  const buildColumn = (key: any) => ({
     title: key,
     dataIndex: key,
     key: key,
@@ -173,7 +173,13 @@ const onSelectChange = (keys: Key[]) => {
     search: {
       type: 'string'
     }
-  }))
+  })
+
+  if (keys.length > 0) {
+    resultColumns.value = keys.map((key: any) => buildColumn(key))
+  } else if (activeTab.value === 'visual') {
+    resultColumns.value = fieldsData.value.map((field: any) => buildColumn(field.name))
+  }
 
   updateConfiguration()
 }
@@ -269,16 +275,19 @@ const handleRequest = (request: any) =>
       queryByPage(props.dataSourceId, request)
         .then((resp: any) => {
           if (activeTab.value === 'sql') {
-            const _columns = Object.keys(resp.result.data[0] || {}).map((key: any) => ({
-              title: key,
-              dataIndex: key,
-              key: key,
-              width: 100,
-              search: { type: 'string' }
-            }))
+            const resultData = resp.result?.data || []
+            if (resultData.length > 0) {
+              const _columns = Object.keys(resultData[0] || {}).map((key: any) => ({
+                title: key,
+                dataIndex: key,
+                key: key,
+                width: 100,
+                search: { type: 'string' }
+              }))
 
-            if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
-              resultColumns.value = _columns
+              if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
+                resultColumns.value = _columns
+              }
             }
           }
           resolve({
