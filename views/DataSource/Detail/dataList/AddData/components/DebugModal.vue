@@ -57,10 +57,12 @@
                 @change="handleInputStateChange"
               />
             </template>
-            <j-empty
+            <div
+              class="empty"
               v-else
-              description="无需输入参数"
-            />
+            >
+              <j-empty description="无需输入参数" />
+            </div>
           </a-form>
         </div>
       </div>
@@ -218,6 +220,16 @@ const handleExecuteDebug = async () => {
     onlyMessage('执行失败: ' + (error.message || '未知错误'), 'error')
   } finally {
     debugLoading.value = false
+    await scrollToBottom()
+  }
+}
+
+const scrollToBottom = async () => {
+  await nextTick()
+
+  const modalBody = document.querySelector('.ant-modal-body')
+  if (modalBody) {
+    modalBody.scrollTop = modalBody.scrollHeight
   }
 }
 

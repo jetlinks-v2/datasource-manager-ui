@@ -138,6 +138,7 @@ const formData = reactive<FormData>({
     commandName: '',
     output: {},
     input: [],
+    param: {},
     expression: {
       uri: { url: '' },
       method: 'GET',
@@ -184,7 +185,12 @@ const handleCancel = () => {
 }
 
 const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsData: any) => {
-  formData.configuration.expression = expression
+  formData.configuration = {
+    ...formData.configuration,
+    expression,
+    param: dynamicParamsData
+  }
+
   testDataSource.value = testData
   dynamicParams.value = dynamicParamsData
 }
@@ -501,11 +507,11 @@ const processInputOutput = (data: any) => {
 const buildQueryString = (queryParams: any[] = []) => {
   return queryParams
     .filter((item) => item.enable !== false)
-    .map((item) => `${encodeURIComponent(item.key)}=${encodeURIComponent(item.value)}`)
+    .map((item) => `${item.key}=${item.value}`)
     .join('&')
 }
 
-// API 发送类型
+// API 类型
 const handleApiSendInit = (data: any) => {
   const { expression } = data.configuration
   if (!expression) return
@@ -548,16 +554,12 @@ const handleWebSocketInit = (data: any) => {
 
 // RDB 类型
 const handleRdbInit = (data: any) => {
-  if (data.configuration?.rdbDefinition) {
-    formData.configuration.rdbDefinition = data.configuration.rdbDefinition
-  }
+  formData.configuration = data.configuration || {}
 }
 
 // ES 类型
 const handleEsInit = (data: any) => {
-  if (data.configuration?.elasticsearchConfig) {
-    formData.configuration.elasticsearchConfig = data.configuration.elasticsearchConfig
-  }
+  formData.configuration = data.configuration || {}
 }
 
 onMounted(() => {

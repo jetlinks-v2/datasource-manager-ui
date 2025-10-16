@@ -115,15 +115,10 @@ const selectedRowKeys = ref<Key[]>([])
 const testQueryLoading = ref(false)
 const initLoading = ref(false)
 
-// 当前表的字段
 const fieldsData = ref<ColumnSchema[]>([])
-// 保存的表名（用于回显）
 const initialTableName = ref('')
-// 保存的字段名（用于回显）
 const initialColumnNames = ref<string[]>([])
-// 所有表数据
 const allTablesData = ref<TableSchema[]>([])
-// 是否正在初始化回显
 const isInitializing = ref(false)
 
 const selectAllRows = () => {
@@ -131,20 +126,17 @@ const selectAllRows = () => {
   onSelectChange(selectedRowKeys.value)
 }
 
-// 表数据加载完成
 const handleTablesLoaded = (tables: TableSchema[]) => {
   allTablesData.value = tables
 
   // 如果有保存的字段配置，在表选中后回显字段
   if (initialColumnNames.value.length > 0 && initialTableName.value) {
-    // 等待一下让 selectTable 完成
     nextTick(() => {
       selectedRowKeys.value = initialColumnNames.value
       onSelectChange(selectedRowKeys.value)
       isInitializing.value = false
     })
   } else {
-    // 没有需要回显的配置，重置初始化状态
     isInitializing.value = false
   }
 }

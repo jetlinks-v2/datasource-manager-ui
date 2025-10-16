@@ -30,6 +30,7 @@ interface FormData {
     commandName: string
     output: any
     input: any[]
+    param: any
     expression: {
       uri: { url: string }
       method?: string
