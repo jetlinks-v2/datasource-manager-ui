@@ -18,7 +18,7 @@
       language="sql"
       theme="vs-white"
       style="height: 300px; width: 100%"
-      @blur="handleChange"
+      @change="handleChange"
     />
   </div>
 </template>

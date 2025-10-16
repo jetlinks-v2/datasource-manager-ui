@@ -6,7 +6,7 @@
     :maskClosable="false"
     @cancel="handleCancel"
     width="900px"
-    :bodyStyle="{ maxHeight: '80vh', overflow: 'hidden' }"
+    :body-style="modalBodyStyle"
   >
     <div class="command-info">
       <h3 class="command-title">
@@ -62,6 +62,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['cancel', 'update'])
+
+const modalBodyStyle = computed(() => ({
+  maxHeight: '80vh',
+  overflowY: 'auto' as any,
+  paddingRight: '8px',
+  marginRight: '-8px'
+}))
 
 const modelValue = computed(() => {
   return {

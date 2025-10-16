@@ -251,6 +251,7 @@ onMounted(async () => {
 .page-header {
   display: flex;
   align-items: center;
+  white-space: normal;
   gap: 16px;
 
   .back-btn {
