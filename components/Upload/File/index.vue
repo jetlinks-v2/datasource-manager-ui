@@ -62,7 +62,7 @@ import { Upload } from 'ant-design-vue'
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
 import { TOKEN_KEY } from '@jetlinks-web/constants'
 import { getToken, onlyMessage } from '@jetlinks-web/utils'
-import { fileBatchUpload, FileStatic } from '@datasoureceManager/api/comm' // 导入封装好的上传接口
+import { fileBatchUpload, FileStatic } from '@datasource-manager-ui/api/comm' // 导入封装好的上传接口
 import { BASE_API } from '@jetlinks-web/constants'
 
 const props = defineProps({

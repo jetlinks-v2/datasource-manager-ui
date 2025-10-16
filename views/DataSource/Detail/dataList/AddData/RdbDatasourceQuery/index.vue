@@ -81,9 +81,9 @@
 
 <script setup lang="ts" name="RdbDatasourceQuery">
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
-import { getDataSourceTables, queryByPage } from '@datasoureceManager/api/data/datasource'
+import { getDataSourceTables, queryByPage } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnSchema, Key, TableSchema } from './type'
-import { useSqlKeywords } from '@datasoureceManager/hooks/useSqlKeywords'
+import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import TableSelector from './components/TableSelector.vue'
 import FieldSelector from './components/FieldSelector.vue'
 import SqlEditor from './components/SqlEditor.vue'

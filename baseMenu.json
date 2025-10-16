@@ -32,13 +32,10 @@
         "sortIndex": 8,
         "url": "/system/DataSource",
         "icon": "icon-shebei",
-        "showPage": ["datasource-config"],
-        "permissions": [
-          {
-            "permission": "datasource-config-group",
-            "actions": ["query"]
-          }
+        "showPage": [
+          "datasource-config"
         ],
+        "permissions": [],
         "buttons": [
           {
             "id": "view",
@@ -51,7 +48,21 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": ["query"]
+                "actions": [
+                  "query"
+                ]
+              },
+              {
+                "permission": "datasource-config-group",
+                "actions": [
+                  "query"
+                ]
+              },
+              {
+                "permission": "datasource",
+                "actions": [
+                  "query"
+                ]
               }
             ],
             "i18nName": "查询"
@@ -67,7 +78,15 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": ["query", "delete"]
+                "actions": [
+                  "delete"
+                ]
+              },
+              {
+                "permission": "datasource-config-group",
+                "actions": [
+                  "delete"
+                ]
               }
             ]
           },
@@ -82,7 +101,15 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": ["query", "save"]
+                "actions": [
+                  "save"
+                ]
+              },
+              {
+                "permission": "datasource-config-group",
+                "actions": [
+                  "save"
+                ]
               }
             ]
           },
@@ -97,7 +124,15 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": ["query", "save"]
+                "actions": [
+                  "save"
+                ]
+              },
+              {
+                "permission": "datasource-config-group",
+                "actions": [
+                  "save"
+                ]
               }
             ]
           },
@@ -111,16 +146,55 @@
             },
             "permissions": [
               {
+                "permission": "datasource-config-group",
+                "actions": [
+                  "save"
+                ]
+              },
+              {
                 "permission": "datasource-config",
-                "actions": ["query", "save"]
+                "actions": [
+                  "save"
+                ]
+              },
+              {
+                "permission": "datasource",
+                "actions": [
+                  "save"
+                ]
               }
             ]
+          },
+          {
+            "id": "state",
+            "name": "测试链接",
+            "description": "",
+            "permissions": [
+              {
+                "permission": "datasource-config",
+                "actions": [
+                  "state"
+                ]
+              }
+            ],
+            "i18nName": "测试链接"
+          },
+          {
+            "id": "execute",
+            "name": "数据源命令执行",
+            "description": "",
+            "permissions": [
+              {
+                "permission": "datasource",
+                "actions": [
+                  "execute"
+                ]
+              }
+            ],
+            "i18nName": "数据源命令执行"
           }
         ],
-        "accessSupport": {
-          "text": "支持",
-          "value": "support"
-        },
+        "accessSupport": "support",
         "supportDataAccess": true,
         "assetType": "datasource"
       }

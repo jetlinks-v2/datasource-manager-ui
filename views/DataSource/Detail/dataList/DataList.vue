@@ -64,7 +64,7 @@ import {
   importDataSource,
   getDatasource,
   getDataSourceCommands
-} from '@datasoureceManager/api/data/datasource'
+} from '@datasource-manager-ui/api/data/datasource'
 
 interface DataSourceInfo {
   id: string

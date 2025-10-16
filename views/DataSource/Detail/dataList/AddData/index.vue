@@ -78,11 +78,11 @@
 </template>
 
 <script setup lang="ts">
-import { DATA_TYPE_ITEM } from '@datasoureceManager/enums/dataEnums'
+import { DATA_TYPE_ITEM } from '@datasource-manager-ui/enums/dataEnums'
 import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
 import ApiSend from './ApiSend/index.vue'
 import BasicForm from './components/BasicForm.vue'
-import { addDataSourceCommand, editDataSourceCommand } from '@datasoureceManager/api/data/datasource'
+import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { DatasourceType } from './type'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'

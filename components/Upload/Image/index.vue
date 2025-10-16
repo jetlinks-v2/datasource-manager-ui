@@ -89,8 +89,8 @@ import { BASE_API, TOKEN_KEY } from '@jetlinks-web/constants'
 import type { CSSProperties, PropType } from 'vue'
 import type { UploadChangeParam } from 'ant-design-vue'
 import CropperModal from './Cropper.vue'
-import { getImageUrl } from '@datasoureceManager/utils'
-import { FileStatic } from '@datasoureceManager/api/comm'
+import { getImageUrl } from '@datasource-manager-ui/utils'
+import { FileStatic } from '@datasource-manager-ui/api/comm'
 
 const props = defineProps({
   value: {
