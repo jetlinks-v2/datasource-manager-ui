@@ -265,9 +265,8 @@ const handleSubmit = async () => {
     const formItemRef = getFormItemRefByType(formType.value)
     const dataHandler = getDataHandlerByType(formType.value)
 
-    // 禁用数据源（如果存在ID）
-    const shouldToggleDataSource = !!baseFormData.value.id
-    if (shouldToggleDataSource) {
+    // 编辑先禁用数据源
+    if (isEditor.value) {
       await disableDataSource(baseFormData.value.id)
     }
 
@@ -278,7 +277,7 @@ const handleSubmit = async () => {
       }
     } finally {
       // 恢复数据源状态
-      if (shouldToggleDataSource) {
+      if (isEditor.value) {
         await enableDataSource(baseFormData.value.id)
       }
     }
