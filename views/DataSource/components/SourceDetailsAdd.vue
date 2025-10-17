@@ -360,7 +360,7 @@ const handleSubmit = async () => {
   formRef.value
     .validate()
     .then(async () => {
-      if (formData.value.id) {
+      if (isEditor.value) {
         await disableDataSource(formData.value.id)
       }
       formItemRef
