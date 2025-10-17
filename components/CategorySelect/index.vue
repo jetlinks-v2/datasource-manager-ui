@@ -63,7 +63,7 @@
 
     <!-- 分类编辑弹窗 -->
     <CategoryModal
-      v-model:visible="categoryModelVisible"
+      v-model:open="categoryModelVisible"
       :title="categoryModelTitle"
       :formState="categoryFormState"
       :labelKey="labelKey"
