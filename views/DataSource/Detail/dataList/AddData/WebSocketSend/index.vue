@@ -152,8 +152,8 @@ const handleBlur = (bodyData: any) => {
   checkTestDataSource.value = bodyData
 }
 
-const validateAll = async () => {
-  return await props.formRef
+const validateAll = () => {
+  return props.formRef
     ?.validate([['configuration', 'expression', 'uri', 'url']])
     .then(async () => {
       if (!(await validate())) {
@@ -166,8 +166,9 @@ const validateAll = async () => {
       }
 
       expression.value.uri.url = getUrl(expression.value.uri.url)
+      const latestBody = responseResultRef.value?.getCurrentBody() || checkTestDataSource.value
       const inputs = convertParamsToObject(dynamicParams.value)
-      emit('update:expression', expression.value, checkTestDataSource.value, inputs)
+      emit('update:expression', expression.value, latestBody, inputs)
       return true
     })
     .catch(() => {

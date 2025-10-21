@@ -82,6 +82,14 @@ const formatJsonData = (data: any) => {
   }
 }
 
+const getCurrentBody = () => {
+  try {
+    return JSON.parse(jsonData.value)
+  } catch (error) {
+    return null
+  }
+}
+
 watch(
   () => props.data,
   (newVal) => {
@@ -95,7 +103,8 @@ watch(
 )
 
 defineExpose({
-  isValid
+  isValid,
+  getCurrentBody
 })
 </script>
 

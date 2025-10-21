@@ -1,59 +1,59 @@
 <template>
   <div class="response-container">
     <TitleComponent
-        data="响应结果"
-        :style="{ fontSize: '16px' }"
+      data="响应结果"
+      :style="{ fontSize: '16px' }"
     />
 
     <a-tabs
-        v-model="activeTab"
-        type="card"
+      v-model="activeTab"
+      type="card"
     >
       <a-tab-pane
-          key="body"
-          tab="响应体"
+        key="body"
+        tab="响应体"
       >
         <JsonEditor
-            ref="editorRef"
-            v-model="jsonData"
-            height="350px"
-            :showFormatBtn="false"
-            formatOnBlur
-            showMinimap
-            @update="handleBlur"
+          ref="editorRef"
+          v-model="jsonData"
+          height="350px"
+          :showFormatBtn="false"
+          formatOnBlur
+          showMinimap
+          @update="handleBlur"
         />
       </a-tab-pane>
       <!-- 请求头 -->
       <a-tab-pane
-          key="request"
-          tab="请求头"
+        key="request"
+        tab="请求头"
       >
         <a-table
-            :columns="columns"
-            :data-source="requestData"
-            size="small"
-            bordered
-            :scroll="{ y: 250 }"
+          :columns="columns"
+          :data-source="requestData"
+          size="small"
+          bordered
+          :scroll="{ y: 250 }"
         />
       </a-tab-pane>
 
       <a-tab-pane
-          key="headers"
-          tab="响应头"
+        key="headers"
+        tab="响应头"
       >
         <a-table
-            :columns="columns"
-            :data-source="headersData"
-            size="small"
-            bordered
-            :scroll="{ y: 250 }"
+          :columns="columns"
+          :data-source="headersData"
+          size="small"
+          bordered
+          :scroll="{ y: 250 }"
         />
       </a-tab-pane>
 
       <template #rightExtra>
         <div
-            class="meta"
-            v-if="data.status"
+          class="meta"
+          v-if="data.status"
         >
           <a-tag :color="data.status === 200 ? 'success' : 'error'">{{ data.status }}</a-tag>
         </div>
@@ -64,8 +64,8 @@
 
 <script setup lang="ts">
 import JsonEditor from '../../components/JsonEditor.vue'
-import {onlyMessage} from '@jetlinks-web/utils'
-import {isArray} from 'lodash-es'
+import { onlyMessage } from '@jetlinks-web/utils'
+import { isArray } from 'lodash-es'
 
 const props = defineProps({
   data: {
@@ -128,20 +128,29 @@ const handleBlur = () => {
   }
 }
 
+const getCurrentBody = () => {
+  try {
+    return JSON.parse(jsonData.value)
+  } catch (error) {
+    return null
+  }
+}
+
 watch(
-    () => props.data.body,
-    (newVal) => {
-      try {
-        jsonData.value = JSON.stringify(newVal, null, 2)
-      } catch (error) {
-        jsonData.value = '{}'
-        onlyMessage('响应体解析失败', 'error')
-      }
+  () => props.data.body,
+  (newVal) => {
+    try {
+      jsonData.value = JSON.stringify(newVal, null, 2)
+    } catch (error) {
+      jsonData.value = '{}'
+      onlyMessage('响应体解析失败', 'error')
     }
+  }
 )
 
 defineExpose({
-  isValid
+  isValid,
+  getCurrentBody
 })
 </script>
 
