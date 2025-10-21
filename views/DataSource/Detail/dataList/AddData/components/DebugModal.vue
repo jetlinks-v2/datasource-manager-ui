@@ -145,9 +145,11 @@
 
 <script setup lang="ts">
 import JsonEditor from './JsonEditor.vue'
-import { DataInputsItem } from '@visualization-designer-ui'
-import { queryDataSourceCm1 } from '@/modules/datasource-manager-ui/api/data/datasource'
+import { queryDataSourceCm1 } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { moduleRegistry } from '@/utils/module-registry'
+
+const { DataInputsItem } = moduleRegistry.getResource('visualization-designer-ui', 'components')
 
 interface DebugResult {
   success: boolean
