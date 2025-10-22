@@ -19,7 +19,7 @@
         label="分类名称"
         :name="labelKey"
         :rules="[
-          { required: true, message: '请输入分类名称' },
+          { required: true, message: '请输入分类名称', trigger: 'change' },
           { max: 64, message: '最多可输入64个字符', trigger: 'blur' },
           {
             validator: spaceValidator,
