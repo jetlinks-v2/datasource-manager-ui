@@ -87,6 +87,12 @@
                 "actions": [
                   "delete"
                 ]
+              },
+              {
+                "permission": "datasource",
+                "actions": [
+                  "delete"
+                ]
               }
             ]
           },
