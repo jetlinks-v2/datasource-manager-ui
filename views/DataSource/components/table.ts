@@ -2,6 +2,7 @@ import DataApi from '@datasource-manager-ui/assets/svg/data-api.svg'
 import DataDm from '@datasource-manager-ui/assets/svg/data-dm.svg'
 import DataEsApi from '@datasource-manager-ui/assets/svg/data-es-api.svg'
 import DataExcel from '@datasource-manager-ui/assets/svg/data-excel.svg'
+import DataJson from '@datasource-manager-ui/assets/svg/data-json.svg'
 import DataMariadb from '@datasource-manager-ui/assets/svg/data-mariadb.svg'
 import DataMongodb from '@datasource-manager-ui/assets/svg/data-mongodb.svg'
 import DataMysql from '@datasource-manager-ui/assets/svg/data-mysql.svg'
@@ -22,6 +23,7 @@ export const DATASOURCE_TYPE = {
   SQLSERVER: 'sqlserver',
   MONGODB: 'mongodb',
   EXCEL: 'excel',
+  JSON: 'json',
   DAMENG: 'dm',
   REDIS: 'redis',
   ESAPI: 'es_api'
@@ -37,6 +39,7 @@ export const DATASOURCE_NAME = {
   [DATASOURCE_TYPE.SQLSERVER]: 'SQLServer',
   [DATASOURCE_TYPE.MONGODB]: 'MongoDB',
   [DATASOURCE_TYPE.EXCEL]: 'Excel',
+  [DATASOURCE_TYPE.JSON]: 'JSON',
   [DATASOURCE_TYPE.DAMENG]: '达梦数据库',
   [DATASOURCE_TYPE.REDIS]: 'Redis',
   [DATASOURCE_TYPE.ESAPI]: 'ES API'
@@ -68,6 +71,12 @@ export const typesData = [
         icon: DataExcel,
         value: DATASOURCE_TYPE.EXCEL,
         name: DATASOURCE_NAME[DATASOURCE_TYPE.EXCEL],
+        disable: true
+      },
+      {
+        icon: DataJson,
+        value: DATASOURCE_TYPE.JSON,
+        name: DATASOURCE_NAME[DATASOURCE_TYPE.JSON],
         disable: true
       }
     ]
