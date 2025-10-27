@@ -136,8 +136,8 @@
 </template>
 
 <script setup lang="ts" name="Table">
-import { fieldColumns } from './table'
-import { SourceDataInfo } from './type'
+import { fieldColumns } from '../table'
+import { SourceDataInfo } from '../type'
 import { getDataSourceTables, queryByPage, refreshTable } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader/index.vue'
@@ -325,19 +325,18 @@ onMounted(() => {
 }
 
 .table-sidebar {
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
-  height: 100%;
+  width: 250px !important;
+  flex: 0 0 250px;
   display: flex;
   flex-direction: column;
-  border-radius: 8px 0 0 8px;
+  height: 100%;
   margin-right: 4px;
 }
 
 .table-list {
   flex: 1;
   overflow: auto;
+  scrollbar-gutter: stable;
 
   :deep(.ant-list) {
     padding-right: 4px;

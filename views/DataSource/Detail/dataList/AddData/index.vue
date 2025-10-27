@@ -6,7 +6,7 @@
     :maskClosable="false"
     @cancel="emit('cancel')"
     :width="sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE && currentStep === 1 ? '600px' : '1200px'"
-    :bodyStyle="{ maxHeight: '80vh', overflowY: 'auto' }"
+    :bodyStyle="modalBodyStyle"
   >
     <a-form
       :model="formData"
@@ -136,6 +136,13 @@ const formData = reactive<any>({
     }
   }
 })
+
+const modalBodyStyle = computed(() => ({
+  maxHeight: '80vh',
+  overflowY: 'auto' as any,
+  paddingRight: '8px',
+  marginRight: '-8px'
+}))
 
 const isEdit = computed(() => {
   if (props.data.id) {

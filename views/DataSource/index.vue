@@ -16,7 +16,6 @@
       <div class="parameter-container">
         <div class="fixed-width">
           <CategorySelect
-            ref="categorySelect"
             :data="categoryList"
             labelKey="name"
             :labelRules="labelRules"
@@ -62,7 +61,6 @@ import DataSourceList from './DataSourceList.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { Modal } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
-import CategorySelect from '@datasource-manager-ui/components/CategorySelect/index.vue'
 import {
   deleteDataSourceGroup,
   getDataSourceGroup,
@@ -71,16 +69,16 @@ import {
 } from '@datasource-manager-ui/api/data'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { Rule } from 'ant-design-vue/es/form'
+import { moduleRegistry } from '@/utils/module-registry'
+
+const { CategorySelect } = moduleRegistry.getResource('visualization-manager-ui', 'components')
 
 const permission = 'system/DataSource'
 const dataSourceListRef = ref()
 const listLength = ref()
-const categorySelect = ref()
 const categoryList = ref([] as any)
 const categoryListDeep = ref([] as any)
 const clickItem = ref<any>({})
-const router = useRouter()
-console.log(router.getRoutes(), '=====')
 
 const labelRules: Rule[] = [
   {
