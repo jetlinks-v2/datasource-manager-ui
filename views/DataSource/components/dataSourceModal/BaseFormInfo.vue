@@ -72,13 +72,11 @@
         </a-select>
         <j-permission-button
           type="dashed"
-          :hasPermission="`${permission}:add`"
+          :hasPermission="`${permission}:add_class`"
           @click="handleAddCategory"
         >
           <template #icon>
-            <AIcon
-              type="PlusOutlined"
-            />
+            <AIcon type="PlusOutlined" />
           </template>
         </j-permission-button>
       </div>

@@ -106,6 +106,15 @@ export const queryEsIndexPager = (datasourceId: string, data: any) =>
   request.post(`/datasource/elasticsearch/${datasourceId}/QueryIndexPager`, data)
 
 /**
+ * 刷新 Elasticsearch 索引
+ * @param datasourceId 数据源ID
+ * @param data 刷新参数
+ * @returns 刷新结果
+ */
+export const refreshEsIndex = (datasourceId: string, data: any) =>
+  request.post(`/datasource/elasticsearch/${datasourceId}/Refresh`, data)
+
+/**
  * 查询 Elasticsearch 索引元数据
  * @param datasourceId 数据源ID
  * @param data 索引参数

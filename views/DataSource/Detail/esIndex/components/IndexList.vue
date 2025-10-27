@@ -11,6 +11,18 @@
           个索引
         </slot>
       </template>
+
+      <template #actions>
+        <a-tooltip title="刷新索引">
+          <a-button
+            type="text"
+            @click="handleRefresh"
+            size="small"
+          >
+            <AIcon :type="refreshLoading ? 'LoadingOutlined' : 'SyncOutlined'" />
+          </a-button>
+        </a-tooltip>
+      </template>
     </ListHeader>
 
     <div
@@ -50,7 +62,8 @@
 
 <script setup lang="ts" name="IndexList">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
-import { queryEsIndexPager } from '@datasource-manager-ui/api/data/datasource'
+import { queryEsIndexPager, refreshEsIndex } from '@datasource-manager-ui/api/data/datasource'
+import { onlyMessage } from '@jetlinks-web/utils'
 
 const emit = defineEmits(['select'])
 const props = defineProps<{
@@ -66,6 +79,33 @@ const pageSize = 12
 const hasMore = ref(true)
 const allData = ref<any[]>([])
 const searchQuery = ref('')
+const refreshLoading = ref(false)
+
+const handleRefresh = async () => {
+  if (loading.value) return
+  refreshLoading.value = true
+
+  try {
+    const id = route.params.id as string
+
+    const indexes = allData.value.map((item) => item.index) || []
+    const res = await refreshEsIndex(id, {
+      index: indexes
+    })
+
+    if (res.status === 200) {
+      onlyMessage('操作成功')
+    } else {
+      onlyMessage('操作失败', 'error')
+    }
+
+    await loadIndexData()
+  } catch (error) {
+    console.error('刷新索引失败:', error)
+  } finally {
+    refreshLoading.value = false
+  }
+}
 
 // 加载索引数据
 const loadIndexData = async (append = false) => {
