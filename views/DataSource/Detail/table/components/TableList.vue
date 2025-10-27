@@ -189,9 +189,8 @@ onMounted(() => {
 
 <style scoped lang="less">
 .table-sidebar {
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
+  width: 250px !important;
+  flex: 0 0 250px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -204,6 +203,7 @@ onMounted(() => {
   overflow: auto;
   display: flex;
   flex-direction: column;
+  scrollbar-gutter: stable;
   min-height: 0;
 
   :deep(.ant-list) {
