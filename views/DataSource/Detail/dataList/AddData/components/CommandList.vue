@@ -62,12 +62,7 @@
                 <div class="command-name">{{ item.name }}</div>
               </j-ellipsis>
               <a-dropdown>
-                <a-button
-                  type="text"
-                  size="small"
-                >
-                  <AIcon type="MoreOutlined" />
-                </a-button>
+                <AIcon type="MoreOutlined" />
                 <template #overlay>
                   <a-menu style="width: 100px">
                     <a-menu-item @click="handleEdit(item)">
@@ -177,7 +172,8 @@ watch(
 
 <style lang="less" scoped>
 .command-list {
-  width: 300px;
+  width: 250px !important;
+  flex: 0 0 250px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -186,6 +182,7 @@ watch(
   &-content {
     flex: 1;
     overflow-y: auto;
+    scrollbar-gutter: stable;
     padding-right: 4px;
   }
 

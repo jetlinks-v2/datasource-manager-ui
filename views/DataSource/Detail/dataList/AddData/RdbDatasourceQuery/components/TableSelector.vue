@@ -63,6 +63,9 @@ defineEmits(['select', 'refresh'])
 <style scoped lang="less">
 .tables-container {
   width: 250px;
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid #e8e8e8;
   padding-right: 4px;
   margin-right: 4px;

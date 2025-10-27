@@ -6,7 +6,7 @@
     @cancel="cancelModal"
     :maskClosable="false"
     centered
-    :bodyStyle="{ maxHeight: '75vh', overflow: 'auto', padding: '8px' }"
+    :bodyStyle="modalBodyStyle"
   >
     <a-form
       ref="formRef"
@@ -229,6 +229,13 @@ const formRef = ref<any>()
 const categoryFormRef = ref<any>()
 const formItemUniversalRef = ref<any>()
 const formItemRelationRef = ref<any>()
+
+const modalBodyStyle = computed(() => ({
+  maxHeight: '80vh',
+  overflowY: 'auto' as any,
+  paddingRight: '8px',
+  marginRight: '-8px'
+}))
 
 const formData = ref<any>({
   name: '',
