@@ -21,42 +21,14 @@
 
     <a-divider style="height: 1px; background-color: #dedede" />
 
-    <FormItemApi
-      v-if="formType === DATA_TYPE_ITEM.API_SEND"
-      ref="FormItemApiRef"
-      v-model:formData="formData.universalData"
-      :editData="formData.universalData"
-    />
-
-    <FormItemRdb
-      v-else-if="formType === DATA_TYPE_ITEM.RDB_DATASOURCE"
-      ref="FormItemRdbRef"
-      v-model:formData="formData.relationData"
+    <component
+      :is="componentMap[formType]"
+      v-if="componentMap[formType]"
+      :ref="getFormItemRefByType(formType)"
+      v-model:formData="formDataMap[formType]"
+      :editData="formDataMap[formType]"
       :active="activeType"
-      :editData="formData.relationData"
       @test-connection="handleTestConnection"
-    />
-
-    <FormItemWebSocket
-      v-else-if="formType === DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE"
-      ref="formItemWebSocketRef"
-      v-model="formData.websocketData"
-      :editData="formData.websocketData"
-    />
-
-    <FormItemEs
-      v-else-if="formType === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE"
-      ref="formItemEsRef"
-      v-model="formData.elasticsearchData"
-      :editData="formData.elasticsearchData"
-      @test-connection="handleTestESConnection"
-    />
-
-    <FormItemRedis
-      v-else-if="formType === DATA_TYPE_ITEM.REDIS_DATASOURCE"
-      ref="formItemRedisRef"
-      v-model="formData.redisData"
-      :editData="formData.redisData"
     />
 
     <template #footer>
@@ -160,6 +132,22 @@ const formData = ref<any>({
   } as RedisData
 })
 
+const componentMap = {
+  [DATA_TYPE_ITEM.API_SEND]: FormItemApi,
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: FormItemRdb,
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: FormItemWebSocket,
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: FormItemEs,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: FormItemRedis
+} as Record<string, any>
+
+const formDataMap = {
+  [DATA_TYPE_ITEM.API_SEND]: formData.value.universalData,
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: formData.value.relationData,
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formData.value.websocketData,
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formData.value.elasticsearchData,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: formData.value.redisData
+} as Record<string, any>
+
 const formType = ref<any>(DATA_TYPE_ITEM.API_SEND)
 const datasourceName = ref('')
 const isEditor = ref(false)
@@ -208,29 +196,14 @@ const getCategoryList = async () => {
   }
 }
 
-// RDB 数据源测试连接
-const handleTestConnection = async (_relationData: any) => {
-  const setLoading = (loading: boolean) => FormItemRdbRef.value?.setLoading(loading)
-
+// 通用测试连接
+const handleTestConnection = async (data: any) => {
+  const ref = getFormItemRefByType(formType.value)
+  const setLoading = (loading: boolean) => ref?.setLoading(loading)
   setLoading(true)
   const { name } = baseFormData.value
   const { type } = activeType.value
-
-  await testConnection(DATA_TYPE_ITEM.RDB_DATASOURCE, name, _relationData, { type })
-
-  setLoading(false)
-}
-
-// Elasticsearch 数据源测试连接
-const handleTestESConnection = async (_esData: any) => {
-  const setLoading = (loading: boolean) => formItemEsRef.value?.setLoading(loading)
-
-  setLoading(true)
-  const { name } = baseFormData.value
-  const { type } = activeType.value
-
-  await testConnection(DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE, name, _esData, { type })
-
+  await testConnection(formType.value, name, data, { type })
   setLoading(false)
 }
 
