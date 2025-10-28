@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts" name="FormItemEs">
-import { useSourceDetailStore } from '../../sourceDetail'
+import { useSourceDetailStore } from '../../../sourceDetail'
 
 const emit = defineEmits(['update:modelValue', 'testConnection'])
 const props = defineProps({

@@ -52,6 +52,13 @@
       @test-connection="handleTestESConnection"
     />
 
+    <FormItemRedis
+      v-else-if="formType === DATA_TYPE_ITEM.REDIS_DATASOURCE"
+      ref="formItemRedisRef"
+      v-model="formData.redisData"
+      :editData="formData.redisData"
+    />
+
     <template #footer>
       <div
         :class="isEditor ? 'editor-footer' : 'add-footer'"
@@ -78,12 +85,7 @@
 </template>
 
 <script lang="ts" name="SourceDetailsAdd" setup>
-import BaseFormInfo from './BaseFormInfo.vue'
-import FormItemApi from './FormItemApi.vue'
-import FormItemRdb from './FormItemRdb.vue'
-import FormItemWebSocket from './FormItemWebSocket.vue'
-import FormItemEs from './FormItemEs.vue'
-
+import { BaseFormInfo, FormItemApi, FormItemRdb, FormItemWebSocket, FormItemEs, FormItemRedis } from './FormItem'
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
 import {
   addDataSource,
@@ -91,7 +93,7 @@ import {
   enableDataSource,
   updateDataSource
 } from '@datasource-manager-ui/api/data/datasource'
-import { RelationData, WebSocketData, BaseFormData, UniversalData, ElasticsearchData } from '../type'
+import { RelationData, WebSocketData, BaseFormData, UniversalData, ElasticsearchData, RedisData } from '../type'
 import { DATASOURCE_NAME, getTypesDataDetail, datasourceParseUrl, DATASOURCE_TYPE, DATA_TYPE_ITEM } from '../table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '../../sourceDetail'
@@ -125,6 +127,7 @@ const FormItemApiRef = ref<any>()
 const FormItemRdbRef = ref<any>()
 const formItemWebSocketRef = ref<any>()
 const formItemEsRef = ref<any>()
+const formItemRedisRef = ref<any>()
 
 const sourceDetailStore = useSourceDetailStore()
 const { testConnection } = useTestConnection()
@@ -146,7 +149,15 @@ const formData = ref<any>({
     pathPrefix: '',
     username: '',
     password: ''
-  } as ElasticsearchData
+  } as ElasticsearchData,
+  redisData: {
+    host: '',
+    port: '6379',
+    userName: '',
+    password: '',
+    databaseIndex: '0',
+    separator: ':'
+  } as RedisData
 })
 
 const formType = ref<any>(DATA_TYPE_ITEM.API_SEND)
@@ -241,7 +252,8 @@ const getFormItemRefByType = (type: string) => {
     [DATA_TYPE_ITEM.API_SEND]: FormItemApiRef,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: FormItemRdbRef,
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formItemWebSocketRef,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formItemEsRef
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formItemEsRef,
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: formItemRedisRef
   }
   return refMap[type]?.value || null
 }
@@ -252,7 +264,8 @@ const getDataHandlerByType = (type: string) => {
     [DATA_TYPE_ITEM.API_SEND]: universalDataAdd,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: relationDataAdd,
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: websocketDataAdd,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: elasticsearchDataAdd
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: elasticsearchDataAdd,
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: redisDataAdd
   }
   return handlerMap[type]
 }
@@ -450,6 +463,25 @@ const elasticsearchDataAdd = async () => {
   await submitDataSource(params)
 }
 
+const redisDataAdd = async () => {
+  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
+  const { redisData } = formData.value
+  const { value: activeValue } = activeType.value
+
+  const params = {
+    id: id || `data_source_${randomString(4)}`,
+    name,
+    typeId: DATA_TYPE_ITEM.REDIS_DATASOURCE,
+    group,
+    shareConfig: { ...redisData },
+    shareCluster: true,
+    description,
+    searchCode: activeValue
+  }
+
+  await submitDataSource(params)
+}
+
 // 解析不同数据源类型的配置
 const parseDataSourceConfig = (searchCode: string, shareConfig: any) => {
   const parsers: Record<string, () => any> = {
@@ -521,6 +553,16 @@ const parseDataSourceConfig = (searchCode: string, shareConfig: any) => {
         pathPrefix: shareConfig.pathPrefix || '',
         username: shareConfig.username || '',
         password: shareConfig.password || ''
+      }
+    }),
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: () => ({
+      redisData: {
+        host: shareConfig.host || '',
+        port: shareConfig.port || '',
+        userName: shareConfig.userName || '',
+        password: shareConfig.password || '',
+        databaseIndex: shareConfig.databaseIndex ?? '',
+        separator: shareConfig.separator ?? '，'
       }
     })
   }

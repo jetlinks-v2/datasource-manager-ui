@@ -95,6 +95,7 @@ import Query from './query/index.vue'
 import Table from './table/index.vue'
 import DataList from './dataList/index.vue'
 import EsIndex from './esIndex/index.vue'
+import RedisKey from './redisKey/index.vue'
 import SourceDetailsAdd from '../components/dataSourceModal/SourceDetailsAdd.vue'
 import { deleteDataSource, disableDataSource, getDataSourceDetail } from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
@@ -119,7 +120,8 @@ const tabs = {
   Table,
   Query,
   DataList,
-  EsIndex
+  EsIndex,
+  RedisKey
 } as Record<string, any>
 
 const showSourceAdd = ref(false)
@@ -137,7 +139,8 @@ const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
   ],
   [DATA_TYPE_ITEM.API_SEND]: [],
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }]
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }]
 }
 
 const routeLink = computed(() => ({

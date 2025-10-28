@@ -21,6 +21,7 @@ import EsConnection from './EsConnection.vue'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import { DATASOURCE_NAME, DATA_TYPE_ITEM } from '../../components/table'
 import { SourceDataInfo } from '../type'
+import RedisConnection from './RedisConnection.vue'
 
 const props = defineProps<{ info: SourceDataInfo; sourceClassify: any; sourceData?: any }>()
 const { info, sourceClassify } = toRefs(props)
@@ -90,6 +91,8 @@ const connectionComponent = computed(() => {
       return WebSocketConnection
     case DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE:
       return EsConnection
+    case DATA_TYPE_ITEM.REDIS_DATASOURCE:
+      return RedisConnection
     default:
       return null
   }

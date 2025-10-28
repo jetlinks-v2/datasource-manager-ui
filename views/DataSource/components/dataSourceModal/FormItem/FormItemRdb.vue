@@ -143,9 +143,9 @@
 </template>
 
 <script setup lang="ts" name="FormItemRdb">
-import { RelationData } from '../type'
-import { DATASOURCE_TYPE, datasourceParseUrl } from '../table'
-import { useSourceDetailStore } from '../../sourceDetail'
+import { RelationData } from '../../type'
+import { DATASOURCE_TYPE, datasourceParseUrl } from '../../table'
+import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 

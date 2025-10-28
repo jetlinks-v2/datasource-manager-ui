@@ -172,10 +172,10 @@
   </a-form>
 </template>
 <script lang="ts" name="FormItemApi" setup>
-import { useSourceDetailStore } from '../../sourceDetail'
+import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
-import { UniversalData } from '../type'
-import HeaderParamsTable from './HeaderParamsTable.vue'
+import { UniversalData } from '../../type'
+import HeaderParamsTable from '../HeaderParamsTable.vue'
 
 interface Header {
   key: string

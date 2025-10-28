@@ -56,3 +56,12 @@ export interface ElasticsearchData {
   username: string
   password: string
 }
+
+export interface RedisData {
+  host: string
+  port: string
+  databaseIndex: string
+  userName: string
+  password: string
+  separator: string
+}

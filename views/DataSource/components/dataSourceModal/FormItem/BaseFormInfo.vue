@@ -136,7 +136,7 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { getDataSourceRepeat } from '@datasource-manager-ui/api/data/datasource'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { addDataSourceGroup } from '@datasource-manager-ui/api/data'
-import { BaseFormData } from '../type'
+import { BaseFormData } from '../../type'
 
 const props = defineProps({
   // 表单数据
