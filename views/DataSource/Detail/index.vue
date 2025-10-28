@@ -93,7 +93,7 @@
 <script lang="ts" name="Detail" setup>
 import Info from './info/Info.vue'
 import Query from './query/Query.vue'
-import Table from './Table.vue'
+import Table from './table/Table.vue'
 import DataList from './dataList/DataList.vue'
 import SourceDetailsAdd from '../components/SourceDetailsAdd.vue'
 import {
