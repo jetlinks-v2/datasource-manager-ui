@@ -149,13 +149,13 @@ import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 
-const emit = defineEmits(['update:formData', 'testConnection'])
+const emit = defineEmits(['update:modelValue', 'testConnection'])
 const props = defineProps({
   active: {
     type: Object,
     default: {}
   },
-  editData: {
+  modelValue: {
     type: Object,
     default: {}
   }
@@ -258,7 +258,7 @@ const validate = () => {
     formRef.value
       .validate()
       .then(() => {
-        emit('update:formData', formData.value)
+        emit('update:modelValue', formData.value)
         resolve(true)
       })
       .catch((error: any) => {
@@ -304,8 +304,8 @@ const validateJdbcUrl = (rule: any, value: string) => {
 }
 
 const handleEditor = () => {
-  for (const key in props.editData) {
-    formData.value[key] = props.editData[key]
+  for (const key in props.modelValue as any) {
+    formData.value[key] = (props.modelValue as any)[key]
   }
   let urls = formData.value.url
   const { port, path } = datasourceParseUrl(urls, active.value)

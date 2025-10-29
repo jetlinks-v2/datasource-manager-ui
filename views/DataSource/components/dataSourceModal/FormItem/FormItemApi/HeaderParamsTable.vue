@@ -1,11 +1,11 @@
 <template>
   <div>
     <a-table
-        :columns="columns"
-        :dataSource="modelValue"
-        :pagination="false"
-        size="small"
-        rowKey="id"
+      :columns="columns"
+      :dataSource="modelValue"
+      :pagination="false"
+      size="small"
+      rowKey="id"
     >
       <!-- <template #headerCell="{ column }">
         <template v-if="column.key === 'key'">
@@ -15,37 +15,37 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'key'">
           <FormItem
-              v-model:value="record.key"
-              placeholder="Key"
-              :error="formItemErrors[record.id]?.key"
-              @change="(val: string) => handleFieldChange(val, 'key', record)"
+            v-model:value="record.key"
+            placeholder="Key"
+            :error="formItemErrors[record.id]?.key"
+            @change="(val: string) => handleFieldChange(val, 'key', record)"
           />
         </template>
         <template v-else-if="column.key === 'value'">
           <FormItem
-              v-model:value="record.value"
-              placeholder="Value"
-              :error="formItemErrors[record.id]?.value"
-              @change="(val: string) => handleFieldChange(val, 'value', record)"
+            v-model:value="record.value"
+            placeholder="Value"
+            :error="formItemErrors[record.id]?.value"
+            @change="(val: string) => handleFieldChange(val, 'value', record)"
           />
         </template>
         <template v-else-if="column.key === 'action'">
           <a-button
-              type="text"
-              size="small"
-              danger
-              @click="() => removeItem(record)"
+            type="text"
+            size="small"
+            danger
+            @click="() => removeItem(record)"
           >
-            <AIcon type="DeleteOutlined"/>
+            <AIcon type="DeleteOutlined" />
           </a-button>
         </template>
       </template>
     </a-table>
     <a-form-item>
       <a-button
-          block
-          type="dashed"
-          @click="addItem"
+        block
+        type="dashed"
+        @click="addItem"
       >
         新增一条
       </a-button>
@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import FormItem from '../FormItem.vue'
+import FormItem from '../../../FormItem.vue'
 
 interface Header {
   key: string
@@ -121,7 +121,7 @@ const handleFieldChange = (val: string, field: 'key' | 'value', record: any) => 
   record[field] = val
   updateFormError(record.id, field)
 
-  const lengthError = validateField(val, field)
+  const lengthError = validateField(val)
   if (lengthError) {
     updateFormError(record.id, field, lengthError)
   }
@@ -174,8 +174,8 @@ const validate = (): boolean => {
     }
 
     // 字段长度校验
-    const keyErr = validateField(record.key, 'key')
-    const valueErr = validateField(record.value, 'value')
+    const keyErr = validateField(record.key)
+    const valueErr = validateField(record.value)
 
     if (keyErr) {
       hasError = true

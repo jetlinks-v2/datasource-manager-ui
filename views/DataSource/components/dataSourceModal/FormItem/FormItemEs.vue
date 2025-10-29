@@ -63,10 +63,6 @@ const props = defineProps({
   modelValue: {
     type: Object,
     default: () => ({})
-  },
-  editData: {
-    type: Object,
-    default: () => ({})
   }
 })
 
@@ -105,16 +101,10 @@ const setLoading = (val: boolean) => {
   connectionLoading.value = val
 }
 
-const validate = () => {
-  return formRef.value.validate()
-}
-
-const resetFields = () => {
-  formRef.value.resetFields()
-}
+const validate = () => formRef.value.validate()
 
 watch(
-  () => props.editData,
+  () => props.modelValue,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
       Object.assign(formData.value, newData)
@@ -135,8 +125,7 @@ watch(
 
 defineExpose({
   validate,
-  setLoading,
-  resetFields
+  setLoading
 })
 </script>
 

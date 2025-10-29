@@ -98,37 +98,22 @@ const props = defineProps({
   modelValue: {
     type: Object,
     default: () => ({})
-  },
-  editData: {
-    type: Object,
-    default: () => ({})
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-// 表单引用
 const formRef = ref<any>()
 
-// 表单数据
 const formData = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
 
-// 表单验证方法
-const validate = () => {
-  return formRef.value.validate()
-}
+const validate = () => formRef.value.validate()
 
-// 重置表单
-const resetFields = () => {
-  formRef.value.resetFields()
-}
-
-// 监听编辑数据变化
 watch(
-  () => props.editData,
+  () => props.modelValue,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
       Object.assign(formData.value, newData)
@@ -137,11 +122,7 @@ watch(
   { immediate: true, deep: true }
 )
 
-// 暴露给父组件的方法
-defineExpose({
-  validate,
-  resetFields
-})
+defineExpose({ validate })
 </script>
 
 <style lang="less" scoped>

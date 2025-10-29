@@ -22,11 +22,10 @@
     <a-divider style="height: 1px; background-color: #dedede" />
 
     <component
-      :is="componentMap[formType]"
-      v-if="componentMap[formType]"
-      :ref="getFormItemRefByType(formType)"
-      v-model:formData="formDataMap[formType]"
-      :editData="formDataMap[formType]"
+      :is="registry[formType]?.component"
+      v-if="registry[formType]"
+      :ref="registry[formType].ref"
+      v-model="formData[registry[formType].formKey]"
       :active="activeType"
       @test-connection="handleTestConnection"
     />
@@ -58,23 +57,16 @@
 
 <script lang="ts" name="SourceDetailsAdd" setup>
 import { BaseFormInfo, FormItemApi, FormItemRdb, FormItemWebSocket, FormItemEs, FormItemRedis } from './FormItem'
-import { onlyMessage, randomString } from '@jetlinks-web/utils'
-import {
-  addDataSource,
-  disableDataSource,
-  enableDataSource,
-  updateDataSource
-} from '@datasource-manager-ui/api/data/datasource'
 import { RelationData, WebSocketData, BaseFormData, UniversalData, ElasticsearchData, RedisData } from '../type'
-import { DATASOURCE_NAME, getTypesDataDetail, datasourceParseUrl, DATASOURCE_TYPE, DATA_TYPE_ITEM } from '../table'
-import { cloneDeep } from 'lodash-es'
+import { DATASOURCE_NAME, getTypesDataDetail, DATASOURCE_TYPE, DATA_TYPE_ITEM } from '../table'
 import { useSourceDetailStore } from '../../sourceDetail'
 import { useTestConnection } from '../../composables/useTestConnection'
-
+import { useDataSource, type EmitFn } from '../../composables/useDataSource'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { getDataSourceGroup } from '@datasource-manager-ui/api/data'
+import { onlyMessage } from '@jetlinks-web/utils'
+import { cloneDeep } from 'lodash-es'
 
-const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList'])
 const props = defineProps({
   active: {
     type: Object,
@@ -93,6 +85,8 @@ const props = defineProps({
 })
 // 详情数据
 const { active, editData } = toRefs(props)
+const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList']) as EmitFn
+
 const activeType = ref<any>(active.value)
 const baseFormRef = ref<any>()
 const FormItemApiRef = ref<any>()
@@ -124,31 +118,43 @@ const formData = ref<any>({
   } as ElasticsearchData,
   redisData: {
     host: '',
-    port: '6379',
+    port: 6379,
     userName: '',
     password: '',
-    databaseIndex: '0',
+    databaseIndex: 0,
     separator: ':'
   } as RedisData
 })
 
-const componentMap = {
-  [DATA_TYPE_ITEM.API_SEND]: FormItemApi,
-  [DATA_TYPE_ITEM.RDB_DATASOURCE]: FormItemRdb,
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: FormItemWebSocket,
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: FormItemEs,
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: FormItemRedis
-} as Record<string, any>
+const registry = {
+  [DATA_TYPE_ITEM.API_SEND]: {
+    component: FormItemApi,
+    ref: FormItemApiRef,
+    formKey: 'universalData'
+  },
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: {
+    component: FormItemRdb,
+    ref: FormItemRdbRef,
+    formKey: 'relationData'
+  },
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: {
+    component: FormItemWebSocket,
+    ref: formItemWebSocketRef,
+    formKey: 'websocketData'
+  },
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: {
+    component: FormItemEs,
+    ref: formItemEsRef,
+    formKey: 'elasticsearchData'
+  },
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: {
+    component: FormItemRedis,
+    ref: formItemRedisRef,
+    formKey: 'redisData'
+  }
+} as Record<string, { component: any; ref: any; formKey: string }>
 
-const formDataMap = {
-  [DATA_TYPE_ITEM.API_SEND]: formData.value.universalData,
-  [DATA_TYPE_ITEM.RDB_DATASOURCE]: formData.value.relationData,
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formData.value.websocketData,
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formData.value.elasticsearchData,
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: formData.value.redisData
-} as Record<string, any>
-
-const formType = ref<any>(DATA_TYPE_ITEM.API_SEND)
+const formType = ref<string>(DATA_TYPE_ITEM.API_SEND)
 const datasourceName = ref('')
 const isEditor = ref(false)
 const requestFlag = ref(false)
@@ -175,7 +181,6 @@ const getDataSourceName = (value: string) => {
 
 // 关闭弹窗
 const cancelModal = () => {
-  // 新增清除缓存数据
   sourceDetailStore.clearCache()
   emit('close')
 }
@@ -198,8 +203,9 @@ const getCategoryList = async () => {
 
 // 通用测试连接
 const handleTestConnection = async (data: any) => {
-  const ref = getFormItemRefByType(formType.value)
-  const setLoading = (loading: boolean) => ref?.setLoading(loading)
+  const entry = registry[formType.value]
+  const inst = entry?.ref?.value
+  const setLoading = (loading: boolean) => inst?.setLoading(loading)
   setLoading(true)
   const { name } = baseFormData.value
   const { type } = activeType.value
@@ -219,54 +225,32 @@ const handleClick = () => {
   })
 }
 
-// 获取表单引用
-const getFormItemRefByType = (type: string) => {
-  const refMap: Record<string, any> = {
-    [DATA_TYPE_ITEM.API_SEND]: FormItemApiRef,
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: FormItemRdbRef,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: formItemWebSocketRef,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: formItemEsRef,
-    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: formItemRedisRef
-  }
-  return refMap[type]?.value || null
-}
-
-// 数据处理函数映射
-const getDataHandlerByType = (type: string) => {
-  const handlerMap: Record<string, Function> = {
-    [DATA_TYPE_ITEM.API_SEND]: universalDataAdd,
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: relationDataAdd,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: websocketDataAdd,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: elasticsearchDataAdd,
-    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: redisDataAdd
-  }
-  return handlerMap[type]
-}
+// 下沉提交/解析逻辑到 composable
+const { getDataHandlerByType, parseDataSourceConfig, withDisableDuringEdit } = useDataSource({
+  baseFormData,
+  formData,
+  activeType,
+  formType,
+  isEditor,
+  requestFlag,
+  emit
+})
 
 const handleSubmit = async () => {
   if (requestFlag.value) return
   requestFlag.value = true
 
   const validateAndSubmit = async () => {
-    const formItemRef = getFormItemRefByType(formType.value)
+    const entry = registry[formType.value]
+    const formItemRef = entry?.ref?.value
     const dataHandler = getDataHandlerByType(formType.value)
 
-    // 编辑先禁用数据源
-    if (isEditor.value) {
-      await disableDataSource(baseFormData.value.id)
-    }
-
-    try {
-      await formItemRef?.validate()
+    await withDisableDuringEdit(async () => {
+      await formItemRef?.validate?.()
       if (dataHandler) {
         await dataHandler()
       }
-    } finally {
-      // 恢复数据源状态
-      if (isEditor.value) {
-        await enableDataSource(baseFormData.value.id)
-      }
-    }
+    })
   }
 
   try {
@@ -278,269 +262,6 @@ const handleSubmit = async () => {
       requestFlag.value = false
     })
   }
-}
-
-// 通用提交逻辑
-const submitDataSource = async (params: any) => {
-  const action = isEditor.value ? updateDataSource : addDataSource
-
-  try {
-    const res = await action(params)
-    if (res?.success) {
-      emit('close')
-      emit('update')
-      onlyMessage(isEditor.value ? '修改成功' : '新增成功')
-    }
-  } finally {
-    nextTick(() => {
-      requestFlag.value = false
-    })
-  }
-}
-
-// 抽取构建认证配置的逻辑
-const buildAuthConfig = (authType: string, data: any) => {
-  const { username, password, token: token1, OAuth2 } = data
-
-  const configBuilders: Record<string, () => any> = {
-    basic: () => ({
-      authType: 'basic',
-      basic: { username, password }
-    }),
-    bearer: () => ({
-      authType: 'bearer',
-      bearer: { token: token1 }
-    }),
-    OAuth2: () => ({
-      authType: 'OAuth2',
-      oauth2: {
-        grantType: 'client_credentials',
-        clientId: OAuth2.clientId,
-        clientSecret: OAuth2.clientSecret,
-        tokenUrl: OAuth2.token,
-        tokenRequestType: OAuth2.request,
-        scope: OAuth2.scope || '*'
-      }
-    }),
-    none: () => ({ authType: 'none' })
-  }
-
-  return configBuilders[authType]?.() || { authType: 'none' }
-}
-
-const universalDataAdd = async () => {
-  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
-  const { universalData } = formData.value
-  const { api, authType, protocol, OAuth2 } = universalData
-
-  const params: any = {
-    name,
-    typeId: DATA_TYPE_ITEM.API_SEND,
-    id: id || `data_source_${randomString(4)}`,
-    group,
-    shareConfig: {
-      baseUrl: protocol + api,
-      authConfig: buildAuthConfig(authType, universalData),
-      others: {}
-    },
-    shareCluster: true,
-    description,
-    searchCode: activeType.value.value
-  }
-
-  // OAuth2特殊处理
-  if (authType === 'OAuth2' && OAuth2) {
-    params.shareConfig.headers = [...OAuth2.headers]
-    params.shareConfig.parameters = [...OAuth2.params]
-  }
-
-  await submitDataSource(params)
-}
-
-const relationDataAdd = async () => {
-  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
-  const { relationData } = formData.value
-  const { connectionMode, username, password, url, schema, dataBase } = relationData
-  const { value: activeValue } = activeType.value
-
-  const type = connectionMode === 'common' ? activeType.value.type : url.substring(0, url.indexOf(':'))
-
-  const params: any = {
-    name,
-    typeId: DATA_TYPE_ITEM.RDB_DATASOURCE,
-    id: id || `data_source_${randomString(4)}`,
-    group,
-    shareConfig: {
-      type,
-      username,
-      password,
-      schema,
-      url,
-      other: { connectionMode }
-    },
-    shareCluster: true,
-    description,
-    searchCode: activeValue
-  }
-
-  // SQL Server特殊处理
-  if (activeValue === DATASOURCE_TYPE.SQLSERVER) {
-    params.dataBase = dataBase
-  }
-
-  await submitDataSource(params)
-}
-
-const websocketDataAdd = async () => {
-  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
-  const { websocketData } = formData.value
-  const { value: activeValue, defaultConfig } = activeType.value
-
-  const params = {
-    id: id || `data_source_${randomString(4)}`,
-    name,
-    typeId: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
-    group,
-    shareConfig: {
-      ...defaultConfig,
-      ...Object.fromEntries(
-        Object.entries(websocketData).filter(([_, value]) => {
-          return value !== null && value !== undefined && value !== ''
-        })
-      )
-    },
-    shareCluster: true,
-    description,
-    searchCode: activeValue
-  }
-
-  await submitDataSource(params)
-}
-
-const elasticsearchDataAdd = async () => {
-  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
-  const { elasticsearchData } = formData.value
-  const { value: activeValue } = activeType.value
-
-  const params = {
-    id: id || `data_source_${randomString(4)}`,
-    name,
-    typeId: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE,
-    group,
-    shareConfig: { ...elasticsearchData },
-    shareCluster: true,
-    description,
-    searchCode: activeValue
-  }
-
-  await submitDataSource(params)
-}
-
-const redisDataAdd = async () => {
-  const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
-  const { redisData } = formData.value
-  const { value: activeValue } = activeType.value
-
-  const params = {
-    id: id || `data_source_${randomString(4)}`,
-    name,
-    typeId: DATA_TYPE_ITEM.REDIS_DATASOURCE,
-    group,
-    shareConfig: { ...redisData },
-    shareCluster: true,
-    description,
-    searchCode: activeValue
-  }
-
-  await submitDataSource(params)
-}
-
-// 解析不同数据源类型的配置
-const parseDataSourceConfig = (searchCode: string, shareConfig: any) => {
-  const parsers: Record<string, () => any> = {
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: () => {
-      const { other, username, password, url, schema } = shareConfig
-      const { protocol, host, port, path } = datasourceParseUrl(url, activeType.value)
-      const isBasic = other.connectionMode === 'basic'
-
-      return {
-        relationData: {
-          connectionMode: other.connectionMode,
-          username,
-          password,
-          jdbcHeaders: protocol,
-          schema,
-          host: isBasic ? host : '',
-          port: isBasic ? port : '',
-          jdbcUrl: isBasic ? protocol : url,
-          serviceName: isBasic && searchCode === DATASOURCE_TYPE.ORACLE ? path : '',
-          url
-        }
-      }
-    },
-    [DATA_TYPE_ITEM.API_SEND]: () => {
-      const { authConfig, baseUrl: api, headers, parameters } = shareConfig
-      const { protocol } = datasourceParseUrl(api, activeType.value)
-
-      const parseAuthData = () => {
-        const baseData = { authType: authConfig.authType, api, protocol }
-
-        switch (authConfig.authType) {
-          case 'basic':
-            return { ...baseData, ...authConfig.basic }
-          case 'bearer':
-            return { ...baseData, token: authConfig.bearer.token }
-          case 'OAuth2':
-            return {
-              ...baseData,
-              OAuth2: {
-                mode: authConfig.oauth2.grantType,
-                clientId: authConfig.oauth2.clientId,
-                clientSecret: authConfig.oauth2.clientSecret,
-                token: authConfig.oauth2.tokenUrl,
-                request: authConfig.oauth2.tokenRequestType,
-                scope: authConfig.oauth2.scope === '*' ? '' : authConfig.oauth2.scope,
-                headers,
-                params: parameters
-              }
-            }
-          default:
-            return baseData
-        }
-      }
-
-      return { universalData: parseAuthData() }
-    },
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: () => ({
-      websocketData: {
-        handshakeTimeout: shareConfig.handshakeTimeout,
-        reconnectionAttempts: shareConfig.reconnectionAttempts,
-        maxMessageSize: shareConfig.maxMessageSize,
-        reconnectionIntervals: shareConfig.reconnectionIntervals,
-        payloadType: shareConfig.payloadType
-      }
-    }),
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: () => ({
-      elasticsearchData: {
-        uri: shareConfig.uri || '',
-        pathPrefix: shareConfig.pathPrefix || '',
-        username: shareConfig.username || '',
-        password: shareConfig.password || ''
-      }
-    }),
-    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: () => ({
-      redisData: {
-        host: shareConfig.host || '',
-        port: shareConfig.port || '',
-        userName: shareConfig.userName || '',
-        password: shareConfig.password || '',
-        databaseIndex: shareConfig.databaseIndex ?? '',
-        separator: shareConfig.separator ?? '，'
-      }
-    })
-  }
-
-  return parsers[formType.value]?.() || {}
 }
 
 onMounted(() => {

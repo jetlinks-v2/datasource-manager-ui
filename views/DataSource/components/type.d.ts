@@ -59,8 +59,8 @@ export interface ElasticsearchData {
 
 export interface RedisData {
   host: string
-  port: string
-  databaseIndex: string
+  port: number
+  databaseIndex: number
   userName: string
   password: string
   separator: string

@@ -102,10 +102,6 @@ const props = defineProps({
   modelValue: {
     type: Object,
     default: () => ({})
-  },
-  editData: {
-    type: Object,
-    default: () => ({})
   }
 })
 
@@ -117,10 +113,9 @@ const formData = computed<RedisData>({
 })
 
 const validate = () => formRef.value?.validate()
-const resetFields = () => formRef.value?.resetFields()
 
 watch(
-  () => props.editData,
+  () => props.modelValue,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
       Object.assign(formData.value, newData)
@@ -129,7 +124,7 @@ watch(
   { immediate: true, deep: true }
 )
 
-defineExpose({ validate, resetFields })
+defineExpose({ validate })
 </script>
 
 <style scoped lang="less"></style>
