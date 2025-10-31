@@ -63,6 +63,12 @@
                 "actions": [
                   "query"
                 ]
+              },
+              {
+                "permission": "dictionary",
+                "actions": [
+                  "query"
+                ]
               }
             ],
             "i18nName": "查询"
@@ -198,6 +204,45 @@
               }
             ],
             "i18nName": "数据源命令执行"
+          },
+          {
+            "id": "add_class",
+            "name": "新增分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": [
+                  "save"
+                ]
+              }
+            ],
+            "i18nName": "新增分类"
+          },
+          {
+            "id": "delete_class",
+            "name": "删除分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": [
+                  "delete"
+                ]
+              }
+            ],
+            "i18nName": "删除分类"
+          },
+          {
+            "id": "edit_class",
+            "name": "编辑分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": [
+                  "save"
+                ]
+              }
+            ],
+            "i18nName": "编辑分类"
           }
         ],
         "accessSupport": "support",
