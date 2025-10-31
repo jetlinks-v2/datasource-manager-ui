@@ -104,11 +104,20 @@ interface LevelData {
   data: KeyItem[]
 }
 
+interface DataSourceInfo {
+  shareConfig: {
+    delimiter?: string
+    databaseIndex?: number
+  }
+}
+
 const props = defineProps<{
-  info: any
+  info: DataSourceInfo
 }>()
 
-const emit = defineEmits(['select'])
+const emit = defineEmits<{
+  select: [item: KeyItem]
+}>()
 
 const route = useRoute()
 const typeId = route.query.typeId as string
@@ -122,19 +131,45 @@ const searchQuery = ref('')
 
 const hasFolder = ref(false)
 const currentLevel = ref(0)
-const levelStack = ref<LevelData[]>([
-  {
-    prefix: '',
-    cursor: '0',
-    data: []
-  }
-])
 const hasMore = ref(true)
 const refreshLoading = ref(false)
 
+// 创建层级数据对象
+const createLevelData = (prefix: string): LevelData => ({
+  prefix,
+  cursor: '0',
+  data: []
+})
+
+const levelStack = ref<LevelData[]>([createLevelData('')])
+
 const checkFolderMode = () => {
   const delimiter = props.info?.shareConfig?.delimiter
-  hasFolder.value = delimiter && delimiter !== ''
+  hasFolder.value = Boolean(delimiter && delimiter !== '')
+}
+
+// 选中第一个合适的键
+const selectFirstAvailableKey = (data: KeyItem[]) => {
+  if (data.length === 0) return
+
+  nextTick(() => {
+    const firstKey = data.find((item: KeyItem) => item.type === 'key')
+    const targetItem = firstKey || data[0]
+
+    if (targetItem && targetItem.type === 'key') {
+      handleClick(targetItem)
+    }
+  })
+}
+
+// 重置当前层级状态
+const resetCurrentLevelState = () => {
+  const currentLevelData = levelStack.value[currentLevel.value]
+  currentLevelData.cursor = '0'
+  currentLevelData.data = []
+  hasMore.value = true
+  displayData.value = []
+  selectedKey.value = ''
 }
 
 // 获取键总数
@@ -149,12 +184,11 @@ const fetchKeyTotal = throttle(async (auto: boolean = true) => {
     })
     if (res.status === 200 && res.result?.dbSize?.keys !== undefined) {
       total.value = res.result.dbSize.keys
-      if (!auto) {
-        onlyMessage('操作成功')
-      }
+      if (!auto) onlyMessage('操作成功')
     }
   } catch (error) {
     console.error('获取键总数失败:', error)
+    onlyMessage('获取键总数失败', 'error')
   } finally {
     refreshLoading.value = false
   }
@@ -204,23 +238,12 @@ const loadKeyData = async (append = false) => {
       } else {
         currentLevelData.data = sortedData
         displayData.value = sortedData
-
-        if (sortedData.length > 0) {
-          nextTick(() => {
-            const firstKey = sortedData.find((item: KeyItem) => item.type === 'key')
-            const targetItem = firstKey || sortedData[0]
-
-            if (targetItem) {
-              if (targetItem.type === 'key') {
-                handleClick(targetItem)
-              }
-            }
-          })
-        }
+        selectFirstAvailableKey(sortedData)
       }
     }
   } catch (error) {
     console.error('加载键数据失败:', error)
+    onlyMessage('加载键数据失败', 'error')
   } finally {
     loading.value = false
   }
@@ -250,15 +273,12 @@ const handleEnterFolder = (item: KeyItem) => {
   currentLevel.value++
 
   if (levelStack.value.length <= currentLevel.value) {
-    levelStack.value.push({
-      prefix: item.prefix || '',
-      cursor: '0',
-      data: []
-    })
+    levelStack.value.push(createLevelData(item.prefix || ''))
   } else {
-    levelStack.value[currentLevel.value].prefix = item.prefix || ''
-    levelStack.value[currentLevel.value].cursor = '0'
-    levelStack.value[currentLevel.value].data = []
+    const levelData = levelStack.value[currentLevel.value]
+    levelData.prefix = item.prefix || ''
+    levelData.cursor = '0'
+    levelData.data = []
   }
 
   hasMore.value = true
@@ -282,44 +302,18 @@ const handleBack = () => {
     scrollContainerRef.value.scrollTop = 0
   }
 
-  // 选中上层的第一个键
-  if (currentLevelData.data.length > 0) {
-    nextTick(() => {
-      const firstKey = currentLevelData.data.find((item: KeyItem) => item.type === 'key')
-      const targetItem = firstKey || currentLevelData.data[0]
-
-      if (targetItem) {
-        if (targetItem.type === 'key') {
-          handleClick(targetItem)
-        }
-      }
-    })
-  }
+  selectFirstAvailableKey(currentLevelData.data)
 }
 
 const handleSearch = (value: string) => {
   searchQuery.value = value.trim()
-
-  const currentLevelData = levelStack.value[currentLevel.value]
-  currentLevelData.cursor = '0'
-  currentLevelData.data = []
-
-  hasMore.value = true
-  displayData.value = []
-  selectedKey.value = ''
-
+  resetCurrentLevelState()
   loadKeyData()
 }
 
 const refresh = () => {
   currentLevel.value = 0
-  levelStack.value = [
-    {
-      prefix: '',
-      cursor: '0',
-      data: []
-    }
-  ]
+  levelStack.value = [createLevelData('')]
   hasMore.value = true
   displayData.value = []
   selectedKey.value = ''
