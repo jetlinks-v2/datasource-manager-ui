@@ -9,7 +9,7 @@
 
     <!-- 键值统计 -->
     <DescriptionItemList
-      v-if="serverInfo.dbSize"
+      v-if="serverInfo?.dbSize"
       title="键值统计"
       :items="dbSizeItems"
       :column="3"
@@ -83,7 +83,7 @@ interface ServerInfo {
   connectedClients?: number
   totalConnectionsReceived?: number
   totalCommandsProcessed?: number
-  dbSize: DbSize
+  dbSize?: DbSize
 }
 
 interface InfoProps {
@@ -106,22 +106,7 @@ const redisData = reactive<ShareConfig>({
 })
 
 // 模拟数据
-const serverInfo = ref<ServerInfo>({
-  redisVersion: '5.0.4',
-  os: 'Linux 6.6.87.2-microsoft-standard-WSL2 x86_64',
-  processId: '1',
-  usedMemory: '1.45M',
-  usedMemoryPeak: '4.77M',
-  usedMemoryLua: '37.00K',
-  connectedClients: 11,
-  totalConnectionsReceived: 303,
-  totalCommandsProcessed: 3251086,
-  dbSize: {
-    keys: 38,
-    expires: 0,
-    avg_ttl: 0
-  }
-})
+const serverInfo = ref<ServerInfo>()
 const loading = ref(false)
 
 const items = computed<DescriptionItem[]>(() => [

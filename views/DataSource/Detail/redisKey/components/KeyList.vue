@@ -289,6 +289,27 @@ const handleSearch = (value: string) => {
   loadKeyData()
 }
 
+// 刷新列表
+const refresh = () => {
+  // 重置到第一层
+  currentLevel.value = 0
+  levelStack.value = [
+    {
+      prefix: '',
+      cursor: '0',
+      data: []
+    }
+  ]
+  hasMore.value = true
+  displayData.value = []
+  selectedKey.value = ''
+  searchQuery.value = ''
+
+  // 重新加载
+  fetchKeyTotal()
+  loadKeyData()
+}
+
 // 初始化
 onMounted(() => {
   checkFolderMode()
@@ -305,6 +326,11 @@ watch(
   },
   { deep: true }
 )
+
+// 暴露方法给父组件
+defineExpose({
+  refresh
+})
 </script>
 
 <style scoped lang="less">
