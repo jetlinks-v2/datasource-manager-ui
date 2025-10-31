@@ -78,6 +78,6 @@ const handleRefresh = () => {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  padding: 16px 24px 0 24px;
+  padding: 0 24px;
 }
 </style>

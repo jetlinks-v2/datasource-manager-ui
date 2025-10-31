@@ -1,30 +1,20 @@
 <template>
-  <div class="set-type">
-    <a-table
-      :columns="columns"
-      :data-source="setData"
-      :pagination="false"
-      :scroll="{ y: tableHeight }"
-      size="small"
-      bordered
-    >
-      <template #bodyCell="{ column, record, index }">
-        <template v-if="column.key === 'index'">
-          {{ index + 1 }}
-        </template>
-        <template v-else-if="column.key === 'value'">
-          {{ record.value }}
-        </template>
-        <template v-else-if="column.key === 'action'">
-          <PreviewPopover :content="record.value" />
-        </template>
-      </template>
-    </a-table>
-  </div>
+  <CommonTable
+    :data="setData"
+    :columns="columns"
+    @countUpdated="handleCountUpdated"
+  >
+    <template #index="{ index }">
+      {{ index + 1 }}
+    </template>
+    <template #column-value="{ record }">
+      {{ record.value }}
+    </template>
+  </CommonTable>
 </template>
 
 <script setup lang="ts">
-import PreviewPopover from './PreviewPopover.vue'
+import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
@@ -34,8 +24,6 @@ const emit = defineEmits<{
   countUpdated: [count: string]
 }>()
 
-const tableHeight = ref(400)
-
 const columns = [
   {
     title: '序号',
@@ -44,7 +32,7 @@ const columns = [
     align: 'center' as const
   },
   {
-    title: '成员',
+    title: 'Value',
     key: 'value',
     dataIndex: 'value',
     ellipsis: true
@@ -74,40 +62,7 @@ const setData = computed(() => {
   }))
 })
 
-watch(
-  setData,
-  (data) => {
-    if (data.length > 0) {
-      emit('countUpdated', `共 ${data.length} 个成员`)
-    }
-  },
-  { immediate: true }
-)
-
-const calculateTableHeight = () => {
-  const container = document.querySelector('.set-type')
-  if (container) {
-    const containerHeight = container.clientHeight
-    tableHeight.value = Math.max(containerHeight - 80, 100)
-  }
+const handleCountUpdated = (count: number) => {
+  emit('countUpdated', `共 ${count} 个元素`)
 }
-
-onMounted(() => {
-  nextTick(() => {
-    calculateTableHeight()
-    window.addEventListener('resize', calculateTableHeight)
-  })
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', calculateTableHeight)
-})
 </script>
-
-<style scoped lang="less">
-.set-type {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

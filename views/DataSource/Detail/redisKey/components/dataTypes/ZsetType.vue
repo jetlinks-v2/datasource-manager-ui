@@ -1,35 +1,24 @@
 <template>
-  <div class="zset-type">
-    <a-table
-      :columns="columns"
-      :data-source="zsetData"
-      :pagination="false"
-      :scroll="{ y: tableHeight }"
-      size="small"
-      bordered
-      @change="onChange"
-    >
-      <template #bodyCell="{ column, record, index }">
-        <template v-if="column.key === 'index'">
-          {{ index + 1 }}
-        </template>
-        <template v-else-if="column.key === 'score'">
-          <a-tag color="blue">{{ record.score }}</a-tag>
-        </template>
-        <template v-else-if="column.key === 'value'">
-          {{ record.value }}
-        </template>
-        <template v-else-if="column.key === 'action'">
-          <PreviewPopover :content="record.value" />
-        </template>
-      </template>
-    </a-table>
-  </div>
+  <CommonTable
+    :data="zsetData"
+    :columns="columns"
+    @change="handleTableChange"
+    @countUpdated="handleCountUpdated"
+  >
+    <template #index="{ index }">
+      {{ index + 1 }}
+    </template>
+    <template #column-score="{ record }">
+      <a-tag color="blue">{{ record.score }}</a-tag>
+    </template>
+    <template #column-value="{ record }">
+      {{ record.value }}
+    </template>
+  </CommonTable>
 </template>
 
 <script setup lang="ts">
-import type { TableProps } from 'ant-design-vue'
-import PreviewPopover from './PreviewPopover.vue'
+import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
@@ -39,11 +28,9 @@ const emit = defineEmits<{
   countUpdated: [count: string]
 }>()
 
-const tableHeight = ref(400)
-
 const tableSortOrder = ref<'ascend' | 'descend' | null>(null)
 
-const columns = computed<TableProps['columns']>(() => [
+const columns = computed<any>(() => [
   {
     title: '序号',
     key: 'index',
@@ -60,7 +47,7 @@ const columns = computed<TableProps['columns']>(() => [
     sortOrder: tableSortOrder.value
   },
   {
-    title: '成员',
+    title: 'Value',
     key: 'value',
     dataIndex: 'value',
     ellipsis: true
@@ -91,46 +78,13 @@ const zsetData = computed(() => {
   }))
 })
 
-const onChange: TableProps['onChange'] = (_, __, sorter) => {
-  if (sorter && 'field' in sorter && sorter.field === 'score') {
+const handleTableChange: any = (_: any, __: any, sorter: any) => {
+  if (sorter && sorter.field === 'score') {
     tableSortOrder.value = sorter.order || null
   }
 }
 
-watch(
-  zsetData,
-  (data) => {
-    if (data.length > 0) {
-      emit('countUpdated', `共 ${data.length} 个成员`)
-    }
-  },
-  { immediate: true }
-)
-
-const calculateTableHeight = () => {
-  const container = document.querySelector('.zset-type')
-  if (container) {
-    const containerHeight = container.clientHeight
-    tableHeight.value = Math.max(containerHeight - 80, 100)
-  }
+const handleCountUpdated = (count: number) => {
+  emit('countUpdated', `共 ${count} 个元素`)
 }
-
-onMounted(() => {
-  nextTick(() => {
-    calculateTableHeight()
-    window.addEventListener('resize', calculateTableHeight)
-  })
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', calculateTableHeight)
-})
 </script>
-
-<style scoped lang="less">
-.zset-type {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

@@ -1,30 +1,20 @@
 <template>
-  <div class="list-type">
-    <a-table
-      :columns="columns"
-      :data-source="listData"
-      :pagination="false"
-      :scroll="{ y: tableHeight }"
-      size="small"
-      bordered
-    >
-      <template #bodyCell="{ column, record, index }">
-        <template v-if="column.key === 'index'">
-          {{ index }}
-        </template>
-        <template v-else-if="column.key === 'value'">
-          {{ record.value }}
-        </template>
-        <template v-else-if="column.key === 'action'">
-          <PreviewPopover :content="record.value" />
-        </template>
-      </template>
-    </a-table>
-  </div>
+  <CommonTable
+    :data="listData"
+    :columns="columns"
+    @countUpdated="handleCountUpdated"
+  >
+    <template #index="{ index }">
+      {{ index }}
+    </template>
+    <template #column-value="{ record }">
+      {{ record.value }}
+    </template>
+  </CommonTable>
 </template>
 
 <script setup lang="ts">
-import PreviewPopover from './PreviewPopover.vue'
+import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
@@ -33,8 +23,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   countUpdated: [count: string]
 }>()
-
-const tableHeight = ref(400)
 
 const columns = [
   {
@@ -56,66 +44,26 @@ const columns = [
     align: 'center' as const
   }
 ]
-const listData = ref<any[]>([])
 
-watch(
-  () => props.data,
-  (newData) => {
-    if (!newData || !Array.isArray(newData) || newData.length === 0) {
-      listData.value = []
-      return
-    }
-
-    const item = newData[0]
-    const listValue = item?.value || []
-
-    if (!Array.isArray(listValue)) {
-      listData.value = []
-      return
-    }
-
-    listData.value = listValue.map((value, index) => ({
-      index,
-      value: String(value)
-    }))
-  },
-  { deep: true, immediate: true }
-)
-
-watch(
-  listData,
-  (data) => {
-    if (data.length > 0) {
-      emit('countUpdated', `共 ${data.length} 个元素`)
-    }
-  },
-  { immediate: true }
-)
-
-const calculateTableHeight = () => {
-  const container = document.querySelector('.list-type')
-  if (container) {
-    const containerHeight = container.clientHeight
-    tableHeight.value = Math.max(containerHeight - 80, 100)
+const listData = computed(() => {
+  if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
+    return []
   }
+
+  const item = props.data[0]
+  const listValue = item?.value || []
+
+  if (!Array.isArray(listValue)) {
+    return []
+  }
+
+  return listValue.map((value, index) => ({
+    index,
+    value: String(value)
+  }))
+})
+
+const handleCountUpdated = (count: number) => {
+  emit('countUpdated', `共 ${count} 个元素`)
 }
-
-onMounted(() => {
-  nextTick(() => {
-    calculateTableHeight()
-    window.addEventListener('resize', calculateTableHeight)
-  })
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', calculateTableHeight)
-})
 </script>
-
-<style scoped lang="less">
-.list-type {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

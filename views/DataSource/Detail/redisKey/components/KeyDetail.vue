@@ -8,7 +8,7 @@
             type="KeyOutlined"
             class="title-icon"
           />
-          <j-ellipsis style="max-width: 500px; font-size: 16px; font-weight: 500">
+          <j-ellipsis style="font-size: 16px; font-weight: 500">
             {{ selectedKey.name }}
           </j-ellipsis>
         </div>

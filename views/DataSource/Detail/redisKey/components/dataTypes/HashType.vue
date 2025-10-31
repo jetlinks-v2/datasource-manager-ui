@@ -1,33 +1,23 @@
 <template>
-  <div class="hash-type">
-    <a-table
-      :columns="columns"
-      :data-source="tableData"
-      :pagination="false"
-      size="small"
-      bordered
-      :scroll="{ y: tableHeight }"
-    >
-      <template #bodyCell="{ column, record, index }">
-        <template v-if="column.key === 'index'">
-          {{ index + 1 }}
-        </template>
-        <template v-else-if="column.key === 'key'">
-          {{ record.key }}
-        </template>
-        <template v-else-if="column.key === 'value'">
-          {{ record.value }}
-        </template>
-        <template v-else-if="column.key === 'action'">
-          <PreviewPopover :content="record.value" />
-        </template>
-      </template>
-    </a-table>
-  </div>
+  <CommonTable
+    :data="tableData"
+    :columns="columns"
+    @countUpdated="handleCountUpdated"
+  >
+    <template #index="{ index }">
+      {{ index + 1 }}
+    </template>
+    <template #column-key="{ record }">
+      {{ record.key }}
+    </template>
+    <template #column-value="{ record }">
+      {{ record.value }}
+    </template>
+  </CommonTable>
 </template>
 
 <script setup lang="ts">
-import PreviewPopover from './PreviewPopover.vue'
+import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
@@ -37,8 +27,6 @@ const emit = defineEmits<{
   countUpdated: [count: string]
 }>()
 
-const tableHeight = ref(300)
-
 const columns = [
   {
     title: '序号',
@@ -47,7 +35,7 @@ const columns = [
     align: 'center' as const
   },
   {
-    title: 'key',
+    title: 'Key',
     key: 'key',
     dataIndex: 'key',
     width: 200,
@@ -81,40 +69,7 @@ const tableData = computed(() => {
   }))
 })
 
-watch(
-  tableData,
-  (data) => {
-    if (data.length > 0) {
-      emit('countUpdated', `共 ${data.length} 个字段`)
-    }
-  },
-  { immediate: true }
-)
-
-const calculateTableHeight = () => {
-  const container = document.querySelector('.hash-type')
-  if (container) {
-    const containerHeight = container.clientHeight
-    tableHeight.value = Math.max(containerHeight - 80, 100)
-  }
+const handleCountUpdated = (count: number) => {
+  emit('countUpdated', `共 ${count} 个值`)
 }
-
-onMounted(() => {
-  nextTick(() => {
-    calculateTableHeight()
-    window.addEventListener('resize', calculateTableHeight)
-  })
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', calculateTableHeight)
-})
 </script>
-
-<style scoped lang="less">
-.hash-type {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

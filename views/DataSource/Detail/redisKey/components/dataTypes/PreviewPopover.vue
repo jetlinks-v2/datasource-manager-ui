@@ -1,35 +1,29 @@
 <template>
-  <div>
-    <div
-      v-if="open"
-      class="popover-modal-mask"
-      @click="handleClose"
-    ></div>
-    <a-popover
-      :open="open"
-      trigger="click"
-      placement="leftTop"
-      @open-change="handleOpenChange"
-    >
-      <template #content>
-        <div class="preview-wrapper">
-          <slot name="header"></slot>
-          <div class="preview-content">
-            <StringType
-              :data="[{ value: content }]"
-              width="400px"
-              height="300px"
-            />
-          </div>
-        </div>
-      </template>
-      <AIcon
-        type="EyeOutlined"
-        class="preview-icon"
-        @click="handleOpen"
+  <div
+    v-if="open"
+    class="popover-modal-mask"
+    @click="handleClose"
+  ></div>
+  <a-popover
+    :open="open"
+    trigger="click"
+    placement="leftTop"
+    @open-change="handleOpenChange"
+  >
+    <template #content>
+      <StringType
+        :data="[{ value: content }]"
+        width="400px"
+        height="300px"
+        class="preview-content"
       />
-    </a-popover>
-  </div>
+    </template>
+    <AIcon
+      type="EyeOutlined"
+      class="preview-icon"
+      @click="handleOpen"
+    />
+  </a-popover>
 </template>
 
 <script setup lang="ts">
@@ -72,24 +66,14 @@ const handleOpenChange = (value: boolean) => {
   backdrop-filter: blur(1px);
 }
 
-.preview-wrapper {
-  padding: 8px;
-}
-
 .preview-content {
+  padding: 8px;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .preview-icon {
-  font-size: 16px;
   color: #1890ff;
   cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    color: #40a9ff;
-    transform: scale(1.1);
-  }
 }
 </style>

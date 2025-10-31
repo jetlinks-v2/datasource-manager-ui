@@ -109,7 +109,6 @@ const displayData = ref<KeyItem[]>([])
 const selectedKey = ref('')
 const searchQuery = ref('')
 
-// 文件夹模式相关状态
 const hasFolder = ref(false)
 const currentLevel = ref(0)
 const levelStack = ref<LevelData[]>([
@@ -121,7 +120,6 @@ const levelStack = ref<LevelData[]>([
 ])
 const hasMore = ref(true)
 
-// 判断是否为文件夹模式
 const checkFolderMode = () => {
   const delimiter = props.info?.shareConfig?.delimiter
   hasFolder.value = delimiter && delimiter !== ''
@@ -142,6 +140,15 @@ const fetchKeyTotal = async () => {
   } catch (error) {
     console.error('获取键总数失败:', error)
   }
+}
+
+// 数据排序：目录在前，键在后
+const sortData = (data: KeyItem[]): KeyItem[] => {
+  return data.sort((a, b) => {
+    if (a.type === 'dir' && b.type === 'key') return -1
+    if (a.type === 'key' && b.type === 'dir') return 1
+    return a.name.localeCompare(b.name)
+  })
 }
 
 // 加载键数据
@@ -169,28 +176,27 @@ const loadKeyData = async (append = false) => {
     if (res.status === 200) {
       const { nextCursor = '0', data = [] } = res.result
 
-      // 更新游标
       currentLevelData.cursor = nextCursor
-
-      // 判断是否还有更多数据
       hasMore.value = nextCursor !== '0'
+      const sortedData = sortData(data)
 
       if (append) {
-        // 追加数据
-        currentLevelData.data = [...currentLevelData.data, ...data]
-        displayData.value = [...displayData.value, ...data]
+        currentLevelData.data = [...currentLevelData.data, ...sortedData]
+        displayData.value = [...displayData.value, ...sortedData]
       } else {
-        // 重置数据
-        currentLevelData.data = data
-        displayData.value = data
-      }
+        currentLevelData.data = sortedData
+        displayData.value = sortedData
 
-      // 默认选中第一个非文件夹项
-      if (!append && data.length > 0 && currentLevel.value === 0) {
-        const firstKey = data.find((item: KeyItem) => item.type === 'key')
-        if (firstKey) {
+        if (sortedData.length > 0) {
           nextTick(() => {
-            handleClick(firstKey)
+            const firstKey = sortedData.find((item: KeyItem) => item.type === 'key')
+            const targetItem = firstKey || sortedData[0]
+
+            if (targetItem) {
+              if (targetItem.type === 'key') {
+                handleClick(targetItem)
+              }
+            }
           })
         }
       }
@@ -202,36 +208,29 @@ const loadKeyData = async (append = false) => {
   }
 }
 
-// 处理滚动事件
 const handleScroll = () => {
   if (!scrollContainerRef.value || loading.value || !hasMore.value) return
 
   const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.value
 
-  // 当滚动到距离底部 100px 时触发加载
   if (scrollTop + clientHeight >= scrollHeight - 100) {
     loadKeyData(true)
   }
 }
 
-// 处理点击事件
 const handleClick = (item: KeyItem) => {
   if (item.type === 'dir') {
-    // 点击文件夹，进入下一层
     handleEnterFolder(item)
   } else {
-    // 点击键，选中并触发事件
     if (item.name === selectedKey.value) return
     selectedKey.value = item.name
     emit('select', item)
   }
 }
 
-// 进入文件夹
 const handleEnterFolder = (item: KeyItem) => {
   currentLevel.value++
 
-  // 检查是否已经存在该层级的数据
   if (levelStack.value.length <= currentLevel.value) {
     levelStack.value.push({
       prefix: item.prefix || '',
@@ -239,44 +238,50 @@ const handleEnterFolder = (item: KeyItem) => {
       data: []
     })
   } else {
-    // 更新现有层级的 prefix
     levelStack.value[currentLevel.value].prefix = item.prefix || ''
     levelStack.value[currentLevel.value].cursor = '0'
     levelStack.value[currentLevel.value].data = []
   }
 
-  // 重置状态
   hasMore.value = true
   displayData.value = []
   selectedKey.value = ''
 
-  // 加载新层级的数据
   loadKeyData()
 }
 
-// 返回上层
 const handleBack = () => {
   if (currentLevel.value === 0) return
 
   currentLevel.value--
   const currentLevelData = levelStack.value[currentLevel.value]
 
-  // 恢复上层数据
   displayData.value = currentLevelData.data
   hasMore.value = currentLevelData.cursor !== '0'
   selectedKey.value = ''
 
-  // 滚动到顶部
   if (scrollContainerRef.value) {
     scrollContainerRef.value.scrollTop = 0
   }
+
+  // 选中上层的第一个键
+  if (currentLevelData.data.length > 0) {
+    nextTick(() => {
+      const firstKey = currentLevelData.data.find((item: KeyItem) => item.type === 'key')
+      const targetItem = firstKey || currentLevelData.data[0]
+
+      if (targetItem) {
+        if (targetItem.type === 'key') {
+          handleClick(targetItem)
+        }
+      }
+    })
+  }
 }
 
-// 处理搜索
 const handleSearch = (value: string) => {
   searchQuery.value = value.trim()
 
-  // 重置当前层级的数据
   const currentLevelData = levelStack.value[currentLevel.value]
   currentLevelData.cursor = '0'
   currentLevelData.data = []
@@ -285,13 +290,10 @@ const handleSearch = (value: string) => {
   displayData.value = []
   selectedKey.value = ''
 
-  // 重新加载数据
   loadKeyData()
 }
 
-// 刷新列表
 const refresh = () => {
-  // 重置到第一层
   currentLevel.value = 0
   levelStack.value = [
     {
@@ -305,19 +307,16 @@ const refresh = () => {
   selectedKey.value = ''
   searchQuery.value = ''
 
-  // 重新加载
   fetchKeyTotal()
   loadKeyData()
 }
 
-// 初始化
 onMounted(() => {
   checkFolderMode()
   fetchKeyTotal()
   loadKeyData()
 })
 
-// 监听 info 变化
 watch(
   () => props.info,
   () => {
@@ -327,7 +326,6 @@ watch(
   { deep: true }
 )
 
-// 暴露方法给父组件
 defineExpose({
   refresh
 })
