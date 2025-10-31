@@ -53,6 +53,7 @@ import TitleComponent from '@/components/TitleComponent/index.vue'
 import InfoCard from './components/InfoCard.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { formatExpiration } from '../utils'
 
 const route = useRoute()
 const typeId = route.query.typeId as string
@@ -154,39 +155,24 @@ const infoCards = computed(() => [
     items: [
       { label: '客户端连接数', value: String(serverInfo.value?.connectedClients || '--'), highlight: true },
       { label: '历史连接数', value: String(serverInfo.value?.totalConnectionsReceived || '--') },
-      { label: '历史命令数', value: formatNumber(serverInfo.value?.totalCommandsProcessed) }
+      { label: '历史命令数', value: String(serverInfo.value?.totalCommandsProcessed || '--') }
     ]
   }
 ])
 
 // 键值统计配置
 const dbSizeItems = computed<DescriptionItem[]>(() => {
-  const dbSize = serverInfo.value?.dbSize
+  const { keys = '--', expires = '--', avg_ttl = '--' } = serverInfo.value?.dbSize || {}
   return [
-    { key: 'keys', label: '键总数', value: formatNumber(dbSize?.keys) || '0' },
-    { key: 'expires', label: '过期键数', value: formatNumber(dbSize?.expires) || '0' },
-    { key: 'avg_ttl', label: '平均TTL', value: formatTTL(dbSize?.avg_ttl) }
+    { key: 'keys', label: '键总数', value: String(keys) },
+    { key: 'expires', label: '过期键数', value: String(expires) },
+    { key: 'avg_ttl', label: '平均TTL', value: avg_ttl ? formatExpiration(avg_ttl) : '--' }
   ]
 })
 
 const parseRedisConfig = (shareConfig: ShareConfig) => {
-  const { host = '', port = '', databaseIndex = '', userName = '', password = '', delimiter = '，' } = shareConfig
+  const { host = '', port = '', databaseIndex = '', userName = '', password = '', delimiter = '' } = shareConfig
   return { host, port, databaseIndex, userName, password, delimiter }
-}
-
-// 格式化数字，添加千分位分隔符
-const formatNumber = (num: number | undefined) => {
-  if (num === undefined || num === null) return '--'
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
-// 格式化 TTL
-const formatTTL = (ttl: number | undefined) => {
-  if (ttl === undefined || ttl === null || ttl === 0) return '永久'
-  if (ttl < 60) return `${ttl}秒`
-  if (ttl < 3600) return `${Math.floor(ttl / 60)}分钟`
-  if (ttl < 86400) return `${Math.floor(ttl / 3600)}小时`
-  return `${Math.floor(ttl / 86400)}天`
 }
 
 // 查询服务器信息

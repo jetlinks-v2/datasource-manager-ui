@@ -23,6 +23,16 @@
           <AIcon type="ArrowLeftOutlined" />
         </a-button>
       </template>
+
+      <template #actions>
+        <a-button
+          type="text"
+          size="small"
+          @click="fetchKeyTotal(false)"
+        >
+          <AIcon :type="refreshLoading ? 'LoadingOutlined' : 'SyncOutlined'" />
+        </a-button>
+      </template>
     </ListHeader>
 
     <div
@@ -79,7 +89,8 @@
 <script setup lang="ts" name="KeyList">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
-import { getToken } from '@jetlinks-web/utils'
+import { getToken, onlyMessage } from '@jetlinks-web/utils'
+import { throttle } from 'lodash-es'
 
 interface KeyItem {
   type: 'dir' | 'key'
@@ -119,6 +130,7 @@ const levelStack = ref<LevelData[]>([
   }
 ])
 const hasMore = ref(true)
+const refreshLoading = ref(false)
 
 const checkFolderMode = () => {
   const delimiter = props.info?.shareConfig?.delimiter
@@ -126,21 +138,27 @@ const checkFolderMode = () => {
 }
 
 // 获取键总数
-const fetchKeyTotal = async () => {
+const fetchKeyTotal = throttle(async (auto: boolean = true) => {
   if (!typeId) return
 
   try {
+    refreshLoading.value = true
     const { shareConfig } = props.info
     const res = await queryDataSource(typeId, dataSourceId, 'ServerInfo', {
       index: shareConfig.databaseIndex
     })
     if (res.status === 200 && res.result?.dbSize?.keys !== undefined) {
       total.value = res.result.dbSize.keys
+      if (!auto) {
+        onlyMessage('操作成功')
+      }
     }
   } catch (error) {
     console.error('获取键总数失败:', error)
+  } finally {
+    refreshLoading.value = false
   }
-}
+}, 1000)
 
 // 数据排序：目录在前，键在后
 const sortData = (data: KeyItem[]): KeyItem[] => {
@@ -307,7 +325,6 @@ const refresh = () => {
   selectedKey.value = ''
   searchQuery.value = ''
 
-  fetchKeyTotal()
   loadKeyData()
 }
 
@@ -321,7 +338,6 @@ watch(
   () => props.info,
   () => {
     checkFolderMode()
-    fetchKeyTotal()
   },
   { deep: true }
 )

@@ -115,12 +115,12 @@
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { Modal } from 'ant-design-vue'
+import { formatExpiration } from '../../utils'
 import StringType from './dataTypes/StringType.vue'
 import HashType from './dataTypes/HashType.vue'
 import ListType from './dataTypes/ListType.vue'
 import SetType from './dataTypes/SetType.vue'
 import ZsetType from './dataTypes/ZsetType.vue'
-import { template } from 'lodash-es'
 
 interface KeyItem {
   type: 'dir' | 'key'
@@ -174,19 +174,6 @@ const getTypeColor = (type: string) => {
   return typeColorMap[type?.toLowerCase()] || 'default'
 }
 
-// 格式化过期时间
-const formatExpiration = (exp: string) => {
-  if (!exp) return '查询中...'
-  const expNum = parseInt(exp)
-  if (expNum === -1) return '永久'
-  if (expNum === -2) return '键不存在'
-  if (expNum < 0) return '未知'
-  if (expNum < 60) return `${expNum}秒`
-  if (expNum < 3600) return `${Math.floor(expNum / 60)}分钟`
-  if (expNum < 86400) return `${Math.floor(expNum / 3600)}小时`
-  return `${Math.floor(expNum / 86400)}天`
-}
-
 // 处理数量更新
 const handleCountUpdate = (count: string) => {
   dataCount.value = count
@@ -214,7 +201,7 @@ const fetchExpiration = async () => {
       key: props.selectedKey?.name
     })
     if (res.status === 200) {
-      expiration.value = String(res.result)
+      expiration.value = res.result
     }
   } catch (error) {
     console.error('查询过期时间失败:', error)
