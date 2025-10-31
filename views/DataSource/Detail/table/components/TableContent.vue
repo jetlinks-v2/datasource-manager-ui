@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts" name="TableContent">
-import { queryByPage } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 
 const props = defineProps<{
   fieldData: any[]
@@ -85,6 +85,8 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const activeKey = ref('fields')
 const dataColumns = ref<any>([])
 const showDataTable = ref(false)
@@ -152,7 +154,7 @@ const fieldColumns = [
 const handleRequest = (request: any) =>
   new Promise((resolve) => {
     if (props.currentTable) {
-      queryByPage(route.params.id as string, request)
+      queryDataSource(typeId, dataSourceId, 'QueryPager', request)
         .then((resp: any) => {
           handleColumns(resp.result.data)
           resolve({

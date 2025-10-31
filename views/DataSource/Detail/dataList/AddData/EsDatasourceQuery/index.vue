@@ -45,7 +45,7 @@
 <script setup lang="ts" name="EsDatasourceQuery">
 import { message } from 'ant-design-vue'
 import { randomString } from '@jetlinks-web/utils'
-import { queryEsMetadata, queryEsPager } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { EsField } from './type'
 import IndexList from '@datasource-manager-ui/views/DataSource/Detail/esIndex/components/IndexList.vue'
 import EsFieldSelector from './components/EsFieldSelector.vue'
@@ -55,15 +55,13 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
-  },
-  dataSourceId: {
-    type: String,
-    default: ''
   }
 })
 
 const emit = defineEmits(['update:configuration'])
-
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const selectedIndex = ref('')
 const fieldLoading = ref(false)
 const resultColumns = ref<any[]>([])
@@ -74,7 +72,7 @@ const fieldsData = ref<EsField[]>([])
 const getIndexFieldsData = async (index: string) => {
   fieldLoading.value = true
   try {
-    const res = await queryEsMetadata(props.dataSourceId, { index })
+    const res = await queryDataSource(typeId, dataSourceId, 'QueryMetadata', { index })
     if (res.status === 200 && res.result && res.result.length > 0) {
       fieldsData.value = res.result[0].properties || []
       selectedFields.value = fieldsData.value.map((field: EsField) => field.id) // 默认全选所有字段
@@ -143,7 +141,7 @@ const handleRequest = (request: any) =>
         terms: request.terms || []
       }
 
-      queryEsPager(props.dataSourceId, params)
+      queryDataSource(typeId, dataSourceId, 'QueryPager', params)
         .then((resp: any) => {
           resolve({
             code: resp.status,

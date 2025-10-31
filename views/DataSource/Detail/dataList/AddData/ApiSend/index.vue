@@ -73,14 +73,10 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
 import { convertParamsToObject, transformArray } from '../components/utils'
-import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 
 const props = defineProps({
-  dataSourceId: {
-    type: String,
-    required: true
-  },
   formRef: {
     type: Object,
     default: () => ({})
@@ -92,6 +88,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:expression'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const expression = ref()
 const checkTestRef = ref()
 const sending = ref(false)
@@ -193,7 +192,7 @@ const handleSend = async () => {
         expression: _expression
       }
 
-      const res = await testAPIDataSource(props.dataSourceId, sendParams)
+      const res = await queryDataSource(typeId, dataSourceId, 'HttpExprRequest', sendParams)
 
       if (res.status === 200) {
         checkTestDataSource.value = res.result || {}

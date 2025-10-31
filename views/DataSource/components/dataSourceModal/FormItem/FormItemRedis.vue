@@ -19,7 +19,7 @@
     >
       <a-input
         v-model:value="formData.host"
-        placeholder="请输入主机地址，例：192.168.1.100 或 10.0.0.1,10.0.0.2 （Cluster）"
+        placeholder="请输入主机地址"
       />
     </a-form-item>
 
@@ -33,7 +33,7 @@
         :min="0"
         :max="65536"
         :precision="0"
-        placeholder="请输入端口号（0-65536）"
+        placeholder="6379"
         style="width: 100%"
       />
     </a-form-item>
@@ -72,11 +72,11 @@
       />
     </a-form-item>
 
-    <a-form-item name="separator">
+    <a-form-item name="delimiter">
       <template #label>
         <a-space>
           <span>分隔符</span>
-          <a-tooltip title="树状显示的分隔符，设置为空可以禁用树状图，直接以列表展示">
+          <a-tooltip title="树状显示的分隔符，设置为空可以禁用详情页中键管理的树状图，直接以列表展示">
             <a-icon
               type="QuestionCircleFilled"
               style="color: #777"
@@ -85,10 +85,11 @@
         </a-space>
       </template>
       <a-input
-        v-model:value="formData.separator"
+        v-model:value="formData.delimiter"
         allow-clear
         placeholder="请输入树状显示的分隔符"
         :maxlength="10"
+        @blur="handleSeparatorBlur"
       />
     </a-form-item>
   </a-form>
@@ -113,6 +114,13 @@ const formData = computed<RedisData>({
 })
 
 const validate = () => formRef.value?.validate()
+
+const handleSeparatorBlur = () => {
+  if (formData.value.delimiter) {
+    const trimmedValue = formData.value.delimiter.trim()
+    formData.value.delimiter = trimmedValue || ''
+  }
+}
 
 watch(
   () => props.modelValue,

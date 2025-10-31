@@ -1,45 +1,128 @@
 <template>
-  <DescriptionItemList title="数据连接" :column="3" :items="visibleItems" />
+  <div class="redis-connection">
+    <!-- 数据连接配置信息 -->
+    <DescriptionItemList
+      title="数据连接"
+      :column="3"
+      :items="visibleItems"
+    />
+
+    <!-- 键值统计 -->
+    <DescriptionItemList
+      v-if="serverInfo.dbSize"
+      title="键值统计"
+      :items="dbSizeItems"
+      :column="3"
+    />
+
+    <!-- 服务器信息展示 -->
+    <div
+      class="server-info-container"
+      v-if="serverInfo"
+    >
+      <TitleComponent
+        data="服务器信息"
+        class="section-title"
+      />
+
+      <div class="info-cards">
+        <InfoCard
+          v-for="card in infoCards"
+          :key="card.title"
+          :title="card.title"
+          :icon="card.icon"
+          :items="card.items"
+        />
+      </div>
+    </div>
+
+    <!-- 加载状态 -->
+    <div
+      v-else-if="loading"
+      class="loading-container"
+    >
+      <a-spin tip="加载服务器信息中..." />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
+import TitleComponent from '@/components/TitleComponent/index.vue'
+import InfoCard from './components/InfoCard.vue'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { onlyMessage } from '@jetlinks-web/utils'
 
-interface RedisConfig {
-  host: string
-  port: string | number
-  databaseIndex: string | number
-  userName: string
-  password: string
-  separator: string
-}
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 
 interface ShareConfig {
-  host?: string
-  port?: string | number
-  databaseIndex?: string | number
-  userName?: string
-  password?: string
-  separator?: string
+  host: string
+  port: number
+  databaseIndex: number
+  userName: string
+  password: string
+  delimiter: string
+}
+
+interface DbSize {
+  keys: number
+  expires: number
+  avg_ttl: number
+}
+
+interface ServerInfo {
+  redisVersion?: string
+  os?: string
+  processId?: string
+  usedMemory?: string
+  usedMemoryPeak?: string
+  usedMemoryLua?: string
+  connectedClients?: number
+  totalConnectionsReceived?: number
+  totalCommandsProcessed?: number
+  dbSize: DbSize
 }
 
 interface InfoProps {
-  shareConfig?: ShareConfig
+  shareConfig: ShareConfig
+  typeId: string
+  type: string
   [key: string]: any
 }
 
 const props = defineProps<{ info: InfoProps }>()
 const { info } = toRefs(props)
 
-const redisData = reactive<RedisConfig>({
+const redisData = reactive<ShareConfig>({
   host: '',
-  port: '',
-  databaseIndex: '',
+  port: 0,
+  databaseIndex: 0,
   userName: '',
   password: '',
-  separator: '，'
+  delimiter: ''
 })
+
+// 模拟数据
+const serverInfo = ref<ServerInfo>({
+  redisVersion: '5.0.4',
+  os: 'Linux 6.6.87.2-microsoft-standard-WSL2 x86_64',
+  processId: '1',
+  usedMemory: '1.45M',
+  usedMemoryPeak: '4.77M',
+  usedMemoryLua: '37.00K',
+  connectedClients: 11,
+  totalConnectionsReceived: 303,
+  totalCommandsProcessed: 3251086,
+  dbSize: {
+    keys: 38,
+    expires: 0,
+    avg_ttl: 0
+  }
+})
+const loading = ref(false)
 
 const items = computed<DescriptionItem[]>(() => [
   { key: 'host', label: '连接地址', value: redisData.host || '--', condition: true },
@@ -53,18 +136,93 @@ const items = computed<DescriptionItem[]>(() => [
     componentProps: { value: redisData.password, placeholder: '--' },
     condition: true
   },
-  { key: 'separator', label: '分隔符', value: redisData.separator || '--', condition: true }
+  { key: 'delimiter', label: '分隔符', value: redisData.delimiter || '--', condition: true }
 ])
 
 const visibleItems = computed(() =>
-  items.value
-    .filter((item) => item.condition)
-    .map((item) => ({ ...item, value: item.value || '--' }))
+  items.value.filter((item) => item.condition).map((item) => ({ ...item, value: item.value || '--' }))
 )
 
+// 服务器信息卡片配置
+const infoCards = computed(() => [
+  {
+    title: '服务器',
+    icon: 'DatabaseOutlined',
+    items: [
+      { label: 'Redis版本', value: serverInfo.value?.redisVersion || '--', highlight: true },
+      { label: 'OS', value: serverInfo.value?.os || '--' },
+      { label: '进程ID', value: serverInfo.value?.processId || '--' }
+    ]
+  },
+  {
+    title: '内存',
+    icon: 'HddOutlined',
+    items: [
+      { label: '已用内存', value: serverInfo.value?.usedMemory || '--', highlight: true },
+      { label: '内存占用峰值', value: serverInfo.value?.usedMemoryPeak || '--' },
+      { label: 'Lua占用内存', value: serverInfo.value?.usedMemoryLua || '--' }
+    ]
+  },
+  {
+    title: '状态',
+    icon: 'DashboardOutlined',
+    items: [
+      { label: '客户端连接数', value: String(serverInfo.value?.connectedClients || '--'), highlight: true },
+      { label: '历史连接数', value: String(serverInfo.value?.totalConnectionsReceived || '--') },
+      { label: '历史命令数', value: formatNumber(serverInfo.value?.totalCommandsProcessed) }
+    ]
+  }
+])
+
+// 键值统计配置
+const dbSizeItems = computed<DescriptionItem[]>(() => {
+  const dbSize = serverInfo.value?.dbSize
+  return [
+    { key: 'keys', label: '键总数', value: formatNumber(dbSize?.keys) || '0' },
+    { key: 'expires', label: '过期键数', value: formatNumber(dbSize?.expires) || '0' },
+    { key: 'avg_ttl', label: '平均TTL', value: formatTTL(dbSize?.avg_ttl) }
+  ]
+})
+
 const parseRedisConfig = (shareConfig: ShareConfig) => {
-  const { host = '', port = '', databaseIndex = '', userName = '', password = '', separator = '，' } = shareConfig
-  return { host, port, databaseIndex, userName, password, separator }
+  const { host = '', port = '', databaseIndex = '', userName = '', password = '', delimiter = '，' } = shareConfig
+  return { host, port, databaseIndex, userName, password, delimiter }
+}
+
+// 格式化数字，添加千分位分隔符
+const formatNumber = (num: number | undefined) => {
+  if (num === undefined || num === null) return '--'
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+// 格式化 TTL
+const formatTTL = (ttl: number | undefined) => {
+  if (ttl === undefined || ttl === null || ttl === 0) return '永久'
+  if (ttl < 60) return `${ttl}秒`
+  if (ttl < 3600) return `${Math.floor(ttl / 60)}分钟`
+  if (ttl < 86400) return `${Math.floor(ttl / 3600)}小时`
+  return `${Math.floor(ttl / 86400)}天`
+}
+
+// 查询服务器信息
+const fetchServerInfo = async () => {
+  if (!typeId) return
+
+  loading.value = true
+  try {
+    const { shareConfig } = info.value
+    const res = await queryDataSource(typeId, dataSourceId, 'ServerInfo', {
+      index: shareConfig.databaseIndex
+    })
+    if (res.status === 200 && res.result) {
+      serverInfo.value = res.result
+    }
+  } catch (error) {
+    console.error('获取服务器信息失败:', error)
+    onlyMessage('获取服务器信息失败', 'error')
+  } finally {
+    loading.value = false
+  }
 }
 
 watch(
@@ -74,10 +232,53 @@ watch(
       const config = parseRedisConfig(newInfo.shareConfig)
       Object.assign(redisData, config)
     }
+    if (newInfo?.id) {
+      fetchServerInfo()
+    }
   },
   { immediate: true }
 )
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.redis-connection {
+  .section-title {
+    font-size: 16px;
+    height: 32px;
+    line-height: 32px;
+  }
 
+  .server-info-container {
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+  }
+
+  // 响应式布局
+  @media (max-width: 1200px) {
+    .server-info-container {
+      .info-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .server-info-container {
+      .info-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+</style>

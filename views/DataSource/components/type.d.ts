@@ -63,5 +63,5 @@ export interface RedisData {
   databaseIndex: number
   userName: string
   password: string
-  separator: string
+  delimiter: string
 }

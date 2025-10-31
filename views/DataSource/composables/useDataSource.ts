@@ -290,11 +290,11 @@ export const useDataSource = (opts: {
         return {
           redisData: {
             host: config.host || '',
-            port: config.port || 6379,
+            port: config.port || undefined,
             userName: config.userName || '',
             password: config.password || '',
-            databaseIndex: config.databaseIndex ?? 0,
-            separator: config.separator ?? ':'
+            databaseIndex: config.databaseIndex ?? undefined,
+            delimiter: config.delimiter ?? ':'
           }
         }
       }

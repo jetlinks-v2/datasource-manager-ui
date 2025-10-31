@@ -35,7 +35,7 @@
       </div>
 
       <a-space
-        v-if="!isSearching && showActions"
+        v-if="!isSearching"
         class="header-buttons"
       >
         <slot name="actions"></slot>
@@ -47,12 +47,10 @@
 <script lang="ts" setup>
 interface Props {
   searchPlaceholder?: string
-  showActions?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  searchPlaceholder: '请输入关键词',
-  showActions: true
+  searchPlaceholder: '请输入关键词'
 })
 
 const emit = defineEmits<{

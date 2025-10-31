@@ -29,7 +29,6 @@
           :is="currentComponent"
           ref="componentRef"
           :is-edit="isEdit"
-          :data-source-id="info.id"
           :form-ref="formRef"
           :data="formData.configuration"
           @update:expression="handleExpressionUpdate"

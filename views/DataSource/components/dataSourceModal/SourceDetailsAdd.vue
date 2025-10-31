@@ -118,12 +118,12 @@ const formData = ref<any>({
   } as ElasticsearchData,
   redisData: {
     host: '',
-    port: 6379,
+    port: undefined,
     userName: '',
     password: '',
-    databaseIndex: 0,
-    separator: ':'
-  } as RedisData
+    databaseIndex: undefined,
+    delimiter: ':'
+  } as unknown as RedisData
 })
 
 const registry = {

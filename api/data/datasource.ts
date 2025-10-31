@@ -26,28 +26,17 @@ export const getDataSourceRepeat = (data: any) => {
   return request.get(`/datasource/config/_exists?where=id is ${data}`)
 }
 
-//刷新RDB表结构
-export const refreshTable = (datasourceId: string, data = {}) =>
-  request.post(`/datasource/rdb/${datasourceId}/Refresh`, data)
-// export const refreshTable = (data: any) =>
-//   request.post(`/datasource/rdb/{datasourceId}/Refresh`, data)
 //测试数据源连接状态
 export const testDataSource = (data: any) => request.post('datasource/config/_state', data)
 
 //获取数据库表
 export const getDataSourceTables = (id: string) => request.get(`datasource/rdb/${id}/tables`)
-// 执行SQL语句
-export const handleSQL_api = (datasourceId: string, data: any) =>
-  request.post(`datasource/rdb/${datasourceId}/ExecuteSql`, data)
 
 // 新增API数据源
 export const addAPIDataSource_api = (data: any) => request.post(`/datasource/config`, data)
 
 // 编辑API数据源
 export const editAPIDataSource_api = (data: any) => request.patch(`/datasource/config`, data)
-
-//执行分页查询命令
-export const queryByPage = (id: string, data: any) => request.post(`datasource/rdb/${id}/QueryPager`, data)
 
 // 查询命令组
 export const queryCommandGroup = (data: any) => request.post(`/datasource/command/group/_query/no-paging`, data)
@@ -64,15 +53,6 @@ export const editDataSourceCommand = (data: any) => request.patch(`datasource`, 
 //删除数据源命令
 export const deleteDataSourceCommand = (id: string) => request.remove(`datasource/${id}`)
 
-/**
- * 测试API数据源
- * @param datasourceId 数据源ID
- * @param data 请求参数
- * @returns 测试结果
- */
-export const testAPIDataSource = (datasourceId: string, data: any) =>
-  request.post(`/datasource/api/${datasourceId}/HttpExprRequest`, data)
-
 // 导入数据源
 export const importDataSource = (dataSourceId: string, dataSoourceType: string, data: any) =>
   request.post(`/datasource/${dataSourceId}/${dataSoourceType}/import`, data)
@@ -88,54 +68,29 @@ export const getDataSourceCommands = (dataSourceId: string, support: string) =>
   request.get(`/datasource/${dataSourceId}/commands?support=${support}`)
 
 /**
- * 测试WebSocket数据源
- * @param datasourceId 数据源ID
- * @param data 测试数据
- * @returns 测试结果
- */
-export const testWebSocketDataSource = (datasourceId: string, data: any) =>
-  request.post(`/datasource/websocket/${datasourceId}/WebSocketExprRequest`, data)
-
-/**
- * 分页查询 Elasticsearch 索引
- * @param datasourceId 数据源ID
- * @param data 分页参数
- * @returns 索引列表
- */
-export const queryEsIndexPager = (datasourceId: string, data: any) =>
-  request.post(`/datasource/elasticsearch/${datasourceId}/QueryIndexPager`, data)
-
-/**
- * 刷新 Elasticsearch 索引
- * @param datasourceId 数据源ID
- * @param data 刷新参数
- * @returns 刷新结果
- */
-export const refreshEsIndex = (datasourceId: string, data: any) =>
-  request.post(`/datasource/elasticsearch/${datasourceId}/Refresh`, data)
-
-/**
- * 查询 Elasticsearch 索引元数据
- * @param datasourceId 数据源ID
- * @param data 索引参数
- * @returns 索引元数据
- */
-export const queryEsMetadata = (datasourceId: string, data: any) =>
-  request.post(`/datasource/elasticsearch/${datasourceId}/QueryMetadata`, data)
-
-/**
- * 分页查询 Elasticsearch 索引数据
- * @param datasourceId 数据源ID
- * @param data 查询参数
- * @returns 索引数据
- */
-export const queryEsPager = (datasourceId: string, data: any) =>
-  request.post(`/datasource/elasticsearch/${datasourceId}/QueryPager`, data)
-
-/**
  * 命令查询
  * @param data 查询参数
  * @returns 查询结果
  */
 export const queryDataSourceCm1 = (data: any) =>
   request.post('/datasource/data_source_a8X2/cm1/QueryList/execute', data)
+
+/**
+ * 通用数据源操作接口
+ * @param typeId 数据源类型 (rdb, elasticsearch, redis, api, websocket 等)
+ * @param dataSourceId 数据源ID
+ * @param action 操作类型 (Refresh, ExecuteSql, QueryPager, ServerInfo, QueryKey, HttpExprRequest, WebSocketExprRequest, QueryIndexPager, QueryMetadata 等)
+ * @param data 查询参数
+ * @returns 查询结果
+ * @example
+ * // 刷新 RDB 表结构
+ * queryDataSource('rdb', 'datasource_id', 'Refresh', {})
+ *
+ * // 查询 Redis 键
+ * queryDataSource('redis', 'datasource_id', 'QueryKey', { pattern: '*', cursor: '0' })
+ *
+ * // 测试 API 数据源
+ * queryDataSource('api', 'datasource_id', 'HttpExprRequest', { url: 'http://example.com' })
+ */
+export const queryDataSource = (typeId: string, dataSourceId: string, action: string, data: any) =>
+  request.post(`/datasource/${typeId}/${dataSourceId}/${action}`, data)
