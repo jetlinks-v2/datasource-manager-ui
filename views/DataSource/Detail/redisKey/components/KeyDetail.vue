@@ -32,12 +32,11 @@
       <div class="info-section">
         <a-row :gutter="16">
           <a-col :span="12">
-            <div class="info-item">
-              <span class="info-label">数据类型：</span>
+            <a-space>
+              数据类型：
               <a-tag
                 v-if="keyType"
                 :color="getTypeColor(keyType)"
-                class="type-tag"
               >
                 {{ keyType.toUpperCase() }}
               </a-tag>
@@ -45,13 +44,13 @@
                 v-else
                 size="small"
               />
-            </div>
+            </a-space>
           </a-col>
           <a-col :span="12">
-            <div class="info-item">
-              <span class="info-label">过期时间：</span>
-              <span class="info-value">{{ formatExpiration(expiration) }}</span>
-            </div>
+            <a-space>
+              过期时间：
+              <span>{{ formatExpiration(expiration) }}</span>
+            </a-space>
           </a-col>
         </a-row>
       </div>
@@ -59,7 +58,10 @@
       <!-- 数据内容 -->
       <div class="content-section">
         <div class="section-header">
-          <div class="section-title">数据内容</div>
+          <TitleComponent
+            data="数据内容"
+            class="section-title"
+          />
           <div
             v-if="dataCount !== null"
             class="section-count"
@@ -80,16 +82,14 @@
         </div>
 
         <!-- 数据展示 -->
-        <div
-          v-else-if="keyData"
-          class="data-content"
-        >
+        <template v-else-if="keyData">
           <component
             :is="currentTypeComponent"
             :data="keyData"
+            show-total
             @count-updated="handleCountUpdate"
           />
-        </div>
+        </template>
 
         <!-- 空状态 -->
         <div
@@ -120,6 +120,7 @@ import HashType from './dataTypes/HashType.vue'
 import ListType from './dataTypes/ListType.vue'
 import SetType from './dataTypes/SetType.vue'
 import ZsetType from './dataTypes/ZsetType.vue'
+import { template } from 'lodash-es'
 
 interface KeyItem {
   type: 'dir' | 'key'
@@ -226,9 +227,7 @@ const fetchKeyData = async () => {
   if (!keyType.value) return
 
   try {
-    // 将类型首字母大写，作为 action
-    const typeAction = keyType.value.charAt(0).toUpperCase() + keyType.value.slice(1)
-    const res = await queryDataSource(props.typeId, props.datasourceId, typeAction, {
+    const res = await queryDataSource(props.typeId, props.datasourceId, 'GeneralQuery', {
       key: props.selectedKey?.name
     })
     if (res.status === 200) {
@@ -319,7 +318,7 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 0 16px 0;
+  padding: 0 0 14px 0;
   border-bottom: 1px solid #f0f0f0;
   margin-bottom: 20px;
 
@@ -331,7 +330,6 @@ watch(
     min-width: 0;
 
     .title-icon {
-      font-size: 18px;
       color: #1890ff;
       flex-shrink: 0;
     }
@@ -339,9 +337,9 @@ watch(
 }
 
 .info-section {
-  padding: 16px;
+  padding: 14px;
   background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-  border-radius: 8px;
+  border-radius: 4px;
   margin-bottom: 20px;
   border: 1px solid #f0f0f0;
 
@@ -349,24 +347,6 @@ watch(
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
-
-    .info-label {
-      color: rgba(0, 0, 0, 0.65);
-      font-weight: 500;
-    }
-
-    .info-value {
-      color: rgba(0, 0, 0, 0.85);
-      font-weight: 500;
-    }
-
-    .type-tag {
-      font-size: 13px;
-      padding: 2px 12px;
-      font-weight: 600;
-      border-radius: 4px;
-    }
   }
 }
 
@@ -375,26 +355,25 @@ watch(
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 0;
 
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 
     .section-title {
-      font-size: 15px;
-      font-weight: 600;
+      height: 20px;
+      font-weight: 500;
       color: rgba(0, 0, 0, 0.85);
+      margin: 0;
     }
 
     .section-count {
-      font-size: 13px;
+      margin-right: 12px;
       color: rgba(0, 0, 0, 0.65);
       font-weight: 500;
-      padding: 4px 12px;
-      border-radius: 4px;
+      white-space: nowrap;
     }
   }
 
@@ -406,13 +385,6 @@ watch(
     justify-content: center;
     min-height: 300px;
     gap: 16px;
-  }
-
-  .data-content {
-    flex: 1;
-    overflow: hidden;
-    border-radius: 8px;
-    min-height: 0;
   }
 
   .empty-content {

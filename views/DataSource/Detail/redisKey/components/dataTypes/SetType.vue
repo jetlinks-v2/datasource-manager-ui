@@ -3,18 +3,20 @@
     <a-table
       :columns="columns"
       :data-source="setData"
-      :pagination="pagination"
+      :pagination="false"
       :scroll="{ y: tableHeight }"
-      size="middle"
+      size="small"
       bordered
-      class="set-table"
     >
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'index'">
-          <span class="index-cell">{{ index + 1 }}</span>
+          {{ index + 1 }}
         </template>
         <template v-else-if="column.key === 'value'">
           {{ record.value }}
+        </template>
+        <template v-else-if="column.key === 'action'">
+          <PreviewPopover :content="record.value" />
         </template>
       </template>
     </a-table>
@@ -22,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import PreviewPopover from './PreviewPopover.vue'
+
 const props = defineProps<{
   data: any
 }>()
@@ -36,28 +40,22 @@ const columns = [
   {
     title: '序号',
     key: 'index',
-    width: 100,
+    width: 80,
     align: 'center' as const
   },
   {
     title: '成员',
     key: 'value',
-    dataIndex: 'value'
+    dataIndex: 'value',
+    ellipsis: true
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 80,
+    align: 'center' as const
   }
 ]
-
-const pagination = computed(() => {
-  const total = setData.value.length
-  return total > 10
-    ? {
-        pageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number) => `共 ${total} 条`,
-        pageSizeOptions: ['10', '20', '50', '100']
-      }
-    : false
-})
 
 const setData = computed(() => {
   if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
@@ -86,19 +84,23 @@ watch(
   { immediate: true }
 )
 
-const updateTableHeight = () => {
-  const windowHeight = window.innerHeight
-  const calculatedHeight = windowHeight - 500
-  tableHeight.value = Math.max(300, calculatedHeight)
+const calculateTableHeight = () => {
+  const container = document.querySelector('.set-type')
+  if (container) {
+    const containerHeight = container.clientHeight
+    tableHeight.value = Math.max(containerHeight - 80, 100)
+  }
 }
 
 onMounted(() => {
-  updateTableHeight()
-  window.addEventListener('resize', updateTableHeight)
+  nextTick(() => {
+    calculateTableHeight()
+    window.addEventListener('resize', calculateTableHeight)
+  })
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateTableHeight)
+  window.removeEventListener('resize', calculateTableHeight)
 })
 </script>
 
@@ -107,35 +109,5 @@ onBeforeUnmount(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.set-table {
-  flex: 1;
-  border-radius: 8px;
-  overflow: hidden;
-
-  :deep(.ant-table) {
-    font-size: 13px;
-
-    .ant-table-thead > tr > th {
-      background-color: #fafafa;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.85);
-      padding: 12px 16px;
-    }
-
-    .ant-table-tbody > tr > td {
-      padding: 10px 16px;
-    }
-
-    .ant-table-tbody > tr:hover > td {
-      background-color: #f5f5f5;
-    }
-  }
-
-  .index-cell {
-    color: rgba(0, 0, 0, 0.45);
-    font-size: 12px;
-  }
 }
 </style>

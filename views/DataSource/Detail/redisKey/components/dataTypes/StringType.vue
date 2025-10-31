@@ -6,9 +6,9 @@
     <div class="editor-container">
       <MonacoEditor
         v-model="displayContent"
+        read-only
         :language="editorLanguage"
         :theme="'vs'"
-        :read-only="true"
         :blur-format="false"
         :options="{
           minimap: { enabled: false },
@@ -25,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+
 const props = withDefaults(
   defineProps<{
     data: any
@@ -38,6 +40,10 @@ const props = withDefaults(
     showTotal: false
   }
 )
+
+const emit = defineEmits<{
+  countUpdated: [count: string]
+}>()
 
 const editorLanguage = ref('plaintext')
 const displayContent = ref('')
@@ -62,7 +68,6 @@ const isValidJSON = (str: string): boolean => {
   }
 }
 
-// 格式化 JSON 字符串
 const formatJSON = (str: string): string => {
   try {
     const parsed = JSON.parse(str)
@@ -80,7 +85,6 @@ const processContent = () => {
     return
   }
 
-  // data 格式: [{ key: "xxx", value: "string content" }]
   const item = props.data[0]
   const value = item?.value || ''
 
@@ -98,6 +102,9 @@ watch(
   () => props.data,
   () => {
     processContent()
+    if (props.showTotal) {
+      emit('countUpdated', `共 ${displayContent.value.length} 个字符`)
+    }
   },
   { immediate: true, deep: true }
 )
