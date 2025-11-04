@@ -41,6 +41,9 @@ interface FormData {
     }
     rdbDefinition?: any
     elasticsearchConfig?: any
+    pattern?: string
     provider?: string
+    description?: string
+    [key: string]: any
   }
 }

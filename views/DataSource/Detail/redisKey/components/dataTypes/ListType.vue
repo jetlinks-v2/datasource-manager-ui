@@ -2,6 +2,7 @@
   <CommonTable
     :data="listData"
     :columns="columns"
+    :showAction="showAction"
     @countUpdated="handleCountUpdated"
   >
     <template #index="{ index }">
@@ -18,6 +19,7 @@ import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
+  showAction?: boolean
 }>()
 
 const emit = defineEmits<{

@@ -1,7 +1,7 @@
 <template>
   <div class="table-container">
     <a-table
-      :columns="columns"
+      :columns="showAction ? columns : columns.filter((column) => column.key !== 'action')"
       :data-source="data"
       :pagination="false"
       :scroll="{ y: tableHeight }"
@@ -46,6 +46,7 @@ import PreviewPopover from './PreviewPopover.vue'
 const props = defineProps<{
   data: any[]
   columns: any[]
+  showAction?: boolean
 }>()
 
 const emit = defineEmits<{

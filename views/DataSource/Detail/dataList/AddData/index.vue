@@ -91,6 +91,7 @@ import ApiSend from './ApiSend/index.vue'
 import BasicForm from './components/BasicForm.vue'
 import WebSocketSend from './WebSocketSend/index.vue'
 import EsDatasourceQuery from './EsDatasourceQuery/index.vue'
+import RedisDatasourceQuery from './RedisDatasourceQuery/index.vue'
 
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
@@ -152,7 +153,8 @@ const COMPONENT_MAP = {
   [DATA_TYPE_ITEM.RDB_DATASOURCE]: RdbDatasourceQuery,
   [DATA_TYPE_ITEM.API_SEND]: ApiSend,
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend,
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: RedisDatasourceQuery
 } as const
 
 const isEdit = computed(() => !!props.data?.id)
@@ -164,7 +166,8 @@ const modalWidth = computed(() => {
   if (currentStep.value === 1) {
     if (
       sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+      sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
     ) {
       return '600px'
     }
@@ -206,6 +209,12 @@ const handleConfigUpdate = (config: any) => {
       formData.configuration = {
         ...formData.configuration,
         rdbDefinition: config
+      }
+      break
+    case DATA_TYPE_ITEM.REDIS_DATASOURCE:
+      formData.configuration = {
+        ...formData.configuration,
+        ...config
       }
       break
     default:
@@ -254,6 +263,12 @@ const handleSave = async () => {
       return
     }
 
+    // Redis 数据源特殊处理
+    if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
+      await saveRedisDataSource()
+      return
+    }
+
     // API 和 WebSocket 通用处理
     await saveCommonDataSource()
   } catch (error: any) {
@@ -293,6 +308,24 @@ const saveEsDataSource = async () => {
     ...formData,
     configuration: {
       elasticsearchConfig: formData.configuration.elasticsearchConfig
+    }
+  })
+}
+
+// 保存 Redis 数据源
+const saveRedisDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const isComponentValid = await componentRef.value?.validateAll()
+  if (!isComponentValid) return
+
+  await saveDataSource({
+    ...formData,
+    configuration: {
+      pattern: formData.configuration.pattern || '*',
+      provider: 'pattern',
+      description: formData.configuration.description || ''
     }
   })
 }
@@ -455,7 +488,8 @@ const initializeFormData = () => {
     [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit,
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit
   }
 
   const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
@@ -558,6 +592,11 @@ const handleRdbInit = (data: any) => {
 
 // ES 类型
 const handleEsInit = (data: any) => {
+  formData.configuration = data.configuration || {}
+}
+
+// Redis 类型
+const handleRedisInit = (data: any) => {
   formData.configuration = data.configuration || {}
 }
 

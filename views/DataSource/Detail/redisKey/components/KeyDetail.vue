@@ -87,6 +87,7 @@
             :is="currentTypeComponent"
             :data="keyData"
             show-total
+            showAction
             @count-updated="handleCountUpdate"
           />
         </template>

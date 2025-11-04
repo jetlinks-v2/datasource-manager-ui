@@ -129,7 +129,6 @@ const displayData = ref<KeyItem[]>([])
 const selectedKey = ref('')
 const searchQuery = ref('')
 
-const hasFolder = ref(false)
 const currentLevel = ref(0)
 const hasMore = ref(true)
 const refreshLoading = ref(false)
@@ -142,11 +141,6 @@ const createLevelData = (prefix: string): LevelData => ({
 })
 
 const levelStack = ref<LevelData[]>([createLevelData('')])
-
-const checkFolderMode = () => {
-  const delimiter = props.info?.shareConfig?.delimiter
-  hasFolder.value = Boolean(delimiter && delimiter !== '')
-}
 
 // 选中第一个合适的键
 const selectFirstAvailableKey = (data: KeyItem[]) => {
@@ -323,18 +317,9 @@ const refresh = () => {
 }
 
 onMounted(() => {
-  checkFolderMode()
   fetchKeyTotal()
   loadKeyData()
 })
-
-watch(
-  () => props.info,
-  () => {
-    checkFolderMode()
-  },
-  { deep: true }
-)
 
 defineExpose({
   refresh

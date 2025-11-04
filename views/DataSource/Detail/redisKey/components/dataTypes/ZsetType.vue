@@ -2,6 +2,7 @@
   <CommonTable
     :data="zsetData"
     :columns="columns"
+    :showAction="showAction"
     @change="handleTableChange"
     @countUpdated="handleCountUpdated"
   >
@@ -22,6 +23,7 @@ import CommonTable from './CommonTable.vue'
 
 const props = defineProps<{
   data: any
+  showAction?: boolean
 }>()
 
 const emit = defineEmits<{

@@ -11,13 +11,16 @@
     @open-change="handleOpenChange"
   >
     <template #content>
-      <StringType
-        :data="[{ value: content }]"
-        width="400px"
-        height="300px"
-        class="preview-content"
-      />
+      <slot name="content111">
+        <StringType
+          :data="[{ value: content }]"
+          width="400px"
+          height="300px"
+          class="preview-content"
+        />
+      </slot>
     </template>
+
     <AIcon
       type="EyeOutlined"
       class="preview-icon"
