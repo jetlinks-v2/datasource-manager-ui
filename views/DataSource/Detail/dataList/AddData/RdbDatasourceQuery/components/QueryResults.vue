@@ -2,7 +2,7 @@
   <div class="query-result">
     <TitleComponent
       data="查询结果预览"
-      :style="{ fontSize: '16px', marginBottom: '0' }"
+      :style="{ marginBottom: '0' }"
     />
     <j-pro-table
       :columns="columns"

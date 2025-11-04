@@ -1,7 +1,10 @@
 <template>
   <div class="check-test-warp">
     <div class="header">
-      <div class="section-title">动态参数</div>
+      <TitleComponent
+        data="动态参数"
+        class="section-title"
+      />
       <slot name="sendOutButton" />
     </div>
     <a-table
@@ -190,7 +193,7 @@ defineExpose({
 }
 
 .section-title {
-  font-size: 16px;
+  margin: 0;
 }
 
 .params-table {

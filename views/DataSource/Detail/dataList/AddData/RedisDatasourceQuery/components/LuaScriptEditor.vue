@@ -241,14 +241,7 @@ const initEditor = (): void => {
     automaticLayout: true,
     minimap: { enabled: props.showMinimap },
     scrollBeyondLastLine: false,
-    lineNumbers: 'on',
-    readOnly: props.readOnly,
-    tabSize: 2,
-    folding: true,
-    wordWrap: 'on',
-    formatOnPaste: false,
-    fontSize: 13,
-    lineHeight: 18
+    readOnly: props.readOnly
   })
 
   monacoInstance.value = instance

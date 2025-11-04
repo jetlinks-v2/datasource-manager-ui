@@ -34,10 +34,7 @@
     <section class="debug-section">
       <!-- 输入参数区域 -->
       <div class="params-section">
-        <TitleComponent
-          data="输入参数"
-          :style="{ fontSize: '16px' }"
-        />
+        <TitleComponent data="输入参数" />
 
         <div class="section-content">
           <a-form
@@ -72,10 +69,7 @@
       <!-- 执行结果区域 -->
       <div class="result-section">
         <h4 class="section-title">
-          <TitleComponent
-            data="执行结果"
-            :style="{ fontSize: '16px' }"
-          />
+          <TitleComponent data="执行结果" />
         </h4>
         <div class="section-content">
           <template v-if="debugLoading">

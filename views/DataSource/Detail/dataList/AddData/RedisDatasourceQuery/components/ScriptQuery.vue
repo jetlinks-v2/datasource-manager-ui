@@ -14,7 +14,6 @@
           <template #content>
             <div style="width: 400px; height: 300px">
               <LuaScriptEditor
-                ref="luaEditorRef"
                 v-model="helpContent"
                 height="100%"
                 :read-only="true"
@@ -44,7 +43,7 @@
           <template #icon>
             <AIcon type="ThunderboltOutlined" />
           </template>
-          解析
+          <span class="button-text">解析</span>
         </a-button>
       </a-space>
     </div>
@@ -56,49 +55,35 @@
       @variables-change="handleVariablesChange"
     />
 
-    <!-- 变量输入区域 -->
+    <!-- 动态参数组件 -->
     <div
       v-if="parsedVariables.length > 0"
       class="variables-section"
     >
-      <div class="section-header">
-        <TitleComponent
-          data="变量参数"
-          class="section-title"
-        />
-        <a-tag color="blue">共 {{ parsedVariables.length }} 个变量</a-tag>
-      </div>
-      <div class="variables-list">
-        <div
-          v-for="variable in parsedVariables"
-          :key="variable"
-          class="variable-item"
-        >
-          <div class="variable-label">
-            <code>${{ variable }}</code>
-          </div>
-          <a-input
-            v-model:value="variableValues[variable]"
-            placeholder="请输入变量值"
-            allow-clear
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- 操作按钮 -->
-    <div class="action-section">
-      <a-button
-        type="primary"
-        :loading="executing"
-        :disabled="!canExecute"
-        @click="handleExecute"
+      <CheckTest
+        ref="checkTestRef"
+        :form-data="{ data: {} }"
+        :query-params="queryParams"
+        :history-params="historyParams"
+        @update:data="handleParamsUpdate"
       >
-        <template #icon>
-          <AIcon type="PlayCircleOutlined" />
+        <template #sendOutButton>
+          <div class="action-section">
+            <a-button
+              type="primary"
+              size="small"
+              :loading="executing"
+              :disabled="!canExecute"
+              @click="handleExecute"
+            >
+              <template #icon>
+                <AIcon type="PlayCircleOutlined" />
+              </template>
+              <span class="button-text">执行</span>
+            </a-button>
+          </div>
         </template>
-        发送执行
-      </a-button>
+      </CheckTest>
     </div>
 
     <!-- 结果展示区域 -->
@@ -133,6 +118,7 @@
 import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
 import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 
 interface Props {
   data?: {
@@ -153,6 +139,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:configuration'])
 
 const luaEditorRef = ref<InstanceType<typeof LuaScriptEditor>>()
+const checkTestRef = ref<InstanceType<typeof CheckTest>>()
+
 const helpContent = ref(`-- Redis Lua 脚本示例
 
 local pattern = \${pattern}
@@ -165,6 +153,7 @@ redis.call('SET', key, \${value})
 local result = redis.call('GET', key)
 
 return result`)
+
 // 脚本内容
 const scriptContent = ref(`-- Redis Lua 脚本示例
 local pattern = \${pattern}
@@ -174,6 +163,15 @@ return keys`)
 // 变量相关
 const parsedVariables = ref<string[]>([])
 const variableValues = ref<Record<string, string>>({})
+
+// CheckTest 组件所需的参数
+const queryParams = ref<Record<string, any>>({
+  query: [],
+  headers: [],
+  body: [],
+  uri: []
+})
+const historyParams = ref<Record<string, string>>({})
 
 // 执行相关
 const executing = ref(false)
@@ -198,6 +196,15 @@ const handleVariablesChange = (variables: string[]) => {
   variableValues.value = newValues
 }
 
+// 处理动态参数更新
+const handleParamsUpdate = (params: Array<{ name: string; value: string }>) => {
+  const newValues: Record<string, string> = {}
+  params.forEach((param) => {
+    newValues[param.name] = param.value
+  })
+  variableValues.value = newValues
+}
+
 // 手动解析变量
 const handleParseVariables = () => {
   if (!luaEditorRef.value) return
@@ -206,10 +213,25 @@ const handleParseVariables = () => {
 
   // 初始化变量值
   const newValues: Record<string, string> = {}
+  const queryParamsArray: Array<{ key: string }> = []
+
   variables.forEach((v: any) => {
     newValues[v] = variableValues.value[v] || ''
+    queryParamsArray.push({ key: v })
   })
+
   variableValues.value = newValues
+
+  // 更新 queryParams 以匹配 CheckTest 组件的期望格式
+  queryParams.value = {
+    query: queryParamsArray,
+    headers: [],
+    body: [],
+    uri: []
+  }
+
+  // 更新历史参数
+  historyParams.value = { ...newValues }
 
   if (variables.length > 0) {
     onlyMessage(`成功解析 ${variables.length} 个变量`)
@@ -305,6 +327,21 @@ onMounted(() => {
       if (luaEditorRef.value) {
         const variables = luaEditorRef.value.extractVariables()
         parsedVariables.value = variables
+
+        // 初始化 queryParams 和 historyParams
+        if (variables.length > 0) {
+          const queryParamsArray: Array<{ key: string }> = []
+          variables.forEach((v: any) => {
+            queryParamsArray.push({ key: v })
+          })
+          queryParams.value = {
+            query: queryParamsArray,
+            headers: [],
+            body: [],
+            uri: []
+          }
+          historyParams.value = { ...variableValues.value }
+        }
       }
       updateConfiguration()
     } catch (error) {
@@ -332,47 +369,13 @@ defineExpose({
     padding: 16px 0;
 
     .section-title {
+      font-size: 14px;
       margin: 0;
     }
   }
 
   .variables-section {
-    .variables-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-
-      .variable-item {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-
-        .variable-label {
-          font-size: 13px;
-          color: #595959;
-          display: flex;
-          align-items: center;
-          white-space: nowrap;
-
-          code {
-            background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            color: #4ec9b0;
-            font-weight: 600;
-          }
-        }
-      }
-    }
-  }
-
-  .action-section {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    border-radius: 4px;
-    padding: 16px 0;
+    margin-top: 16px;
   }
 
   .result-section {
@@ -381,6 +384,10 @@ defineExpose({
       border-radius: 4px;
       overflow: hidden;
     }
+  }
+
+  .button-text {
+    font-size: 12px;
   }
 }
 </style>
