@@ -38,7 +38,6 @@
       <template #checkTest="{ params }">
         <CheckTest
           ref="checkTestRef"
-          :formData="expression"
           :queryParams="params"
           :historyParams="data.param"
           @update:data="handleCheckTestSave"

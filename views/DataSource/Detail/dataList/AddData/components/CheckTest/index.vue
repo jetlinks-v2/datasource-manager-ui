@@ -39,10 +39,6 @@ interface ParamItem {
 }
 
 const props = defineProps({
-  formData: {
-    type: Object,
-    required: true
-  },
   queryParams: {
     type: Object,
     default: {

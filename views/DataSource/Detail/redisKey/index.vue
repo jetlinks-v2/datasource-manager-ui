@@ -36,7 +36,7 @@ interface KeyItem {
 }
 
 const props = defineProps<{
-  info: Object
+  info: any
 }>()
 
 const route = useRoute()

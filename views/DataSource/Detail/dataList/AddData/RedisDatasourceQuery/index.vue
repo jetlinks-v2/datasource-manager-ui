@@ -22,10 +22,11 @@
     <div class="content">
       <CommonQuery
         v-show="activeTab === 'pattern'"
+        ref="commonQueryRef"
         :data="data"
         :type-id="typeId"
         :datasource-id="datasourceId"
-        @update:configuration="handleConfigurationUpdate"
+        @update:expression="handleCommonExpressionUpdate"
       />
 
       <ScriptQuery
@@ -34,7 +35,7 @@
         :data="scriptData"
         :is-edit="isEdit"
         :form-ref="formRef"
-        @update:configuration="handleScriptConfigUpdate"
+        @update:expression="handleScriptExpressionUpdate"
       />
     </div>
   </div>
@@ -59,12 +60,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:configuration'])
+const emit = defineEmits(['update:expression'])
 
 const route = useRoute()
 const activeTab = ref('pattern')
 const scriptQueryRef = ref<InstanceType<typeof ScriptQuery>>()
-
+const commonQueryRef = ref<InstanceType<typeof CommonQuery>>()
 const typeId = computed(() => route.query.typeId as string)
 const datasourceId = computed(() => route.params.id as string)
 
@@ -77,36 +78,22 @@ const scriptData = computed(() => ({
 const handleActiveTabChange = (tab: string) => {
   if (activeTab.value === tab) return
   activeTab.value = tab
-  updateConfiguration()
 }
 
-const handleConfigurationUpdate = (config: any) => {
-  const finalConfig = {
-    ...config,
-    provider: activeTab.value
-  }
-  emit('update:configuration', finalConfig)
+const handleCommonExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
+  emit('update:expression', expression, resultJson, inputs)
 }
 
 // 处理脚本配置更新
-const handleScriptConfigUpdate = (config: any) => {
-  emit('update:configuration', config)
-}
-
-const updateConfiguration = () => {
-  const config = {
-    pattern: props.data.pattern || '',
-    provider: activeTab.value,
-    description: ''
-  }
-  emit('update:configuration', config)
+const handleScriptExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
+  emit('update:expression', expression, resultJson, inputs)
 }
 
 const validateAll = async () => {
   if (activeTab.value === 'script') {
     return scriptQueryRef.value?.validateAll()
   }
-  return true
+  return commonQueryRef.value?.validateAll()
 }
 
 defineExpose({

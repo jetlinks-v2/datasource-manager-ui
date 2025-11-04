@@ -166,8 +166,7 @@ const modalWidth = computed(() => {
   if (currentStep.value === 1) {
     if (
       sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-      sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
     ) {
       return '600px'
     }
@@ -192,6 +191,8 @@ const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsDat
     expression,
     param: dynamicParamsData
   }
+
+  console.log('testData', testData)
 
   testDataSource.value = testData
   dynamicParams.value = dynamicParamsData

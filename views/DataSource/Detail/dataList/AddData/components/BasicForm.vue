@@ -69,9 +69,7 @@
 
     <CommandParams
       v-if="
-        sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE &&
-        sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE &&
-        sourceClassify !== DATA_TYPE_ITEM.REDIS_DATASOURCE
+        sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
       "
       ref="commandParamsRef"
       :modelValue="commandModelValue"
@@ -119,15 +117,13 @@ const commandModelValue = ref<any>({
 
 const outputData = computed(() =>
   props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.REDIS_DATASOURCE
+  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
     ? props.testData
     : convertToTableTreeData(props.testData)
 )
 const inputData = computed(() =>
   props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.REDIS_DATASOURCE
+  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
     ? props.dynamicParams
     : convertToTableTreeData(props.dynamicParams)
 )
@@ -196,8 +192,7 @@ const getFormData = async () => {
   // Redis、RDB 和 ES 不需要验证命令参数
   if (
     props.sourceClassify === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
-    props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-    props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+    props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE
   ) {
     return props.modelValue
   }

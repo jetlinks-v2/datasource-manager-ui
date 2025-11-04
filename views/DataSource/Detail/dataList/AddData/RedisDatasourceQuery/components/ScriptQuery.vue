@@ -52,22 +52,28 @@
     >
       <CheckTest
         ref="checkTestRef"
-        :form-data="{ data: {} }"
         :query-params="queryParams"
         :history-params="historyParams"
         @update:data="handleParamsUpdate"
       >
         <template #sendOutButton>
-          <a-button
-            type="primary"
-            :loading="executing"
-            @click="handleExecute"
-          >
-            <template #icon>
-              <AIcon type="PlayCircleOutlined" />
-            </template>
-            执行
-          </a-button>
+          <a-space>
+            <a-select
+              v-model:value="outputType"
+              :options="outputTypeEnum"
+              style="width: 180px"
+            />
+            <a-button
+              type="primary"
+              :loading="executing"
+              @click="handleExecute"
+            >
+              <template #icon>
+                <AIcon type="PlayCircleOutlined" />
+              </template>
+              执行
+            </a-button>
+          </a-space>
         </template>
       </CheckTest>
     </div>
@@ -105,6 +111,7 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
 import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
+import { convertParamsToObject } from '../../components/utils'
 
 interface Props {
   data?: {
@@ -122,10 +129,19 @@ const props = withDefaults(defineProps<Props>(), {
   formRef: null
 })
 
-const emit = defineEmits(['update:configuration'])
+const emit = defineEmits(['update:expression'])
 
 const luaEditorRef = ref<InstanceType<typeof LuaScriptEditor>>()
 const checkTestRef = ref<InstanceType<typeof CheckTest>>()
+
+const outputTypeEnum = ref([
+  { value: 'BOOLEAN', label: '布尔值 (BOOLEAN)' },
+  { value: 'INTEGER', label: '整数 (INTEGER)' },
+  { value: 'MULTI', label: '多项 (MULTI)' },
+  { value: 'STATUS', label: '状态 (STATUS)' },
+  { value: 'VALUE', label: '值 (VALUE)' },
+  { value: 'OBJECT', label: '对象 (OBJECT)' }
+])
 
 const helpContent = ref(`-- Redis Lua 脚本示例
 
@@ -149,8 +165,10 @@ return keys`)
 // 变量相关
 const parsedVariables = ref<string[]>([])
 const variableValues = ref<Record<string, string>>({})
+const dynamicParams = ref<any>([])
 
 // CheckTest 组件所需的参数
+const outputType = ref('MULTI')
 const queryParams = ref<Record<string, any>>({
   query: []
 })
@@ -175,11 +193,7 @@ const handleVariablesChange = (variables: string[]) => {
 
 // 处理动态参数更新
 const handleParamsUpdate = (params: Array<{ name: string; value: string }>) => {
-  const newValues: Record<string, string> = {}
-  params.forEach((param) => {
-    newValues[param.name] = param.value
-  })
-  variableValues.value = newValues
+  dynamicParams.value = params
 }
 
 // 手动解析变量
@@ -259,19 +273,7 @@ const handleExecute = async () => {
     onlyMessage('脚本执行失败', 'error')
   } finally {
     executing.value = false
-    updateConfiguration()
   }
-}
-
-// 更新配置
-const updateConfiguration = () => {
-  const config = {
-    script: scriptContent.value,
-    variables: variableValues.value,
-    provider: 'script',
-    description: ''
-  }
-  emit('update:configuration', config)
 }
 
 // 验证
@@ -280,6 +282,17 @@ const validateAll = async () => {
     onlyMessage('请输入 Lua 脚本', 'error')
     return false
   }
+
+  emit(
+    'update:expression',
+    {
+      script: scriptContent.value,
+      outputType: outputType.value,
+      provider: 'script'
+    },
+    JSON.parse(resultJson.value || '{}'),
+    convertParamsToObject(dynamicParams.value)
+  )
   return true
 }
 
@@ -310,7 +323,6 @@ onMounted(() => {
           historyParams.value = { ...variableValues.value }
         }
       }
-      updateConfiguration()
     } catch (error) {
       console.error('初始化数据失败', error)
     }

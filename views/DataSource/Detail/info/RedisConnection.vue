@@ -142,7 +142,7 @@ const infoCards = computed(() => [
   },
   {
     title: '内存',
-    icon: 'HddOutlined',
+    icon: 'DashboardOutlined',
     items: [
       { label: '已用内存', value: serverInfo.value?.usedMemory || '--', highlight: true },
       { label: '内存占用峰值', value: serverInfo.value?.usedMemoryPeak || '--' },
@@ -151,7 +151,7 @@ const infoCards = computed(() => [
   },
   {
     title: '状态',
-    icon: 'DashboardOutlined',
+    icon: 'CheckCircleOutlined',
     items: [
       { label: '客户端连接数', value: String(serverInfo.value?.connectedClients || '--'), highlight: true },
       { label: '历史连接数', value: String(serverInfo.value?.totalConnectionsReceived || '--') },

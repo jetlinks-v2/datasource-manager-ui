@@ -8,9 +8,8 @@
       <a-input-search
         v-model:value="searchPattern"
         placeholder="请输入通配符模式（例如：user:*）"
-        :style="{ width: '300px' }"
+        :style="{ width: '400px' }"
         @search="handleSearch"
-        @change="handlePatternChange"
       />
     </div>
 
@@ -75,6 +74,7 @@ import HashType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/co
 import ListType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/ListType.vue'
 import SetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/SetType.vue'
 import ZsetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/ZsetType.vue'
+import { convertParamsToObject } from '../../components/utils'
 
 const props = defineProps({
   data: {
@@ -91,7 +91,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:configuration'])
+const emit = defineEmits(['update:expression'])
 
 const searchPattern = ref('')
 const queryResultLoading = ref(false)
@@ -183,24 +183,19 @@ const loadQueryResults = async (pattern: string) => {
   }
 }
 
-const updateConfiguration = () => {
-  const config = {
-    pattern: searchPattern.value,
-    provider: 'pattern',
-    description: ''
-  }
-  emit('update:configuration', config)
-}
-
-const handlePatternChange = () => {
-  updateConfiguration()
-}
-
 const validateAll = async () => {
+  emit(
+    'update:expression',
+    {
+      pattern: searchPattern.value || '*',
+      provider: 'pattern'
+    },
+    queryResultList.value[0],
+    convertParamsToObject([{ name: 'pattern', value: searchPattern.value || '*' }])
+  )
   return true
 }
 
-// 监听props.data变化，初始化搜索模式
 watch(
   () => props.data,
   (newData) => {
@@ -218,7 +213,6 @@ onMounted(() => {
         searchPattern.value = props.data.pattern
       }
       loadQueryResults(searchPattern.value)
-      updateConfiguration()
     } catch (error) {
       console.error('初始化数据失败', error)
     }
