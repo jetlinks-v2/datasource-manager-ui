@@ -112,6 +112,8 @@ import LuaScriptEditor from './LuaScriptEditor.vue'
 import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 import { convertParamsToObject } from '../../components/utils'
+import { convertToTableTreeData, parseTableTreeToMetadata } from '../../utils'
+import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
 
 interface Props {
   data?: {
@@ -130,9 +132,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits(['update:expression'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const datasourceId = route.params.id as string
 
-const luaEditorRef = ref<InstanceType<typeof LuaScriptEditor>>()
-const checkTestRef = ref<InstanceType<typeof CheckTest>>()
+const luaEditorRef = ref<any>()
+const checkTestRef = ref<any>()
 
 const outputTypeEnum = ref([
   { value: 'BOOLEAN', label: '布尔值 (BOOLEAN)' },
@@ -164,8 +169,8 @@ return keys`)
 
 // 变量相关
 const parsedVariables = ref<string[]>([])
-const variableValues = ref<Record<string, string>>({})
 const dynamicParams = ref<any>([])
+const inputParams = ref<any>([])
 
 // CheckTest 组件所需的参数
 const outputType = ref('MULTI')
@@ -180,15 +185,19 @@ const hasResult = ref(false)
 const executionSuccess = ref(false)
 const resultJson = ref('')
 
-// 变量自动提取（实时）
+// 变量自动提取
 const handleVariablesChange = (variables: string[]) => {
-  // 保留已有的变量值，添加新变量
-  const newValues: Record<string, string> = {}
-  variables.forEach((v) => {
-    newValues[v] = variableValues.value[v] || ''
+  parsedVariables.value = variables
+
+  const queryParamsArray: Array<{ key: string }> = []
+
+  variables.map((v: any) => {
+    queryParamsArray.push({ key: v })
   })
-  variableValues.value = newValues
-  handleParseVariables()
+
+  queryParams.value = {
+    query: queryParamsArray
+  }
 }
 
 // 处理动态参数更新
@@ -196,65 +205,33 @@ const handleParamsUpdate = (params: Array<{ name: string; value: string }>) => {
   dynamicParams.value = params
 }
 
-// 手动解析变量
-const handleParseVariables = () => {
-  if (!luaEditorRef.value) return
-  const variables = luaEditorRef.value.extractVariables()
-  parsedVariables.value = variables
-
-  // 初始化变量值
-  const newValues: Record<string, string> = {}
-  const queryParamsArray: Array<{ key: string }> = []
-
-  variables.forEach((v: any) => {
-    newValues[v] = variableValues.value[v] || ''
-    queryParamsArray.push({ key: v })
-  })
-
-  variableValues.value = newValues
-
-  // 更新 queryParams 以匹配 CheckTest 组件的期望格式
-  queryParams.value = {
-    query: queryParamsArray
-  }
-
-  // 更新历史参数
-  historyParams.value = { ...newValues }
-}
-
-// 执行脚本（模拟）
+// 执行脚本
 const handleExecute = async () => {
   executing.value = true
   hasResult.value = false
 
+  inputParams.value = convertParamsToObject(dynamicParams.value || [])
+  const input = parseTableTreeToMetadata(convertToTableTreeData(inputParams.value))
+  console.log(input, 'input')
+
   try {
-    // 替换脚本中的变量
-    let processedScript = scriptContent.value
-    Object.entries(variableValues.value).forEach(([key, value]) => {
-      const regex = new RegExp(`\\$\\{${key}\\}`, 'g')
-      processedScript = processedScript.replace(regex, value)
+    const res = await queryDataSource(typeId, datasourceId, 'ExecuteScript', {
+      script: scriptContent.value,
+      outputType: outputType.value,
+      executeType: 'DYNAMIC',
+      input,
+      argsValue: inputParams.value
     })
 
-    // 模拟执行结果
-    const mockResult = {
-      success: true,
-      message: '脚本执行成功',
-      data: {
-        script: processedScript,
-        variables: variableValues.value,
-        keys: ['test:key:1', 'test:key:2'],
-        argv: Object.values(variableValues.value),
-        result: 'OK',
-        affectedKeys: Math.floor(Math.random() * 10) + 1,
-        returnValue: Math.random() > 0.5 ? 'SUCCESS' : { status: 'ok', count: 42 },
-        executedAt: new Date().toISOString()
-      },
-      timestamp: Date.now()
+    if (res.success) {
+      executionSuccess.value = true
+      resultJson.value = JSON.stringify(res.result, null, 2)
+      hasResult.value = true
+    } else {
+      executionSuccess.value = false
+      resultJson.value = JSON.stringify(res.result, null, 2)
+      hasResult.value = true
     }
-
-    executionSuccess.value = true
-    resultJson.value = JSON.stringify(mockResult, null, 2)
-    hasResult.value = true
 
     onlyMessage('脚本执行成功')
   } catch (error: any) {
@@ -291,7 +268,7 @@ const validateAll = async () => {
       provider: 'script'
     },
     JSON.parse(resultJson.value || '{}'),
-    convertParamsToObject(dynamicParams.value)
+    convertParamsToObject(dynamicParams.value || [])
   )
   return true
 }
@@ -303,25 +280,11 @@ onMounted(() => {
       if (props.data?.script) {
         scriptContent.value = props.data.script
       }
-      if (props.data?.variables) {
-        variableValues.value = props.data.variables
-      }
+
       // 解析变量
       if (luaEditorRef.value) {
         const variables = luaEditorRef.value.extractVariables()
-        parsedVariables.value = variables
-
-        // 初始化 queryParams 和 historyParams
-        if (variables.length > 0) {
-          const queryParamsArray: Array<{ key: string }> = []
-          variables.forEach((v: any) => {
-            queryParamsArray.push({ key: v })
-          })
-          queryParams.value = {
-            query: queryParamsArray
-          }
-          historyParams.value = { ...variableValues.value }
-        }
+        handleVariablesChange(variables)
       }
     } catch (error) {
       console.error('初始化数据失败', error)

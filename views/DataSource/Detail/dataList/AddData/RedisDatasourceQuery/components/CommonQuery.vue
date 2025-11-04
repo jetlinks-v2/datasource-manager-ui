@@ -80,18 +80,13 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({})
-  },
-  typeId: {
-    type: String,
-    required: true
-  },
-  datasourceId: {
-    type: String,
-    required: true
   }
 })
 
 const emit = defineEmits(['update:expression'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const datasourceId = route.params.id as string
 
 const searchPattern = ref('')
 const queryResultLoading = ref(false)
@@ -168,7 +163,7 @@ const loadQueryResults = async (pattern: string) => {
   queryResultList.value = []
 
   try {
-    const res = await queryDataSource(props.typeId, props.datasourceId, 'GeneralQuery', {
+    const res = await queryDataSource(typeId, datasourceId, 'GeneralQuery', {
       pattern: pattern || '*'
     })
 

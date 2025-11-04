@@ -24,8 +24,6 @@
         v-show="activeTab === 'pattern'"
         ref="commonQueryRef"
         :data="data"
-        :type-id="typeId"
-        :datasource-id="datasourceId"
         @update:expression="handleCommonExpressionUpdate"
       />
 
@@ -62,12 +60,9 @@ const props = defineProps({
 
 const emit = defineEmits(['update:expression'])
 
-const route = useRoute()
 const activeTab = ref('pattern')
-const scriptQueryRef = ref<InstanceType<typeof ScriptQuery>>()
-const commonQueryRef = ref<InstanceType<typeof CommonQuery>>()
-const typeId = computed(() => route.query.typeId as string)
-const datasourceId = computed(() => route.params.id as string)
+const scriptQueryRef = ref<any>()
+const commonQueryRef = ref<any>()
 
 // 脚本查询数据
 const scriptData = computed(() => ({
@@ -84,7 +79,6 @@ const handleCommonExpressionUpdate = (expression: any, resultJson: any, inputs: 
   emit('update:expression', expression, resultJson, inputs)
 }
 
-// 处理脚本配置更新
 const handleScriptExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
   emit('update:expression', expression, resultJson, inputs)
 }
@@ -92,8 +86,9 @@ const handleScriptExpressionUpdate = (expression: any, resultJson: any, inputs: 
 const validateAll = async () => {
   if (activeTab.value === 'script') {
     return scriptQueryRef.value?.validateAll()
+  } else {
+    return commonQueryRef.value?.validateAll()
   }
-  return commonQueryRef.value?.validateAll()
 }
 
 defineExpose({

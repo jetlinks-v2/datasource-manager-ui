@@ -192,8 +192,6 @@ const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsDat
     param: dynamicParamsData
   }
 
-  console.log('testData', testData)
-
   testDataSource.value = testData
   dynamicParams.value = dynamicParamsData
 }
@@ -321,12 +319,22 @@ const saveRedisDataSource = async () => {
   const isComponentValid = await componentRef.value?.validateAll()
   if (!isComponentValid) return
 
+  console.log(formData.configuration, 'formData.configuration')
+  console.log(
+    parseTableTreeToMetadata(formData.configuration.input),
+    'parseTableTreeToMetadata(formData.configuration.input)'
+  )
+  console.log(
+    parseTableTreeToMetadata(formData.configuration.output),
+    'parseTableTreeToMetadata(formData.configuration.output)'
+  )
+
   await saveDataSource({
     ...formData,
     configuration: {
-      pattern: formData.configuration.pattern || '*',
-      provider: 'pattern',
-      description: formData.configuration.description || ''
+      ...formData.configuration,
+      input: parseTableTreeToMetadata(formData.configuration.input),
+      output: parseTableTreeToMetadata(formData.configuration.output)
     }
   })
 }
