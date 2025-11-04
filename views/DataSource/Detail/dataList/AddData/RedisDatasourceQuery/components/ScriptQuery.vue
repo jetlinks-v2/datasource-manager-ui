@@ -35,16 +35,6 @@
             </a-button>
           </a-tooltip>
         </a-popover>
-        <a-button
-          type="primary"
-          size="small"
-          @click="handleParseVariables"
-        >
-          <template #icon>
-            <AIcon type="ThunderboltOutlined" />
-          </template>
-          <span class="button-text">解析</span>
-        </a-button>
       </a-space>
     </div>
 
@@ -52,7 +42,7 @@
       ref="luaEditorRef"
       v-model="scriptContent"
       height="300px"
-      @variables-change="handleVariablesChange"
+      @blur="handleVariablesChange"
     />
 
     <!-- 动态参数组件 -->
@@ -68,20 +58,16 @@
         @update:data="handleParamsUpdate"
       >
         <template #sendOutButton>
-          <div class="action-section">
-            <a-button
-              type="primary"
-              size="small"
-              :loading="executing"
-              :disabled="!canExecute"
-              @click="handleExecute"
-            >
-              <template #icon>
-                <AIcon type="PlayCircleOutlined" />
-              </template>
-              <span class="button-text">执行</span>
-            </a-button>
-          </div>
+          <a-button
+            type="primary"
+            :loading="executing"
+            @click="handleExecute"
+          >
+            <template #icon>
+              <AIcon type="PlayCircleOutlined" />
+            </template>
+            执行
+          </a-button>
         </template>
       </CheckTest>
     </div>
@@ -166,10 +152,7 @@ const variableValues = ref<Record<string, string>>({})
 
 // CheckTest 组件所需的参数
 const queryParams = ref<Record<string, any>>({
-  query: [],
-  headers: [],
-  body: [],
-  uri: []
+  query: []
 })
 const historyParams = ref<Record<string, string>>({})
 
@@ -179,13 +162,6 @@ const hasResult = ref(false)
 const executionSuccess = ref(false)
 const resultJson = ref('')
 
-// 是否可以执行
-const canExecute = computed(() => {
-  if (!scriptContent.value.trim()) return false
-  if (parsedVariables.value.length === 0) return true
-  return parsedVariables.value.every((v) => variableValues.value[v]?.trim())
-})
-
 // 变量自动提取（实时）
 const handleVariablesChange = (variables: string[]) => {
   // 保留已有的变量值，添加新变量
@@ -194,6 +170,7 @@ const handleVariablesChange = (variables: string[]) => {
     newValues[v] = variableValues.value[v] || ''
   })
   variableValues.value = newValues
+  handleParseVariables()
 }
 
 // 处理动态参数更新
@@ -224,18 +201,11 @@ const handleParseVariables = () => {
 
   // 更新 queryParams 以匹配 CheckTest 组件的期望格式
   queryParams.value = {
-    query: queryParamsArray,
-    headers: [],
-    body: [],
-    uri: []
+    query: queryParamsArray
   }
 
   // 更新历史参数
   historyParams.value = { ...newValues }
-
-  if (variables.length > 0) {
-    onlyMessage(`成功解析 ${variables.length} 个变量`)
-  }
 }
 
 // 执行脚本（模拟）
@@ -335,10 +305,7 @@ onMounted(() => {
             queryParamsArray.push({ key: v })
           })
           queryParams.value = {
-            query: queryParamsArray,
-            headers: [],
-            body: [],
-            uri: []
+            query: queryParamsArray
           }
           historyParams.value = { ...variableValues.value }
         }
@@ -369,7 +336,6 @@ defineExpose({
     padding: 16px 0;
 
     .section-title {
-      font-size: 14px;
       margin: 0;
     }
   }
@@ -384,10 +350,6 @@ defineExpose({
       border-radius: 4px;
       overflow: hidden;
     }
-  }
-
-  .button-text {
-    font-size: 12px;
   }
 }
 </style>

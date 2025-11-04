@@ -30,13 +30,13 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
   update: [value: string]
   variablesChange: [variables: string[]]
+  blur: [variables: string[]]
 }>()
 
 const editorContainer = ref<HTMLElement | null>(null)
 const monacoInstance = shallowRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
-// 变量正则表达式 ${xxx}
-const VARIABLE_REGEX = /\$\{([^}]+)\}/g
+const VARIABLE_REGEX = /\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g
 
 // 提取脚本中的所有变量
 const extractVariables = (text: string): string[] => {
@@ -261,6 +261,13 @@ const initEditor = (): void => {
     // 提取并发送变量列表
     const variables = extractVariables(value)
     emit('variablesChange', variables)
+  })
+
+  // 编辑器失焦时触发blur事件并重新提取变量
+  instance.onDidBlurEditorText(() => {
+    const value = instance.getValue()
+    const variables = extractVariables(value)
+    emit('blur', variables)
   })
 
   // 初始化时提取变量
