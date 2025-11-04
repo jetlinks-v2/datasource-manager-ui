@@ -20,12 +20,21 @@
     </div>
 
     <div class="content">
-      <component
-        :is="currentComponent"
+      <CommonQuery
+        v-show="activeTab === 'pattern'"
         :data="data"
         :type-id="typeId"
         :datasource-id="datasourceId"
         @update:configuration="handleConfigurationUpdate"
+      />
+
+      <ScriptQuery
+        v-show="activeTab === 'script'"
+        ref="scriptQueryRef"
+        :data="scriptData"
+        :is-edit="isEdit"
+        :form-ref="formRef"
+        @update:configuration="handleScriptConfigUpdate"
       />
     </div>
   </div>
@@ -54,20 +63,16 @@ const emit = defineEmits(['update:configuration'])
 
 const route = useRoute()
 const activeTab = ref('pattern')
+const scriptQueryRef = ref<InstanceType<typeof ScriptQuery>>()
 
 const typeId = computed(() => route.query.typeId as string)
 const datasourceId = computed(() => route.params.id as string)
 
-// 组件映射
-const componentMap = {
-  pattern: CommonQuery,
-  script: ScriptQuery
-}
-
-// 当前组件
-const currentComponent = computed(() => {
-  return componentMap[activeTab.value as keyof typeof componentMap] || CommonQuery
-})
+// 脚本查询数据
+const scriptData = computed(() => ({
+  script: props.data?.script || '',
+  variables: props.data?.variables || {}
+}))
 
 const handleActiveTabChange = (tab: string) => {
   if (activeTab.value === tab) return
@@ -81,6 +86,11 @@ const handleConfigurationUpdate = (config: any) => {
     provider: activeTab.value
   }
   emit('update:configuration', finalConfig)
+}
+
+// 处理脚本配置更新
+const handleScriptConfigUpdate = (config: any) => {
+  emit('update:configuration', config)
 }
 
 const updateConfiguration = () => {
@@ -105,7 +115,8 @@ defineExpose({
 .redis-datasource-query-container {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 100%;
+  overflow: hidden;
 
   .header {
     display: flex;
@@ -148,6 +159,14 @@ defineExpose({
   .content {
     flex: 1;
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .script-content {
+      overflow-y: auto;
+      padding: 0;
+    }
   }
 }
 </style>

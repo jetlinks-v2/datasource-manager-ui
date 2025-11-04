@@ -92,7 +92,7 @@
         </div>
       </div>
       <div class="result-content">
-        <MonacoEditor
+        <JsonEditor
           v-model="resultJson"
           height="300px"
           :read-only="true"
@@ -106,7 +106,7 @@
 <script setup lang="ts" name="RedisScriptQuery">
 import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
-import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import JsonEditor from '../../dataList/AddData/components/JsonEditor.vue'
 
 interface Props {
   data?: {
@@ -330,7 +330,6 @@ defineExpose({
   flex-direction: column;
   gap: 20px;
   padding: 16px;
-  height: 100%;
 
   .section-header {
     display: flex;
@@ -393,6 +392,7 @@ defineExpose({
             background: #f0f0f0;
             padding: 2px 8px;
             border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
             font-size: 12px;
             color: #4ec9b0;
             font-weight: 600;
