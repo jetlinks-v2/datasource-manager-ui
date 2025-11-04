@@ -143,13 +143,9 @@ const init = () => {
 
   const mergedUniqueParams = Array.from(
     new Map(
-      [
-        ...(props.queryParams.query || []),
-        ...(props.queryParams.headers || []),
-        ...(props.queryParams.message || []),
-        ...(props.queryParams.body || []),
-        ...(props.queryParams.uri || [])
-      ].map((param) => [param.key, param])
+      Object.values(props.queryParams)
+        .flat() // 展开所有数组
+        .map((param) => [param.key, param]) // 按照 key 进行去重
     ).values()
   )
 

@@ -1,6 +1,10 @@
 <template>
   <div class="common-query">
     <div class="search-section">
+      <TitleComponent
+        data="键列表"
+        class="section-title"
+      />
       <a-input-search
         v-model:value="searchPattern"
         placeholder="请输入通配符模式（例如：user:*）"
@@ -235,8 +239,12 @@ defineExpose({
   .search-section {
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: space-between;
     padding: 0 16px;
+    margin-top: 14px;
+    .section-title {
+      margin: 0;
+    }
   }
 
   .table-section {

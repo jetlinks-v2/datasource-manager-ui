@@ -103,6 +103,9 @@ const updateConfiguration = () => {
 }
 
 const validateAll = async () => {
+  if (activeTab.value === 'script') {
+    return scriptQueryRef.value?.validateAll()
+  }
   return true
 }
 

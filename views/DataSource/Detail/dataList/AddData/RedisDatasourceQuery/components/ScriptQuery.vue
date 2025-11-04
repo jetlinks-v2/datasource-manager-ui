@@ -1,9 +1,41 @@
 <template>
   <div class="redis-script-query-container">
     <!-- 脚本编辑区域 -->
-    <div class="script-section">
-      <div class="section-header">
-        <span class="section-title">Lua 脚本</span>
+    <div class="section-header">
+      <TitleComponent
+        data="Lua 脚本"
+        class="section-title"
+      />
+      <a-space>
+        <a-popover
+          trigger="click"
+          placement="left"
+        >
+          <template #content>
+            <div style="width: 400px; height: 300px">
+              <LuaScriptEditor
+                ref="luaEditorRef"
+                v-model="helpContent"
+                height="100%"
+                :read-only="true"
+              />
+            </div>
+          </template>
+          <a-tooltip title="帮助文档">
+            <a-button
+              type="text"
+              ghost
+              size="small"
+            >
+              <template #icon>
+                <AIcon
+                  type="ReadOutlined"
+                  style="color: #1890ff"
+                />
+              </template>
+            </a-button>
+          </a-tooltip>
+        </a-popover>
         <a-button
           type="primary"
           size="small"
@@ -12,18 +44,17 @@
           <template #icon>
             <AIcon type="ThunderboltOutlined" />
           </template>
-          解析变量
+          解析
         </a-button>
-      </div>
-      <div class="editor-container">
-        <LuaScriptEditor
-          ref="luaEditorRef"
-          v-model="scriptContent"
-          height="300px"
-          @variables-change="handleVariablesChange"
-        />
-      </div>
+      </a-space>
     </div>
+
+    <LuaScriptEditor
+      ref="luaEditorRef"
+      v-model="scriptContent"
+      height="300px"
+      @variables-change="handleVariablesChange"
+    />
 
     <!-- 变量输入区域 -->
     <div
@@ -31,7 +62,10 @@
       class="variables-section"
     >
       <div class="section-header">
-        <span class="section-title">变量参数</span>
+        <TitleComponent
+          data="变量参数"
+          class="section-title"
+        />
         <a-tag color="blue">共 {{ parsedVariables.length }} 个变量</a-tag>
       </div>
       <div class="variables-list">
@@ -56,7 +90,6 @@
     <div class="action-section">
       <a-button
         type="primary"
-        size="large"
         :loading="executing"
         :disabled="!canExecute"
         @click="handleExecute"
@@ -66,15 +99,6 @@
         </template>
         发送执行
       </a-button>
-      <a-button
-        size="large"
-        @click="handleReset"
-      >
-        <template #icon>
-          <AIcon type="ReloadOutlined" />
-        </template>
-        重置
-      </a-button>
     </div>
 
     <!-- 结果展示区域 -->
@@ -83,18 +107,20 @@
       class="result-section"
     >
       <div class="section-header">
-        <span class="section-title">执行结果</span>
+        <TitleComponent
+          data="执行结果"
+          class="section-title"
+        />
         <div class="result-info">
           <a-tag :color="executionSuccess ? 'success' : 'error'">
             {{ executionSuccess ? '执行成功' : '执行失败' }}
           </a-tag>
-          <a-tag color="default">耗时: {{ executionTime }}ms</a-tag>
         </div>
       </div>
       <div class="result-content">
         <MonacoEditor
           v-model="resultJson"
-          height="300px"
+          theme="vs"
           :read-only="true"
           :show-format-btn="false"
         />
@@ -127,21 +153,23 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:configuration'])
 
 const luaEditorRef = ref<InstanceType<typeof LuaScriptEditor>>()
+const helpContent = ref(`-- Redis Lua 脚本示例
 
-// 脚本内容
-const scriptContent = ref(`-- Redis Lua 脚本示例
--- 使用 \${变量名} 定义变量
-
-local key = KEYS[1]
-local value = ARGV[1]
+local pattern = \${pattern}
+local value = \${value}
 
 -- 设置键值
-redis.call('SET', key, value)
+redis.call('SET', key, \${value})
 
 -- 获取键值
 local result = redis.call('GET', key)
 
 return result`)
+// 脚本内容
+const scriptContent = ref(`-- Redis Lua 脚本示例
+local pattern = \${pattern}
+local keys = redis.call('KEYS', pattern)
+return keys`)
 
 // 变量相关
 const parsedVariables = ref<string[]>([])
@@ -151,7 +179,6 @@ const variableValues = ref<Record<string, string>>({})
 const executing = ref(false)
 const hasResult = ref(false)
 const executionSuccess = ref(false)
-const executionTime = ref(0)
 const resultJson = ref('')
 
 // 是否可以执行
@@ -186,8 +213,6 @@ const handleParseVariables = () => {
 
   if (variables.length > 0) {
     onlyMessage(`成功解析 ${variables.length} 个变量`)
-  } else {
-    onlyMessage('未发现变量，请在脚本中使用 ${变量名} 格式定义变量', 'error')
   }
 }
 
@@ -196,12 +221,7 @@ const handleExecute = async () => {
   executing.value = true
   hasResult.value = false
 
-  const startTime = Date.now()
-
   try {
-    // 模拟网络请求延迟
-    await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 400))
-
     // 替换脚本中的变量
     let processedScript = scriptContent.value
     Object.entries(variableValues.value).forEach(([key, value]) => {
@@ -226,14 +246,12 @@ const handleExecute = async () => {
       timestamp: Date.now()
     }
 
-    executionTime.value = Date.now() - startTime
     executionSuccess.value = true
     resultJson.value = JSON.stringify(mockResult, null, 2)
     hasResult.value = true
 
     onlyMessage('脚本执行成功')
   } catch (error: any) {
-    executionTime.value = Date.now() - startTime
     executionSuccess.value = false
     resultJson.value = JSON.stringify(
       {
@@ -251,30 +269,6 @@ const handleExecute = async () => {
     executing.value = false
     updateConfiguration()
   }
-}
-
-// 重置
-const handleReset = () => {
-  scriptContent.value = `-- Redis Lua 脚本示例
--- 使用 \${变量名} 定义变量
-
-local key = KEYS[1]
-local value = ARGV[1]
-
--- 设置键值
-redis.call('SET', key, value)
-
--- 获取键值
-local result = redis.call('GET', key)
-
-return result`
-
-  parsedVariables.value = []
-  variableValues.value = {}
-  hasResult.value = false
-  executionSuccess.value = false
-  executionTime.value = 0
-  resultJson.value = ''
 }
 
 // 更新配置
@@ -328,47 +322,17 @@ defineExpose({
 .redis-script-query-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 16px;
+  padding: 0 16px;
   height: 100%;
 
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 0;
 
     .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #262626;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      &::before {
-        content: '';
-        display: inline-block;
-        width: 3px;
-        height: 14px;
-        background: #1890ff;
-        border-radius: 2px;
-      }
-    }
-
-    .result-info {
-      display: flex;
-      gap: 8px;
-    }
-  }
-
-  .script-section {
-    .editor-container {
-      background: #fafafa;
-      border-radius: 4px;
-      padding: 8px;
+      margin: 0;
     }
   }
 
@@ -380,14 +344,15 @@ defineExpose({
 
       .variable-item {
         display: flex;
-        flex-direction: column;
         gap: 8px;
+        align-items: center;
 
         .variable-label {
           font-size: 13px;
           color: #595959;
           display: flex;
           align-items: center;
+          white-space: nowrap;
 
           code {
             background: #f0f0f0;
@@ -404,17 +369,16 @@ defineExpose({
 
   .action-section {
     display: flex;
+    justify-content: flex-end;
     gap: 12px;
-    padding: 16px;
-    background: #fafafa;
     border-radius: 4px;
-    justify-content: center;
+    padding: 16px 0;
   }
 
   .result-section {
     .result-content {
+      height: 300px;
       border-radius: 4px;
-      padding: 8px;
       overflow: hidden;
     }
   }
