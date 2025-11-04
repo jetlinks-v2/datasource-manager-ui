@@ -7,14 +7,14 @@
           :class="{ active: activeTab === 'pattern' }"
           @click="handleActiveTabChange('pattern')"
         >
-          通配符查询
+          通用查询
         </a-button>
         <a-button
           class="segmented-control__button"
           :class="{ active: activeTab === 'script' }"
           disabled
         >
-          执行脚本
+          脚本查询
         </a-button>
       </div>
 
@@ -44,12 +44,12 @@
             :pagination="false"
             :scroll="{ y: 'calc(100vh - 400px)' }"
             bordered
-            row-key="name"
+            row-key="key"
             size="small"
           >
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'key'">
-                <span>{{ record.name }}</span>
+                {{ record.key }}
               </template>
               <template v-else-if="column.key === 'type'">
                 <a-tag :color="getTypeColor(record.type)">
@@ -57,7 +57,7 @@
                 </a-tag>
               </template>
               <template v-else-if="column.key === 'value'">
-                <span>{{ record.value }}</span>
+                {{ record.value }}
               </template>
               <template v-else-if="column.key === 'actions'">
                 <a-popover
@@ -65,7 +65,10 @@
                   trigger="click"
                 >
                   <template #content>
-                    <div class="preview-content">
+                    <div
+                      class="preview-content"
+                      style="width: 400px; height: 300px"
+                    >
                       <StringType
                         v-if="record.type === 'string'"
                         :data="[{ value: record.value }]"
@@ -73,18 +76,22 @@
                       <HashType
                         v-else-if="record.type === 'hash'"
                         :data="[{ value: record.value }]"
+                        :scroll="{ y: '250px' }"
                       />
                       <ListType
                         v-else-if="record.type === 'list'"
                         :data="[{ value: record.value }]"
+                        :scroll="{ y: '250px' }"
                       />
                       <SetType
                         v-else-if="record.type === 'set'"
                         :data="[{ value: record.value }]"
+                        :scroll="{ y: '250px' }"
                       />
                       <ZsetType
                         v-else-if="record.type === 'zset'"
                         :data="[{ value: record.value }]"
+                        :scroll="{ y: '250px' }"
                       />
                     </div>
                   </template>
@@ -146,7 +153,7 @@ const queryResultList = ref<QueryResultItem[]>([])
 const tableColumns = [
   {
     title: 'Key',
-    dataIndex: 'name',
+    dataIndex: 'key',
     key: 'key',
     width: '20%',
     ellipsis: true
@@ -166,7 +173,7 @@ const tableColumns = [
     ellipsis: true
   },
   {
-    title: '操作',
+    title: '查看',
     key: 'actions',
     width: '5%',
     align: 'center'
@@ -215,15 +222,7 @@ const loadQueryResults = async (pattern: string) => {
     })
 
     if (res.status === 200) {
-      const result = res.result || []
-      // 格式化数据
-      queryResultList.value = result.map((item: any) => ({
-        name: item.key,
-        type: item.type,
-        value: item.value
-      }))
-
-      console.log(queryResultList.value)
+      queryResultList.value = res.result || []
     }
   } catch (error) {
     console.error('查询键数据失败:', error)
@@ -236,7 +235,7 @@ const loadQueryResults = async (pattern: string) => {
 const updateConfiguration = () => {
   const config = {
     pattern: searchPattern.value,
-    provider: 'pattern',
+    provider: activeTab.value,
     description: ''
   }
   emit('update:configuration', config)
@@ -351,8 +350,6 @@ defineExpose({
 
   .preview-content {
     padding: 8px;
-    width: 400px;
-    height: 300px;
     overflow: hidden;
   }
 }

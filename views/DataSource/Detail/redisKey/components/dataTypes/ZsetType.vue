@@ -3,6 +3,7 @@
     :data="zsetData"
     :columns="columns"
     :showAction="showAction"
+    :scroll="scroll"
     @change="handleTableChange"
     @countUpdated="handleCountUpdated"
   >
@@ -24,6 +25,7 @@ import CommonTable from './CommonTable.vue'
 const props = defineProps<{
   data: any
   showAction?: boolean
+  scroll?: any
 }>()
 
 const emit = defineEmits<{
@@ -43,7 +45,7 @@ const columns = computed<any>(() => [
     title: 'Score',
     key: 'score',
     dataIndex: 'score',
-    width: 150,
+    width: 80,
     align: 'center' as const,
     sorter: (a: any, b: any) => a.score - b.score,
     sortOrder: tableSortOrder.value
@@ -55,7 +57,7 @@ const columns = computed<any>(() => [
     ellipsis: true
   },
   {
-    title: '操作',
+    title: '查看',
     key: 'action',
     width: 80,
     align: 'center' as const

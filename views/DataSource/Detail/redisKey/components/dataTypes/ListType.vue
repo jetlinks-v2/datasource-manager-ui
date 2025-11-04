@@ -3,6 +3,7 @@
     :data="listData"
     :columns="columns"
     :showAction="showAction"
+    :scroll="scroll"
     @countUpdated="handleCountUpdated"
   >
     <template #index="{ index }">
@@ -20,6 +21,7 @@ import CommonTable from './CommonTable.vue'
 const props = defineProps<{
   data: any
   showAction?: boolean
+  scroll?: any
 }>()
 
 const emit = defineEmits<{
@@ -40,7 +42,7 @@ const columns = [
     ellipsis: true
   },
   {
-    title: '操作',
+    title: '查看',
     key: 'action',
     width: 80,
     align: 'center' as const

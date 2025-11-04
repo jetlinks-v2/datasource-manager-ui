@@ -88,6 +88,7 @@
             :data="keyData"
             show-total
             showAction
+            :scroll="{ y: 'calc(100vh - 560px)' }"
             @count-updated="handleCountUpdate"
           />
         </template>
