@@ -195,7 +195,7 @@ const validateAll = async () => {
 watch(
   () => props.data,
   (newData) => {
-    if (newData.pattern) {
+    if (newData.pattern && newData.pattern !== '*') {
       searchPattern.value = newData.pattern
     }
   },

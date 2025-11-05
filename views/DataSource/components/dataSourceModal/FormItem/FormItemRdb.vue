@@ -132,13 +132,6 @@
         :maxlength="64"
       />
     </a-form-item>
-    <a-button
-      :disabled="!canTestConnection"
-      @click="emit('testConnection', formData)"
-      :loading="connectionLoading"
-    >
-      测试连接
-    </a-button>
   </a-form>
 </template>
 
@@ -149,7 +142,7 @@ import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 
-const emit = defineEmits(['update:modelValue', 'testConnection'])
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   active: {
     type: Object,
@@ -160,7 +153,6 @@ const props = defineProps({
     default: {}
   }
 })
-const connectionLoading = ref(false)
 const sourceDetailStore = useSourceDetailStore()
 const { active } = toRefs(props)
 const formRef = ref()
@@ -203,9 +195,6 @@ const canTestConnection = computed(() => {
   return true
 })
 
-const setLoading = (val: boolean) => {
-  connectionLoading.value = val
-}
 const handleConnectionModeChange = () => {
   if (formData.value?.connectionMode === 'basic') {
     const { host, port, path, protocol } = datasourceParseUrl(formData.value.jdbcUrl, active.value)
@@ -357,7 +346,7 @@ onBeforeUnmount(() => {
 
 defineExpose({
   validate,
-  setLoading
+  canTestConnection
 })
 </script>
 

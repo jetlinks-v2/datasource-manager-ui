@@ -115,6 +115,13 @@ const formData = computed<RedisData>({
 
 const validate = () => formRef.value?.validate()
 
+const hasValue = (value: unknown) => value !== undefined && value !== null && value !== ''
+
+const canTestConnection = computed(() => {
+  const { host, port, databaseIndex } = formData.value
+  return Boolean(host?.trim()) && hasValue(port) && hasValue(databaseIndex)
+})
+
 const handleSeparatorBlur = () => {
   if (formData.value.delimiter) {
     const trimmedValue = formData.value.delimiter.trim()
@@ -132,7 +139,7 @@ watch(
   { immediate: true, deep: true }
 )
 
-defineExpose({ validate })
+defineExpose({ validate, canTestConnection })
 </script>
 
 <style scoped lang="less"></style>

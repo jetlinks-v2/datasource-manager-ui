@@ -119,6 +119,8 @@ interface Props {
   data?: {
     script?: string
     variables?: Record<string, string>
+    outputType?: string
+    argsValue?: Record<string, string>
     [key: string]: any
   }
   isEdit?: boolean
@@ -162,10 +164,7 @@ local result = redis.call('GET', key)
 return result`)
 
 // 脚本内容
-const scriptContent = ref(`-- Redis Lua 脚本示例
-local pattern = \${pattern}
-local keys = redis.call('KEYS', pattern)
-return keys`)
+const scriptContent = ref('')
 
 // 变量相关
 const parsedVariables = ref<string[]>([])
@@ -272,24 +271,42 @@ const validateAll = async () => {
   return true
 }
 
-// 初始化
-onMounted(() => {
-  nextTick(() => {
-    try {
-      if (props.data?.script) {
-        scriptContent.value = props.data.script
-      }
+watch(
+  () => props.data?.outputType,
+  (value) => {
+    if (!value) return
+    outputType.value = value
+  },
+  { immediate: true }
+)
 
-      // 解析变量
-      if (luaEditorRef.value) {
-        const variables = luaEditorRef.value.extractVariables()
-        handleVariablesChange(variables)
-      }
-    } catch (error) {
-      console.error('初始化数据失败', error)
+watch(
+  () => props.data?.argsValue,
+  (value) => {
+    if (!value) return
+    historyParams.value = value
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => props.data?.script,
+  (value) => {
+    if (value && value !== scriptContent.value) {
+      scriptContent.value = value || ''
     }
-  })
-})
+
+    nextTick(() => {
+      try {
+        const variables = luaEditorRef.value?.extractVariables?.() || []
+        handleVariablesChange(variables)
+      } catch (error) {
+        console.error('解析脚本变量失败', error)
+      }
+    })
+  },
+  { immediate: true }
+)
 
 defineExpose({
   validateAll

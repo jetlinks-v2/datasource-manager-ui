@@ -154,7 +154,8 @@ const routeLink = computed(() => ({
 const showTestConnection = computed(() => {
   return (
     sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-    sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+    sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
   )
 })
 
@@ -168,16 +169,7 @@ const showSourceEdit = async () => {
 
 const handleTestDataSource = async () => {
   const { typeId, name, shareConfig } = info.value
-  const { type } = shareConfig
-
-  switch (typeId) {
-    case DATA_TYPE_ITEM.RDB_DATASOURCE:
-      await testConnection(typeId, name, shareConfig, { type })
-      break
-    case DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE:
-      await testConnection(typeId, name, shareConfig, { type })
-      break
-  }
+  await testConnection(typeId, name, shareConfig)
 }
 
 const handleDeleteOk = async () => {

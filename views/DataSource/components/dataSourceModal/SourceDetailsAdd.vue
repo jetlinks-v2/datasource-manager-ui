@@ -27,20 +27,33 @@
       :ref="registry[formType].ref"
       v-model="formData[registry[formType].formKey]"
       :active="activeType"
-      @test-connection="handleTestConnection"
     />
 
     <template #footer>
       <div
-        :class="isEditor ? 'editor-footer' : 'add-footer'"
+        :class="isEditor ? (showTestConnection ? 'add-footer' : 'editor-footer') : 'add-footer'"
         style="display: flex; margin: 0 8px"
       >
-        <a-button
-          v-if="!isEditor"
-          @click="handleClick"
-        >
-          上一步
-        </a-button>
+        <a-space>
+          <a-button
+            v-if="!isEditor"
+            @click="handleClick"
+          >
+            上一步
+          </a-button>
+          <j-permission-button
+            v-if="showTestConnection"
+            :disabled="!canTestConnection"
+            :hasPermission="`${permission}:state`"
+            @click="handleTestConnection()"
+            :loading="testLoading"
+            type="primary"
+            ghost
+          >
+            连接测试
+          </j-permission-button>
+        </a-space>
+
         <a-space>
           <a-button @click="cancelModal">取消</a-button>
           <a-button
@@ -96,7 +109,7 @@ const formItemEsRef = ref<any>()
 const formItemRedisRef = ref<any>()
 
 const sourceDetailStore = useSourceDetailStore()
-const { testConnection } = useTestConnection()
+const { loading: testLoading, testConnection } = useTestConnection()
 
 // 基础表单数据
 const baseFormData = ref<BaseFormData>({
@@ -158,12 +171,25 @@ const formType = ref<string>(DATA_TYPE_ITEM.API_SEND)
 const datasourceName = ref('')
 const isEditor = ref(false)
 const requestFlag = ref(false)
+const showTestConnection = computed(() => {
+  return (
+    formType.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+    formType.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+    formType.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+  )
+})
 
 const categoryList = ref<any>([])
 const activeGroup = computed(() => {
   const item = inject('CLICK_ITEM') as any
   return item.value.id === DEFAULT_CATEGORY_ID ? undefined : item.value.id
 }) as Ref<string>
+
+const canTestConnection = computed(() => {
+  if (!showTestConnection.value) return false
+  const formItemRef = registry[formType.value]?.ref?.value
+  return formItemRef?.canTestConnection
+})
 
 // 处理分类列表刷新
 const handleRefreshCategoryList = async () => {
@@ -202,15 +228,17 @@ const getCategoryList = async () => {
 }
 
 // 通用测试连接
-const handleTestConnection = async (data: any) => {
+const handleTestConnection = async () => {
   const entry = registry[formType.value]
-  const inst = entry?.ref?.value
-  const setLoading = (loading: boolean) => inst?.setLoading(loading)
-  setLoading(true)
+  const formItemRef = entry?.ref?.value
+
+  //表单验证
+  await formItemRef?.validate?.()
   const { name } = baseFormData.value
-  const { type } = activeType.value
-  await testConnection(formType.value, name, data, { type })
-  setLoading(false)
+  await testConnection(formType.value, name, {
+    ...formData.value[entry?.formKey],
+    type: activeType.value.type
+  })
 }
 
 const handleClick = () => {

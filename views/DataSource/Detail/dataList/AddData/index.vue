@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { Modal, message } from 'ant-design-vue'
+import { Modal } from 'ant-design-vue'
 import { cloneDeep, isArray, isObject } from 'lodash-es'
 
 import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
@@ -100,6 +100,7 @@ import { transformArray } from './components/utils'
 import type { TypeId } from '../../type'
 import { DATA_TYPE_ITEM } from '../../../components/table'
 import { FormData } from './type'
+import { onlyMessage } from '@jetlinks-web/utils'
 
 interface Props {
   data?: Record<string, any>
@@ -244,7 +245,7 @@ const handleNextStep = async () => {
     scrollToTop()
   } catch (error) {
     console.error('验证错误:', error)
-    message.error('请检查表单填写是否完整')
+    onlyMessage('请检查表单填写是否完整', 'error')
   } finally {
     loading.value = false
   }
@@ -281,7 +282,7 @@ const handleSave = async () => {
     await saveCommonDataSource()
   } catch (error: any) {
     console.error('保存失败:', error)
-    message.error(error.message || '操作失败')
+    onlyMessage(error.message || '操作失败', 'error')
   } finally {
     loading.value = false
   }
@@ -335,12 +336,8 @@ const saveRedisDataSource = async () => {
 
   const inputConfig = parseTableTreeToMetadata(input)
 
-  const isDataSourceArray = isEdit.value
-    ? props.data?.configuration?.output?.type === 'array'
-    : isArray(testDataSource.value)
-
-  // 构建输出配置
-  const outputConfig = buildOutputConfig(output, isDataSourceArray)
+  // 构建输出配置(固定为数组)
+  const outputConfig = buildOutputConfig(output, true)
 
   const params = {
     ...formDataFromRef,
@@ -384,7 +381,7 @@ const validateForm = async (): Promise<boolean> => {
     return true
   } catch (error: any) {
     const errorMessage = error.errorFields?.[0]?.errors?.[0] || '表单验证失败'
-    message.error(errorMessage)
+    onlyMessage(errorMessage, 'error')
     return false
   }
 }
@@ -491,7 +488,7 @@ const saveDataSource = async (params: any) => {
     throw new Error(isEdit.value ? '编辑失败' : '新增失败')
   }
 
-  message.success(isEdit.value ? '编辑成功' : '新增成功')
+  onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
   emit('ok')
   emit('cancel')
 }

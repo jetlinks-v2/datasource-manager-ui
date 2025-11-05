@@ -382,9 +382,7 @@ watch(
     align-items: center;
     justify-content: center;
     min-height: 300px;
-    background-color: #fafafa;
     border-radius: 8px;
-    border: 1px dashed #d9d9d9;
   }
 }
 
@@ -394,8 +392,6 @@ watch(
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  background-color: #fafafa;
   border-radius: 8px;
-  border: 1px dashed #d9d9d9;
 }
 </style>

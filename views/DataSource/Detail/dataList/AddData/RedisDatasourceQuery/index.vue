@@ -65,10 +65,15 @@ const scriptQueryRef = ref<any>()
 const commonQueryRef = ref<any>()
 
 // 脚本查询数据
-const scriptData = computed(() => ({
-  script: props.data?.script || '',
-  variables: props.data?.variables || {}
-}))
+const scriptData = computed(() => props.data || {})
+
+watch(
+  () => props.data?.provider,
+  (provider) => {
+    activeTab.value = provider || 'pattern'
+  },
+  { immediate: true }
+)
 
 const handleActiveTabChange = (tab: string) => {
   if (activeTab.value === tab) return
