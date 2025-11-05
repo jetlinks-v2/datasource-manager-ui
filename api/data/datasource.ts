@@ -68,15 +68,6 @@ export const getDataSourceCommands = (dataSourceId: string, support: string) =>
   request.get(`/datasource/${dataSourceId}/commands?support=${support}`)
 
 /**
- * 刷新 Elasticsearch 索引
- * @param datasourceId 数据源ID
- * @param data 刷新参数
- * @returns 刷新结果
- */
-export const refreshEsIndex = (datasourceId: string, data: any) =>
-    request.post(`/datasource/elasticsearch/${datasourceId}/Refresh`, data)
-
-/**
  * 命令查询
  * @param data 查询参数
  * @returns 查询结果
