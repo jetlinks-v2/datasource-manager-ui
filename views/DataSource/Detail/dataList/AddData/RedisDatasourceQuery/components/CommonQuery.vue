@@ -75,6 +75,7 @@ import ListType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/co
 import SetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/SetType.vue'
 import ZsetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/ZsetType.vue'
 import { convertParamsToObject } from '../../components/utils'
+import { cloneDeep } from 'lodash-es'
 
 const props = defineProps({
   data: {
@@ -185,7 +186,7 @@ const validateAll = async () => {
       pattern: searchPattern.value || '*',
       provider: 'pattern'
     },
-    queryResultList.value[0],
+    cloneDeep(queryResultList.value[0]),
     convertParamsToObject([{ name: 'pattern', value: searchPattern.value || '*' }])
   )
   return true

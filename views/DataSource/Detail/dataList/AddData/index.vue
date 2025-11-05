@@ -186,14 +186,23 @@ const handleCancel = () => {
 }
 
 const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsData: any) => {
+  testDataSource.value = testData
+  dynamicParams.value = dynamicParamsData
+
+  if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
+    formData.configuration = {
+      ...expression,
+      input: dynamicParamsData,
+      output: testData
+    }
+    return
+  }
+
   formData.configuration = {
     ...formData.configuration,
     expression,
     param: dynamicParamsData
   }
-
-  testDataSource.value = testData
-  dynamicParams.value = dynamicParamsData
 }
 
 const handleConfigUpdate = (config: any) => {
@@ -319,24 +328,35 @@ const saveRedisDataSource = async () => {
   const isComponentValid = await componentRef.value?.validateAll()
   if (!isComponentValid) return
 
-  console.log(formData.configuration, 'formData.configuration')
-  console.log(
-    parseTableTreeToMetadata(formData.configuration.input),
-    'parseTableTreeToMetadata(formData.configuration.input)'
-  )
-  console.log(
-    parseTableTreeToMetadata(formData.configuration.output),
-    'parseTableTreeToMetadata(formData.configuration.output)'
-  )
+  const formDataFromRef = await basicFormRef.value?.getFormData()
+  if (!formDataFromRef) return
 
-  await saveDataSource({
-    ...formData,
+  const { input, output } = formDataFromRef.configuration
+
+  const inputConfig = parseTableTreeToMetadata(input)
+
+  const isDataSourceArray = isEdit.value
+    ? props.data?.configuration?.output?.type === 'array'
+    : isArray(testDataSource.value)
+
+  // 构建输出配置
+  const outputConfig = buildOutputConfig(output, isDataSourceArray)
+
+  const params = {
+    ...formDataFromRef,
     configuration: {
-      ...formData.configuration,
-      input: parseTableTreeToMetadata(formData.configuration.input),
-      output: parseTableTreeToMetadata(formData.configuration.output)
+      ...formDataFromRef.configuration,
+      input: inputConfig,
+      output: outputConfig
     }
-  })
+  }
+
+  // 检查输出配置
+  if (!formDataFromRef.configuration.output?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
+  }
 }
 
 // 保存通用数据源
@@ -400,6 +420,7 @@ const buildDataSourceParams = (formData: any): FormData => {
   // 构建输出配置
   const outputConfig = buildOutputConfig(output, isDataSourceArray)
 
+  console.log(input, 'buildDataSourceParams')
   return {
     ...formData,
     configuration: {
@@ -607,6 +628,7 @@ const handleEsInit = (data: any) => {
 // Redis 类型
 const handleRedisInit = (data: any) => {
   formData.configuration = data.configuration || {}
+  processInputOutput(data)
 }
 
 onMounted(() => {

@@ -115,17 +115,15 @@ const commandModelValue = ref<any>({
   output: []
 })
 
-const outputData = computed(() =>
-  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
-    ? props.testData
-    : convertToTableTreeData(props.testData)
+const isMetadataSource = computed(
+  () =>
+    props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+    props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
 )
+
+const outputData = computed(() => (isMetadataSource.value ? props.testData : convertToTableTreeData(props.testData)))
 const inputData = computed(() =>
-  props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-  props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
-    ? props.dynamicParams
-    : convertToTableTreeData(props.dynamicParams)
+  isMetadataSource.value ? props.dynamicParams : convertToTableTreeData(props.dynamicParams)
 )
 
 const validateID = async (rule: Rule, value: string) => {
@@ -189,11 +187,8 @@ const handleFieldChange = (fieldPath: string, value: any) => {
 }
 
 const getFormData = async () => {
-  // Redis、RDB 和 ES 不需要验证命令参数
-  if (
-    props.sourceClassify === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
-    props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE
-  ) {
+  //RDB 和 ES 不需要验证命令参数
+  if (isMetadataSource.value) {
     return props.modelValue
   }
 

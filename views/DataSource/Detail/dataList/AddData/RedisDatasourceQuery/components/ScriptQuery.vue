@@ -212,7 +212,6 @@ const handleExecute = async () => {
 
   inputParams.value = convertParamsToObject(dynamicParams.value || [])
   const input = parseTableTreeToMetadata(convertToTableTreeData(inputParams.value))
-  console.log(input, 'input')
 
   try {
     const res = await queryDataSource(typeId, datasourceId, 'ExecuteScript', {
