@@ -26,8 +26,14 @@
               v-if="slotProps.primaryKey"
             />
           </template>
-          <template #index="slotProps">
-            {{ slotProps.index }}
+          <template #index="{ index }">
+            {{ index + 1 }}
+          </template>
+          <template #precision="{ precision }">
+            {{ precision ?? '--' }}
+          </template>
+          <template #scale="{ scale }">
+            {{ scale ?? '--' }}
           </template>
           <template #notnull="slotProps">
             <AIcon
@@ -137,9 +143,17 @@ const fieldColumns = [
   },
   {
     title: '精度',
+    dataIndex: 'precision',
+    key: 'precision',
+    width: 120,
+    scopedSlots: true
+  },
+  {
+    title: '刻度',
     dataIndex: 'scale',
     key: 'scale',
-    width: 120
+    width: 120,
+    scopedSlots: true
   },
   {
     title: '是否为空',

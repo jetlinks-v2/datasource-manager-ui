@@ -1,7 +1,6 @@
 import DataApi from '@datasource-manager-ui/assets/svg/data-api.svg'
 import DataDm from '@datasource-manager-ui/assets/svg/data-dm.svg'
 import DataEsApi from '@datasource-manager-ui/assets/svg/data-es-api.svg'
-import DataExcel from '@datasource-manager-ui/assets/svg/data-excel.svg'
 import DataMariadb from '@datasource-manager-ui/assets/svg/data-mariadb.svg'
 import DataMongodb from '@datasource-manager-ui/assets/svg/data-mongodb.svg'
 import DataMysql from '@datasource-manager-ui/assets/svg/data-mysql.svg'
@@ -30,7 +29,6 @@ export const DATASOURCE_TYPE = {
   ORACLE: 'oracle',
   SQLSERVER: 'sqlserver',
   MONGODB: 'mongodb',
-  EXCEL: 'excel',
   DAMENG: 'dm',
   REDIS: 'redis',
   ELASTICSEARCH: 'elasticsearch'
@@ -45,7 +43,6 @@ export const DATASOURCE_NAME = {
   [DATASOURCE_TYPE.ORACLE]: 'Oracle',
   [DATASOURCE_TYPE.SQLSERVER]: 'SQLServer',
   [DATASOURCE_TYPE.MONGODB]: 'MongoDB',
-  [DATASOURCE_TYPE.EXCEL]: 'Excel',
   [DATASOURCE_TYPE.DAMENG]: '达梦数据库',
   [DATASOURCE_TYPE.REDIS]: 'Redis',
   [DATASOURCE_TYPE.ELASTICSEARCH]: 'Elasticsearch'
@@ -74,12 +71,6 @@ export const typesData = [
           reconnectionIntervals: 5000,
           payloadType: 'JSON'
         }
-      },
-      {
-        icon: DataExcel,
-        value: DATASOURCE_TYPE.EXCEL,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.EXCEL],
-        disable: true
       }
     ]
   },
