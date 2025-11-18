@@ -140,7 +140,8 @@ const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
   [DATA_TYPE_ITEM.API_SEND]: [],
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
   [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }]
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }],
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: []
 }
 
 const routeLink = computed(() => ({
@@ -155,7 +156,8 @@ const showTestConnection = computed(() => {
   return (
     sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
     sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE
   )
 })
 

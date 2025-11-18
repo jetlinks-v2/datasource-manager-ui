@@ -16,7 +16,8 @@ export enum DATA_TYPE_ITEM {
   API_SEND = 'api', // 通用表单 (API)
   WEBSOCKET_DATASOURCE = 'websocket', // WebSocket表单
   ELASTICSEARCH_DATASOURCE = 'elasticsearch', // Elasticsearch表单
-  REDIS_DATASOURCE = 'redis' // Redis表单
+  REDIS_DATASOURCE = 'redis', // Redis表单
+  MONGODB_DATASOURCE = 'mongodb' // MongoDB表单
 }
 
 //数据源类型
@@ -142,7 +143,7 @@ export const typesData = [
         icon: DataMongodb,
         value: DATASOURCE_TYPE.MONGODB,
         name: DATASOURCE_NAME[DATASOURCE_TYPE.MONGODB],
-        disable: true
+        formType: DATA_TYPE_ITEM.MONGODB_DATASOURCE
       },
       {
         icon: DataRedis,

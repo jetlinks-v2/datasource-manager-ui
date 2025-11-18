@@ -22,6 +22,7 @@ import DescriptionItemList, { type DescriptionItem } from './components/Descript
 import { DATASOURCE_NAME, DATA_TYPE_ITEM } from '../../components/table'
 import { SourceDataInfo } from '../type'
 import RedisConnection from './RedisConnection.vue'
+import MongoConnection from './MongoConnection.vue'
 
 const props = defineProps<{ info: SourceDataInfo; sourceClassify: any; sourceData?: any }>()
 const { info, sourceClassify } = toRefs(props)
@@ -93,6 +94,8 @@ const connectionComponent = computed(() => {
       return EsConnection
     case DATA_TYPE_ITEM.REDIS_DATASOURCE:
       return RedisConnection
+    case DATA_TYPE_ITEM.MONGODB_DATASOURCE:
+      return MongoConnection
     default:
       return null
   }

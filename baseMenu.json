@@ -32,9 +32,7 @@
         "sortIndex": 8,
         "url": "/system/DataSource",
         "icon": "icon-shebei",
-        "showPage": [
-          "datasource-config"
-        ],
+        "showPage": ["datasource-config"],
         "permissions": [],
         "buttons": [
           {
@@ -48,21 +46,19 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "query"
-                ]
+                "actions": ["query"]
               },
               {
                 "permission": "datasource-config-group",
-                "actions": [
-                  "query"
-                ]
+                "actions": ["query"]
               },
               {
                 "permission": "datasource",
-                "actions": [
-                  "query"
-                ]
+                "actions": ["query"]
+              },
+              {
+                "permission": "dictionary",
+                "actions": ["query"]
               }
             ],
             "i18nName": "查询"
@@ -78,21 +74,15 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "delete"
-                ]
+                "actions": ["delete"]
               },
               {
                 "permission": "datasource-config-group",
-                "actions": [
-                  "delete"
-                ]
+                "actions": ["delete"]
               },
               {
                 "permission": "datasource",
-                "actions": [
-                  "delete"
-                ]
+                "actions": ["delete"]
               }
             ]
           },
@@ -107,15 +97,11 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               },
               {
                 "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               }
             ]
           },
@@ -130,15 +116,11 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               },
               {
                 "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               }
             ]
           },
@@ -153,21 +135,15 @@
             "permissions": [
               {
                 "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               },
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               },
               {
                 "permission": "datasource",
-                "actions": [
-                  "save"
-                ]
+                "actions": ["save"]
               }
             ]
           },
@@ -178,9 +154,7 @@
             "permissions": [
               {
                 "permission": "datasource-config",
-                "actions": [
-                  "state"
-                ]
+                "actions": ["state"]
               }
             ],
             "i18nName": "测试链接"
@@ -192,12 +166,43 @@
             "permissions": [
               {
                 "permission": "datasource",
-                "actions": [
-                  "execute"
-                ]
+                "actions": ["execute"]
               }
             ],
             "i18nName": "数据源命令执行"
+          },
+          {
+            "id": "add_class",
+            "name": "新增分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": ["save"]
+              }
+            ],
+            "i18nName": "新增分类"
+          },
+          {
+            "id": "delete_class",
+            "name": "删除分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": ["delete"]
+              }
+            ],
+            "i18nName": "删除分类"
+          },
+          {
+            "id": "edit_class",
+            "name": "编辑分类",
+            "permissions": [
+              {
+                "permission": "dictionary",
+                "actions": ["save"]
+              }
+            ],
+            "i18nName": "编辑分类"
           }
         ],
         "accessSupport": "support",
