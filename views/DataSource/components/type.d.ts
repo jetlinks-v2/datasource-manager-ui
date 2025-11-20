@@ -68,10 +68,10 @@ export interface RedisData {
 
 export interface MongoData {
   connectionMode: ConnectionMode
-  uri?: string
-  host?: string
-  port?: number
-  database?: string
+  uri: string
+  host: string
+  port: number
+  database: string
   authDatabase?: string
   username?: string
   password?: string

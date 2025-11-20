@@ -34,9 +34,12 @@
             type="text"
             size="small"
             danger
+            :disabled="modelValue.length === 1 && !record.key && !record.value"
             @click="() => removeItem(record)"
           >
-            <AIcon type="DeleteOutlined" />
+            <template #icon>
+              <AIcon type="DeleteOutlined" />
+            </template>
           </a-button>
         </template>
       </template>
@@ -142,13 +145,21 @@ const handleFieldChange = (val: string, field: 'key' | 'value', record: any) => 
 
 const removeItem = (item: any) => {
   const index = props.modelValue.indexOf(item)
-  if (index !== -1) {
-    const newValue = [...props.modelValue]
+  if (index === -1) return
+  const newValue = [...props.modelValue]
+  delete formItemErrors.value[item.id]
+
+  if (newValue.length === 1) {
+    newValue[0] = {
+      key: '',
+      value: '',
+      id: Date.now()
+    }
+  } else {
     newValue.splice(index, 1)
-    emit('update:modelValue', newValue)
-    // 清除对应的错误状态
-    delete formItemErrors.value[item.id]
   }
+
+  emit('update:modelValue', newValue)
 }
 
 const addItem = () => {
@@ -197,15 +208,15 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-.table-header-title {
-  &::before {
-    display: inline-block;
-    margin-inline-end: 4px;
-    color: #ff4d4f;
-    font-size: 14px;
-    font-family: SimSun, sans-serif;
-    line-height: 1;
-    content: '*';
-  }
-}
+// .table-header-title {
+//   &::before {
+//     display: inline-block;
+//     margin-inline-end: 4px;
+//     color: #ff4d4f;
+//     font-size: 14px;
+//     font-family: SimSun, sans-serif;
+//     line-height: 1;
+//     content: '*';
+//   }
+// }
 </style>

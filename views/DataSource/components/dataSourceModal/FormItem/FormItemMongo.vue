@@ -164,7 +164,7 @@ const props = defineProps({
 const formRef = ref()
 const optionsTableRef = ref()
 
-const formData = ref<MongoData>({
+const formData = ref<Partial<MongoData>>({
   connectionMode: 'basic'
 })
 
@@ -249,23 +249,133 @@ const canTestConnection = computed(() => {
   }
 })
 
+// 从基本配置构建URI
+const buildUriFromBasic = () => {
+  const { host, port, database, username, password, authDatabase, sslEnabled } = formData.value
+
+  if (!host || !port || !database) {
+    return ''
+  }
+
+  // 构建认证部分
+  const auth = username ? `${username}${password ? ':' + password : ''}@` : ''
+
+  // 构建主机部分
+  const hostPart = `${host}:${port}`
+
+  // 构建查询参数
+  const params: string[] = []
+  if (authDatabase) {
+    params.push(`authSource=${authDatabase}`)
+  }
+  if (sslEnabled) {
+    params.push('ssl=true')
+  }
+
+  // 添加扩展参数
+  if (formData.value.options && Object.keys(formData.value.options).length > 0) {
+    Object.entries(formData.value.options).forEach(([key, value]) => {
+      if (key) {
+        params.push(`${key}=${value || ''}`)
+      }
+    })
+  }
+
+  const queryString = params.length > 0 ? '?' + params.join('&') : ''
+
+  return `mongodb://${auth}${hostPart}/${database}${queryString}`
+}
+
+// 从URI解析基本配置
+const parseUriToBasic = (uri: string) => {
+  try {
+    // 移除 mongodb:// 或 mongodb+srv:// 前缀
+    const cleanUri = uri.replace(/^mongodb(\+srv)?:\/\//, '')
+
+    // 解析认证信息
+    let auth = ''
+    let hostAndPath = cleanUri
+    if (cleanUri.includes('@')) {
+      ;[auth, hostAndPath] = cleanUri.split('@')
+    }
+
+    const [username, password] = auth ? auth.split(':') : ['', '']
+
+    // 解析主机、端口和路径
+    const [hostPart, pathAndQuery] = hostAndPath.split('/')
+    const [host, portStr] = hostPart.split(',')[0].split(':') // 只取第一个主机
+
+    // 解析数据库和查询参数
+    const [database, queryString] = pathAndQuery ? pathAndQuery.split('?') : ['', '']
+
+    // 解析查询参数
+    const params = new URLSearchParams(queryString || '')
+    const authDatabase = params.get('authSource') || ''
+    const sslEnabled = params.get('ssl') === 'true'
+
+    // 提取扩展参数（排除已知参数）
+    const knownParams = ['authSource', 'ssl']
+    const options: Record<string, string> = {}
+    params.forEach((value, key) => {
+      if (!knownParams.includes(key)) {
+        options[key] = value
+      }
+    })
+
+    return {
+      host: host || '',
+      port: portStr ? parseInt(portStr, 10) : undefined,
+      database: database || '',
+      username: username || '',
+      password: password || '',
+      authDatabase: authDatabase || '',
+      sslEnabled: sslEnabled || false,
+      options: Object.keys(options).length > 0 ? options : undefined
+    }
+  } catch (error) {
+    console.error('解析URI失败:', error)
+    return {
+      host: '',
+      port: undefined,
+      database: '',
+      username: '',
+      password: '',
+      authDatabase: '',
+      sslEnabled: false
+    }
+  }
+}
+
 const handleConnectionModeChange = () => {
   const isUrlMode = formData.value.connectionMode === 'url'
 
-  Object.assign(
-    formData.value,
-    isUrlMode
-      ? { uri: '' }
-      : {
-          host: '',
-          port: undefined,
-          database: '',
-          username: '',
-          password: '',
-          authDatabase: '',
-          sslEnabled: false
+  if (isUrlMode) {
+    // 从基本配置切换到URL模式：构建URI
+    const uri = buildUriFromBasic()
+    Object.assign(formData.value, { uri })
+  } else {
+    // 从URL切换到基本配置模式：解析URI
+    const uri = formData.value.uri || ''
+    const basicConfig = parseUriToBasic(uri)
+    Object.assign(formData.value, basicConfig)
+
+    // 更新扩展参数数组
+    if (basicConfig.options && Object.keys(basicConfig.options).length > 0) {
+      optionsArray.value = Object.entries(basicConfig.options).map(([key, value], index) => ({
+        key,
+        value,
+        id: Date.now() + index
+      }))
+    } else {
+      optionsArray.value = [
+        {
+          key: '',
+          value: '',
+          id: Date.now()
         }
-  )
+      ]
+    }
+  }
 }
 
 // 同步 props.modelValue 到内部状态

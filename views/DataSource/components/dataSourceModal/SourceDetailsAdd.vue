@@ -139,7 +139,9 @@ const baseFormData = ref<BaseFormData>({
 const formData = ref<any>({
   relationData: {} as RelationData,
   universalData: {} as UniversalData,
-  websocketData: cloneDeep(activeType.value.defaultConfig) as WebSocketData,
+  websocketData: {
+    payloadType: 'JSON'
+  } as WebSocketData,
   elasticsearchData: {
     uri: '',
     pathPrefix: '',

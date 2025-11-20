@@ -3,7 +3,7 @@
     <DescriptionItemList
       title="数据连接"
       :column="3"
-      :items="visibleItems"
+      :items="items"
     />
 
     <KeyValueTable
@@ -120,8 +120,6 @@ const items = computed<DescriptionItem[]>(() => {
     }
   ]
 })
-
-const visibleItems = computed(() => items.value.filter((item) => item.condition))
 
 // 判断是否有扩展参数
 const hasOptions = computed(() => {
