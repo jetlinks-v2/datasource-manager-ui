@@ -1,21 +1,11 @@
 <template>
   <div class="rdb-datasource-query-container">
-    <div class="segmented-control">
-      <a-button
-        class="segmented-control__button"
-        :class="{ active: activeTab === 'visual' }"
-        @click="handleActiveTabChange('visual')"
-      >
-        可视化查询
-      </a-button>
-      <a-button
-        class="segmented-control__button"
-        :class="{ active: activeTab === 'sql' }"
-        @click="handleActiveTabChange('sql')"
-      >
-        SQL查询
-      </a-button>
-    </div>
+    <a-segmented
+      v-model:value="activeTab"
+      :options="tabOptions"
+      block
+      class="query-tabs"
+    />
 
     <div class="content">
       <!-- 可视化查询内容 -->
@@ -31,7 +21,10 @@
             @loaded="handleTablesLoaded"
           >
             <template #header>
-              <h3 style="margin: 0; font-size: 15px">数据库表</h3>
+              <TitleComponent
+                data="数据库表"
+                :style="{ margin: 0 }"
+              />
             </template>
           </TableList>
 
@@ -110,6 +103,11 @@ const activeTab = ref('visual')
 const selectedTable = ref('')
 const resultColumns = ref<any[]>([])
 const selectedRowKeys = ref<Key[]>([])
+
+const tabOptions = [
+  { label: '可视化查询', value: 'visual' },
+  { label: 'SQL查询', value: 'sql' }
+]
 
 const testQueryLoading = ref(false)
 const initLoading = ref(false)
@@ -324,12 +322,12 @@ const validateAll = async () => {
   return true
 }
 
-const handleActiveTabChange = (tab: string) => {
-  if (activeTab.value === tab) return
-  activeTab.value = tab
-  const params = resultQueryParams.value
+// 监听 tab 切换，更新查询参数
+watch(activeTab, (newTab, oldTab) => {
+  if (newTab === oldTab) return
 
-  if (activeTab.value === 'sql') {
+  const params = resultQueryParams.value
+  if (newTab === 'sql') {
     delete params.table
     delete params.columns
     params.sql = sqlValue.value
@@ -354,7 +352,7 @@ const handleActiveTabChange = (tab: string) => {
   }
 
   updateConfiguration()
-}
+})
 
 onMounted(() => {
   nextTick(async () => {
@@ -371,7 +369,7 @@ onMounted(() => {
         if (sql) {
           // SQL 查询模式
           sqlValue.value = sql
-          handleActiveTabChange('sql')
+          activeTab.value = 'sql'
           testQuery()
         }
       }
@@ -394,34 +392,9 @@ defineExpose({
   min-height: 500px;
   margin: 8px;
 
-  .segmented-control {
-    display: inline-flex;
-    border: 1px solid #d9d9d9;
-    border-radius: 6px;
-    overflow: hidden;
-    background-color: #f5f5f5;
+  .query-tabs {
     margin-bottom: 16px;
-    width: fit-content;
-    white-space: nowrap;
-
-    &__button {
-      background-color: transparent;
-      color: #595959;
-      border: none;
-      flex: 1;
-      min-width: 80px;
-      transition: all 0.3s ease;
-
-      &:not(:first-child) {
-        border-left: 1px solid #d9d9d9;
-      }
-
-      &.active {
-        background-color: #ffffff;
-        color: #2f54eb;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      }
-    }
+    width: 350px;
   }
 
   .content {

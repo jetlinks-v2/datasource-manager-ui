@@ -31,8 +31,8 @@
 
 <script setup lang="ts" name="CollectionDataTable">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
-import { isString, isObject } from 'lodash-es'
 import PreviewModal from './PreviewModal.vue'
+import { convertObjectId } from '../../utils'
 
 const props = defineProps<{
   currentCollection: string
@@ -48,32 +48,6 @@ const queryParams = ref<any>({
   pageSize: 12
 })
 const previewVisible = ref<Record<string, boolean>>({})
-
-// 生成随机的十六进制字符串
-const generateRandomHex = (length: number): string => {
-  let result = ''
-  const characters = '0123456789abcdef'
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length))
-  }
-  return result
-}
-
-const convertObjectId = (obj: any): string => {
-  if (isString(obj)) return obj
-
-  if (isObject(obj)) {
-    const objAny = obj as any
-    const timestamp = objAny.timestamp ? objAny.timestamp.toString(16).padStart(8, '0') : generateRandomHex(8)
-    const machine = objAny.machine ? objAny.machine.toString(16).padStart(6, '0') : generateRandomHex(6)
-    const processId = objAny.processId ? objAny.processId.toString(16).padStart(4, '0') : generateRandomHex(4)
-    const counter = objAny.counter ? objAny.counter.toString(16).padStart(6, '0') : generateRandomHex(6)
-
-    return timestamp + machine + processId + counter
-  }
-
-  return obj || generateRandomHex(24)
-}
 
 const processData = (data: any[], allKeys: string[]) => {
   return data.map((item) => {

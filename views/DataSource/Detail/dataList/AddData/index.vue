@@ -92,6 +92,7 @@ import BasicForm from './components/BasicForm.vue'
 import WebSocketSend from './WebSocketSend/index.vue'
 import EsDatasourceQuery from './EsDatasourceQuery/index.vue'
 import RedisDatasourceQuery from './RedisDatasourceQuery/index.vue'
+import MongoDatasourceQuery from './MongoDatasourceQuery/index.vue'
 
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
@@ -135,8 +136,6 @@ const formData = reactive<FormData>({
   dataSourceTypeId: route.query.typeId as string,
   description: '',
   configuration: {
-    commandId: '',
-    commandName: '',
     output: {},
     input: [],
     param: {},
@@ -155,7 +154,8 @@ const COMPONENT_MAP = {
   [DATA_TYPE_ITEM.API_SEND]: ApiSend,
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend,
   [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery,
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: RedisDatasourceQuery
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: RedisDatasourceQuery,
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: MongoDatasourceQuery
 } as const
 
 const isEdit = computed(() => !!props.data?.id)
@@ -167,7 +167,8 @@ const modalWidth = computed(() => {
   if (currentStep.value === 1) {
     if (
       sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+      formData.configuration.provider === 'generalQuery'
     ) {
       return '600px'
     }
@@ -195,6 +196,14 @@ const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsDat
       ...expression,
       input: dynamicParamsData,
       output: testData
+    }
+    return
+  }
+
+  if (sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE) {
+    formData.configuration = {
+      ...formData.configuration,
+      ...expression
     }
     return
   }
@@ -278,6 +287,12 @@ const handleSave = async () => {
       return
     }
 
+    // MongoDB 数据源特殊处理
+    if (sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE) {
+      await saveMongoDataSource()
+      return
+    }
+
     // API 和 WebSocket 通用处理
     await saveCommonDataSource()
   } catch (error: any) {
@@ -331,6 +346,52 @@ const saveRedisDataSource = async () => {
 
   const formDataFromRef = await basicFormRef.value?.getFormData()
   if (!formDataFromRef) return
+
+  const { input, output } = formDataFromRef.configuration
+
+  const inputConfig = parseTableTreeToMetadata(input)
+
+  // 构建输出配置(固定为数组)
+  const outputConfig = buildOutputConfig(output, true)
+
+  const params = {
+    ...formDataFromRef,
+    configuration: {
+      ...formDataFromRef.configuration,
+      input: inputConfig,
+      output: outputConfig
+    }
+  }
+
+  // 检查输出配置
+  if (!formDataFromRef.configuration.output?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
+  }
+}
+
+// 保存 MongoDB 数据源
+const saveMongoDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const isComponentValid = await componentRef.value?.validateAll()
+  if (!isComponentValid) return
+
+  const formDataFromRef = await basicFormRef.value?.getFormData()
+  if (!formDataFromRef) return
+
+  // 如果provider是generalQuery，直接保存，排除input和output字段
+  if (formDataFromRef.configuration?.provider === 'generalQuery') {
+    const { input, output, ...restConfiguration } = formDataFromRef.configuration
+    const params = {
+      ...formDataFromRef,
+      configuration: restConfiguration
+    }
+    await saveDataSource(params)
+    return
+  }
 
   const { input, output } = formDataFromRef.configuration
 
@@ -516,7 +577,8 @@ const initializeFormData = () => {
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
     [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit,
-    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit,
+    [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: handleMongoInit
   }
 
   const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
@@ -624,6 +686,12 @@ const handleEsInit = (data: any) => {
 
 // Redis 类型
 const handleRedisInit = (data: any) => {
+  formData.configuration = data.configuration || {}
+  processInputOutput(data)
+}
+
+// MongoDB 类型
+const handleMongoInit = (data: any) => {
   formData.configuration = data.configuration || {}
   processInputOutput(data)
 }

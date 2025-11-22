@@ -68,9 +68,7 @@
     </a-form-item>
 
     <CommandParams
-      v-if="
-        sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
-      "
+      v-if="isShowCommandParams"
       ref="commandParamsRef"
       :modelValue="commandModelValue"
     />
@@ -120,6 +118,15 @@ const isMetadataSource = computed(
     props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
     props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
 )
+
+//是否显示命令参数
+const isShowCommandParams = computed(() => {
+  return (
+    props.sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE &&
+    props.sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE &&
+    props.modelValue.configuration.provider !== 'generalQuery'
+  )
+})
 
 const outputData = computed(() => (isMetadataSource.value ? props.testData : convertToTableTreeData(props.testData)))
 const inputData = computed(() =>

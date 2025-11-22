@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import { parse, parseTree, format, applyEdits, ParseError } from 'jsonc-parser'
-import {isArray} from 'lodash-es'
+import { isArray } from 'lodash-es'
 
 interface ErrorMessagesMap {
   [key: number]: string
@@ -71,9 +71,14 @@ const props = defineProps({
   showMinimap: {
     type: Boolean,
     default: false
+  },
+  // 自定义变量正则表达式字符串，默认为 {{variable}}
+  variablePattern: {
+    type: String,
+    default: '\\{\\{[^{}]*\\}\\}'
   }
 })
-const emit = defineEmits(['update:modelValue', 'error', 'update'])
+const emit = defineEmits(['update:modelValue', 'error', 'update', 'variablesChange', 'blur'])
 
 const editorContainer = ref<HTMLElement | null>(null)
 // shallowRef 避免深层响应式追踪
@@ -97,12 +102,21 @@ const ERROR_MESSAGES: ErrorMessagesMap = {
   15: '无效的转义字符',
   16: '包含非法字符',
   17: '未知的解析错误',
-  18: '存在重复的键名',
-  19: '模板变量不能使用双引号包裹，例如 "{{variable}}" 是非法的，应直接使用 {{variable}}'
+  18: '存在重复的键名'
 }
 
-// 变量正则表达式
-const VARIABLE_REGEX = /\{\{[^{}]*}}/g
+// 动态生成变量错误提示信息
+const getVariableErrorMessage = (): string => {
+  // 根据 variablePattern 生成示例
+  if (props.variablePattern.includes('\\$\\{')) {
+    return '模板变量不能使用双引号包裹，例如 "${variable}" 是非法的，应直接使用 ${variable}'
+  } else {
+    return '模板变量不能使用双引号包裹，例如 "{{variable}}" 是非法的，应直接使用 {{variable}'
+  }
+}
+
+// 变量正则表达式（根据 props 动态生成）
+const VARIABLE_REGEX = computed(() => new RegExp(props.variablePattern, 'g'))
 const PLACEHOLDER_REGEX = /"__VAR_PLACEHOLDER_(\d+)__"/g
 
 // JSON解析和格式化选项
@@ -117,10 +131,11 @@ const getReplacedContentAndMapping = (text: string): { replacedText: string; map
   const mapping: VariableMapping[] = []
   let replacedText = ''
   let lastIndex = 0
-  VARIABLE_REGEX.lastIndex = 0
+  const regex = new RegExp(VARIABLE_REGEX.value)
+  regex.lastIndex = 0
 
   let match
-  while ((match = VARIABLE_REGEX.exec(text)) !== null) {
+  while ((match = regex.exec(text)) !== null) {
     // 添加匹配前原始内容
     replacedText += text.slice(lastIndex, match.index)
     const replacedStart = replacedText.length
@@ -206,8 +221,8 @@ const validateAndMark = (value: string): boolean => {
 
   const markers: MonacoMarker[] = []
 
-  // 先校验非法的 "{{xxx}}"
-  const illegalWrappedVariablePattern = /"\s*(\{\{.*?}})\s*"/g
+  // 先校验非法的变量包裹（支持 {{xxx}} 和 ${xxx}）
+  const illegalWrappedVariablePattern = /"\s*(\{\{.*?}}|\$\{.*?\})\s*"/g
   let match
   while ((match = illegalWrappedVariablePattern.exec(value)) !== null) {
     const startOffset = match.index
@@ -218,7 +233,7 @@ const validateAndMark = (value: string): boolean => {
 
     markers.push({
       severity: monaco.MarkerSeverity.Error,
-      message: ERROR_MESSAGES[19] || '包含非法的模板变量格式',
+      message: getVariableErrorMessage(),
       startLineNumber: startPos.lineNumber,
       startColumn: startPos.column,
       endLineNumber: endPos.lineNumber,
@@ -322,8 +337,9 @@ const registerCustomJsonLanguage = (): void => {
       array: [[/]/, { token: 'delimiter', next: '@pop' }], [/,/, 'delimiter'], { include: '@common' }],
       common: [
         [/[ \t\r\n]+/, ''],
-        [/\{\{[^{}]*}}/, 'variable.custom'], //变量
-        [/"([^"\\]|\\.)*"/, 'string'], // 字符串
+        [/"([^"\\]|\\.)*"/, 'string'], // 字符串（优先匹配）
+        [/\{\{[^{}]*}}/, 'variable.custom'], // 变量 {{xxx}}
+        [/\$\{[^}]+\}/, 'variable.custom'], // 变量 ${xxx}
         [/\b(true|false|null)\b/, 'keyword'], // 布尔和null
         [/-?\d+(\.\d+)?([eE][+\-]?\d+)?/, 'number'] // 数字，支持负数、浮点数、科学计数法
       ]
@@ -427,6 +443,17 @@ const initEditor = (): void => {
     emit('update:modelValue', value)
     emit('update', value)
     validateAndMark(value)
+
+    // 提取并发送变量列表
+    const variables = extractVariables(value)
+    emit('variablesChange', variables)
+  })
+
+  // 编辑器失焦时触发 blur 事件
+  instance.onDidBlurEditorText(() => {
+    const value = instance.getValue()
+    const variables = extractVariables(value)
+    emit('blur', variables)
   })
 
   // 如果启用失焦格式化，注册失焦事件
@@ -436,6 +463,41 @@ const initEditor = (): void => {
 
   // 首次验证
   validateAndMark(props.modelValue)
+
+  // 初始化时提取变量
+  const initialVariables = extractVariables(props.modelValue)
+  emit('variablesChange', initialVariables)
+}
+
+// 提取变量函数（排除字符串内的变量）
+const extractVariables = (text: string): string[] => {
+  const variables = new Set<string>()
+
+  // 移除所有字符串内容，避免提取字符串中的变量
+  const textWithoutStrings = text.replace(/"(?:[^"\\]|\\.)*"/g, '""')
+
+  // 根据变量模式提取变量名
+  const regex = new RegExp(VARIABLE_REGEX.value)
+  const matches = textWithoutStrings.matchAll(regex)
+
+  for (const match of matches) {
+    // 提取变量名（去除包裹符号）
+    let varName = match[0]
+    // 如果是 {{xxx}} 格式，提取 xxx
+    if (varName.startsWith('{{') && varName.endsWith('}}')) {
+      varName = varName.slice(2, -2).trim()
+    }
+    // 如果是 ${xxx} 格式，提取 xxx
+    else if (varName.startsWith('${') && varName.endsWith('}')) {
+      varName = varName.slice(2, -1).trim()
+    }
+
+    if (varName) {
+      variables.add(varName)
+    }
+  }
+
+  return Array.from(variables)
 }
 
 onMounted(initEditor)
@@ -485,7 +547,8 @@ const validateAll = () => {
 }
 
 defineExpose({
-  validateAll
+  validateAll,
+  extractVariables: () => extractVariables(monacoInstance.value?.getValue() || '')
 })
 </script>
 

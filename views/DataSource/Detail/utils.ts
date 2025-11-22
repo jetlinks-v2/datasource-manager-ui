@@ -1,3 +1,5 @@
+import { isString, isObject } from 'lodash-es'
+
 // 格式化过期时间
 export const formatExpiration = (exp: number | string) => {
   if (!exp) return '查询中...'
@@ -17,4 +19,31 @@ export const formatExpiration = (exp: number | string) => {
   const seconds = String(expirationTime.getSeconds()).padStart(2, '0')
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
+// 生成随机的十六进制字符串
+const generateRandomHex = (length: number): string => {
+  let result = ''
+  const characters = '0123456789abcdef'
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return result
+}
+
+//转换对象ID
+export const convertObjectId = (obj: any): string => {
+  if (isString(obj)) return obj
+
+  if (isObject(obj)) {
+    const objAny = obj as any
+    const timestamp = objAny.timestamp ? objAny.timestamp.toString(16).padStart(8, '0') : generateRandomHex(8)
+    const machine = objAny.machine ? objAny.machine.toString(16).padStart(6, '0') : generateRandomHex(6)
+    const processId = objAny.processId ? objAny.processId.toString(16).padStart(4, '0') : generateRandomHex(4)
+    const counter = objAny.counter ? objAny.counter.toString(16).padStart(6, '0') : generateRandomHex(6)
+
+    return timestamp + machine + processId + counter
+  }
+
+  return obj || generateRandomHex(24)
 }

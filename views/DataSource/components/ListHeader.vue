@@ -30,7 +30,9 @@
           type="text"
           @click="handleSearchClick"
         >
-          <AIcon type="SearchOutlined" />
+          <template #icon>
+            <AIcon type="SearchOutlined" />
+          </template>
         </a-button>
       </div>
 
@@ -118,11 +120,6 @@ defineExpose({
     align-items: center;
     width: 32px;
     transition: all 0.3s;
-
-    .ant-btn {
-      font-size: 16px;
-      transition: all 0.3s;
-    }
 
     &.expanded {
       flex-grow: 1;

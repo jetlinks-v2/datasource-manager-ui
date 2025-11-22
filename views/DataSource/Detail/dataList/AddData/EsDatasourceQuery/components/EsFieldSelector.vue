@@ -1,7 +1,10 @@
 <template>
   <div class="field-selector">
     <div class="title">
-      <h3>字段选择</h3>
+      <TitleComponent
+        data="字段选择"
+        :style="{ margin: 0 }"
+      />
       <div class="selection-actions">
         <a-input
           v-model:value="searchText"

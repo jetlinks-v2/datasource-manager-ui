@@ -26,8 +26,8 @@ interface FormData {
   dataSourceTypeId: string
   description: string
   configuration: {
-    commandId: string
-    commandName: string
+    commandId?: string
+    commandName?: string
     output: any
     input: any[]
     param: any

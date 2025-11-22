@@ -46,10 +46,7 @@
     />
 
     <!-- 动态参数组件 -->
-    <div
-      v-if="parsedVariables.length > 0"
-      class="variables-section"
-    >
+    <div class="variables-section">
       <CheckTest
         ref="checkTestRef"
         :query-params="queryParams"
@@ -66,6 +63,7 @@
             <a-button
               type="primary"
               :loading="executing"
+              :disabled="!scriptContent.length"
               @click="handleExecute"
             >
               <template #icon>
@@ -248,6 +246,13 @@ const handleExecute = async () => {
     onlyMessage('脚本执行失败', 'error')
   } finally {
     executing.value = false
+
+    nextTick(() => {
+      const modalBody = document.querySelector('.ant-modal-body')
+      if (modalBody) {
+        modalBody.scrollTop = modalBody.scrollHeight
+      }
+    })
   }
 }
 
