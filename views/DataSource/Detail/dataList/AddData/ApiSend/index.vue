@@ -38,8 +38,8 @@
       <template #checkTest="{ params }">
         <CheckTest
           ref="checkTestRef"
-          :formData="expression"
           :queryParams="params"
+          :historyParams="data.param"
           @update:data="handleCheckTestSave"
         >
           <template #sendOutButton>
@@ -66,20 +66,16 @@
 
 <script setup lang="ts" name="ApiSend">
 import RequestParams from './RequestParams/index.vue'
-import CheckTest from './CheckTest/index.vue'
+import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
-import { convertParamsToObject, transformArray } from './utils'
-import { testAPIDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { convertParamsToObject, transformArray } from '../components/utils'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 
 const props = defineProps({
-  dataSourceId: {
-    type: String,
-    required: true
-  },
   formRef: {
     type: Object,
     default: () => ({})
@@ -91,6 +87,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:expression'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const expression = ref()
 const checkTestRef = ref()
 const sending = ref(false)
@@ -99,7 +98,7 @@ const responseResultRef = ref()
 const checkTestDataSource = ref<any>({ body: {} })
 const dynamicParams = ref<any>([])
 
-const validateUri = async (rule: Rule, value: string) => {
+const validateUri = async (_: Rule, value: string) => {
   if (!value) {
     return Promise.reject('请输入请求路径')
   }
@@ -132,8 +131,7 @@ const handleMethodChange = (value: SelectValue) => {
 }
 
 const handleUriChange = (e: Event) => {
-  const value = (e.target as HTMLInputElement).value
-  expression.value.uri.url = value
+  expression.value.uri.url = (e.target as HTMLInputElement).value
   requestParamsRef.value?.handleUriChange()
 }
 
@@ -141,8 +139,8 @@ const handleBlur = (bodyData: any) => {
   checkTestDataSource.value.body = bodyData
 }
 
-const validateAll = async () => {
-  return await props.formRef
+const validateAll = () => {
+  return props.formRef
     ?.validate([['configuration', 'expression', 'uri', 'url']])
     .then(async () => {
       if (!(await validate())) {
@@ -154,8 +152,9 @@ const validateAll = async () => {
         return false
       }
 
+      const latestBody = checkTestDataSource.value.body
       const inputs = convertParamsToObject(dynamicParams.value)
-      emit('update:expression', expression.value, checkTestDataSource.value, inputs)
+      emit('update:expression', expression.value, latestBody, inputs)
       return true
     })
     .catch(() => {
@@ -185,19 +184,19 @@ const handleSend = async () => {
         queryParams: transformArray(queryParams),
         headers: transformArray(headers)
       }
-      const inputs = convertParamsToObject(dynamicParams.value)
+      const dynamicParamsData = convertParamsToObject(dynamicParams.value)
 
       const sendParams = {
-        inputs,
+        inputs: dynamicParamsData,
         expression: _expression
       }
 
-      const res = await testAPIDataSource(props.dataSourceId, sendParams)
+      const res = await queryDataSource(typeId, dataSourceId, 'HttpExprRequest', sendParams)
 
       if (res.status === 200) {
-        checkTestDataSource.value = res.result
+        checkTestDataSource.value = res.result || {}
         onlyMessage('请求发送成功')
-        emit('update:expression', expression.value, checkTestDataSource.value, inputs)
+        emit('update:expression', expression.value, checkTestDataSource.value.body, dynamicParamsData)
       }
     })
   } finally {
@@ -212,12 +211,6 @@ watch(
   },
   { immediate: true, deep: true }
 )
-
-onMounted(() => {
-  nextTick(() => {
-    requestParamsRef.value?.handleUriChange()
-  })
-})
 
 defineExpose({
   validateAll

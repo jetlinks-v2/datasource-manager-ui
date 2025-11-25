@@ -53,7 +53,10 @@
             style="padding: 4px 8px"
             :hasPermission="`${permission}:delete`"
             :popConfirm="{
-              title: '删除该数据源后，相关数据将被删除，请谨慎操作',
+              title: '确定删除吗？',
+              okText: '删除',
+              cancelText: '取消',
+              content: '删除该数据源后，相关数据将被删除，请谨慎操作',
               onConfirm: () => handleDelete(slotProps.id)
             }"
             :tooltip="{ title: '删除' }"
@@ -99,12 +102,13 @@
 </template>
 <script lang="ts" name="DataSourceList" setup>
 import { dataSourceColumns, iconMaps } from './table'
-import TypeAdd from './components/TypeAdd.vue'
-import SourceDetailsAdd from './components/SourceDetailsAdd.vue'
+import TypeAdd from './components/dataSourceModal/TypeAdd.vue'
+import SourceDetailsAdd from './components/dataSourceModal/SourceDetailsAdd.vue'
 import { deleteDataSource, disableDataSource, getDataSourceList } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
-import { DATASOURCE_NAME, DATASOURCE_TYPE } from './components/table'
+import { DATASOURCE_NAME, typesData } from './components/table'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
+import { useSourceDetailStore } from './sourceDetail'
 
 const props = defineProps({
   clickItem: {
@@ -121,6 +125,8 @@ const props = defineProps({
   }
 })
 const emits = defineEmits(['update:value', 'refreshCategoryList'])
+const sourceDetailStore = useSourceDetailStore()
+
 const { clickItem } = toRefs(props)
 const tableRef = ref()
 const showTypeAdd = ref(false)
@@ -204,7 +210,7 @@ const getDataSourceName = (value: string) => {
 
 const handleAdd = () => {
   activeKey.value = {
-    value: DATASOURCE_TYPE.API,
+    ...typesData[0].types[0],
     group: clickItem.value
   }
   showTypeAdd.value = true
@@ -273,6 +279,10 @@ provide('CLICK_ITEM', clickItem)
 
 defineExpose({
   handleAdd
+})
+
+onBeforeUnmount(() => {
+  sourceDetailStore.clearCache()
 })
 </script>
 

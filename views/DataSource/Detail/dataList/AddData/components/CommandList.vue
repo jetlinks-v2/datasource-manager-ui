@@ -95,7 +95,7 @@
 
 <script lang="ts" setup>
 import FileUpload from '@datasource-manager-ui/components/Upload/File/index.vue'
-import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader/index.vue'
+import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 
 interface Command {
   description: string

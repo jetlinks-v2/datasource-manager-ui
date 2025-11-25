@@ -1,41 +1,47 @@
 <template>
   <div
-    class="table-card"
+    class="card"
     @click.stop="handlePreview"
   >
-    <div class="card-container">
-      <div class="card-header">
-        <div class="title">
-          <AIcon
-            type="CodeOutlined"
-            class="title-icon"
-          />
-          <j-ellipsis>
-            {{ data.name }}
-          </j-ellipsis>
-        </div>
+    <header>
+      <a-space>
+        <AIcon type="CodeOutlined" />
         <j-ellipsis>
-          <div class="badge">标识：{{ data.id }}</div>
+          <div class="title">{{ data.name }}</div>
         </j-ellipsis>
-      </div>
-      <a-divider class="divider" />
-      <div class="card-content">
-        <div class="content-row">
-          <div class="label">说明：</div>
-          <j-ellipsis>
-            <div class="text">{{ data.description || '--' }}</div>
-          </j-ellipsis>
-        </div>
-        <div class="content-row horizontal">
-          <div class="label">创建时间：</div>
-          <div class="text date">{{ dayjs(createTime).format('YYYY-MM-DD HH:mm:ss') }}</div>
-        </div>
-      </div>
+      </a-space>
+      <!-- 操作按钮 -->
+      <a-button
+        type="text"
+        size="small"
+        class="action-btn"
+        @click.stop="handleDebug"
+      >
+        <AIcon type="BugOutlined" />
+      </a-button>
+    </header>
+
+    <div class="badge-wrapper">
+      <span class="badge">标识：</span>
+      <j-ellipsis>{{ data.id }}</j-ellipsis>
     </div>
+
+    <section>
+      <p>
+        <a-space>
+          <span>说明：</span>
+          <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
+        </a-space>
+      </p>
+      <p>
+        <span>创建时间：</span>
+        {{ formatTime }}
+      </p>
+    </section>
   </div>
 </template>
 
-<script lang="ts" name="TaleCard" setup>
+<script lang="ts" setup>
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -44,7 +50,7 @@ const props = defineProps({
     required: true,
     default: () => ({
       name: '',
-      commandId: '',
+      id: '',
       description: '',
       createTime: ''
     })
@@ -54,105 +60,95 @@ const props = defineProps({
     default: ''
   }
 })
-const emit = defineEmits(['click'])
 
-const handlePreview = () => {
-  emit('click', props.data)
-}
+const emit = defineEmits(['click', 'debug'])
+
+const formatTime = computed(() => dayjs(props.createTime).format('YYYY-MM-DD HH:mm:ss'))
+
+const handlePreview = () => emit('click', props.data)
+
+const handleDebug = () => emit('debug', props.data)
 </script>
 
 <style lang="less" scoped>
-.table-card {
-  width: 100%;
+.card {
   margin: 8px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
+  width: 100%;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
-}
 
-.card-container {
-  height: 100%;
-  padding: 20px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    border-color: transparent;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
-  height: 24px;
-  color: #262626;
-  transition: color 0.3s ease;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  &-icon {
-    color: #1890ff;
-    font-size: 16px;
-  }
-}
-
-.badge {
-  color: #8c8c8c;
-  max-width: 100%;
-}
-
-.divider {
-  margin: 8px 0 12px;
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.content-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  &.horizontal {
-    flex-direction: row;
+  header {
+    display: flex;
     align-items: center;
-    justify-content: flex-start;
     gap: 8px;
+    margin-bottom: 8px;
+    justify-content: space-between;
+
+    .anticon {
+      font-size: 16px;
+      color: #1890ff;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .action-btn {
+      flex-shrink: 0;
+      color: #8c8c8c;
+      border: none;
+      padding: 4px 8px;
+      height: auto;
+      transition: all 0.2s;
+
+      &:hover {
+        color: #1890ff;
+        background-color: rgba(24, 144, 255, 0.1);
+      }
+
+      .anticon {
+        font-size: 14px;
+      }
+    }
   }
-}
 
-.label {
-  color: #262626;
-  font-weight: normal;
-}
-
-.text {
-  line-height: 1.5715;
-  color: #8c8c8c;
-
-  &.date {
+  .badge-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
     color: #8c8c8c;
+
+    .badge {
+      white-space: nowrap;
+    }
+  }
+
+  section {
+    margin-top: 12px;
+
+    p {
+      margin: 8px 0;
+      color: #8c8c8c;
+
+      span {
+        color: #262626;
+        margin-right: 4px;
+        white-space: nowrap;
+      }
+    }
   }
 }
 </style>

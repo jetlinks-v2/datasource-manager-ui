@@ -1,8 +1,7 @@
 <template>
   <div class="command-config-container">
-    <!-- 命令入参配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令入参配置</h3>
+      <TitleComponent data="命令入参配置" />
       <CommandTable
         ref="CommandTableInputRef"
         class="config-table"
@@ -14,9 +13,8 @@
       />
     </div>
 
-    <!-- 命令返回响应配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令返回响应配置</h3>
+      <TitleComponent data="命令返回响应配置" />
       <CommandTable
         ref="CommandTableOutputRef"
         class="config-table"
@@ -24,7 +22,7 @@
         :columns="outputColumns"
         :dataSource="outputDataSource"
         :preview="preview"
-        :multiple="true && !preview"
+        :multiple="!preview"
         @update="handleOutputExpandChange"
       />
     </div>
@@ -59,7 +57,8 @@ const columns = [
   {
     title: '类型',
     dataIndex: 'dataType',
-    key: 'dataType'
+    key: 'dataType',
+    className: props.preview ? 'small-padding-cell' : ''
   },
   {
     title: '参数名字',
@@ -88,7 +87,7 @@ const handleOutputExpandChange = (data: any[]) => {
 }
 
 const validateCommandParams = async () => {
-  let hasError = false
+  let hasError
   hasError = CommandTableInputRef.value.validateAllData()
   if (hasError) {
     onlyMessage('请检查命令入参配置', 'error')
@@ -145,15 +144,8 @@ defineExpose({
   padding: 16px;
 }
 
-.section-title {
-  margin: 0 0 16px 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: 500;
-  padding-bottom: 8px;
-}
-
 .config-table {
   border-radius: 4px;
+  margin-top: 16px;
 }
 </style>

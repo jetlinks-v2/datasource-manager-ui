@@ -3,50 +3,48 @@
     open
     :title="preview ? '命令详情' : '编辑命令'"
     centered
-    :maskClosable="false"
     @cancel="handleCancel"
     width="900px"
     :body-style="modalBodyStyle"
   >
-    <div class="command-info">
-      <h3 class="command-title">
-        <AIcon
-          type="CodeOutlined"
-          class="command-title-icon"
-        />
-        {{ data.name }}
-      </h3>
-      <div class="command-meta">
-        <p class="command-id">
-          <span class="label">标识：</span>
-          <span class="value">{{ data.id }}</span>
-        </p>
-        <j-ellipsis class="command-desc">
-          <span class="label">说明：</span>
-          <span class="value">{{ data.description || '--' }}</span>
+    <!-- 命令信息头部 -->
+    <header class="info-header">
+      <div class="title">
+        <AIcon type="CodeOutlined" />
+        <j-ellipsis>
+          <div class="title-content">{{ data.name }}</div>
         </j-ellipsis>
       </div>
-    </div>
 
-    <a-divider style="margin: 16px 0" />
+      <div class="meta">
+        <div class="meta-item">
+          <span>标识：</span>
+          {{ data.id }}
+        </div>
+        <div class="meta-item">
+          <span>说明：</span>
+          <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
+        </div>
+      </div>
+    </header>
 
-    <div class="command-params-container">
+    <a-divider />
+
+    <!-- 参数内容区 -->
+    <section class="params-section">
       <CommandParams
         :modelValue="modelValue"
         :preview="preview"
-        class="command-params"
       />
-    </div>
+    </section>
 
     <template #footer>
-      <div class="modal-footer">
-        <a-button @click="handleCancel">关闭</a-button>
-      </div>
+      <a-button @click="handleCancel">关闭</a-button>
     </template>
   </a-modal>
 </template>
 
-<script setup lang="ts" name="CommandModal">
+<script setup lang="ts">
 import CommandParams from './CommandParams/index.vue'
 import { metadataConvertToTableTree } from '../utils'
 
@@ -70,69 +68,63 @@ const modalBodyStyle = computed(() => ({
   marginRight: '-8px'
 }))
 
-const modelValue = computed(() => {
-  return {
-    input: metadataConvertToTableTree(props.data.inputs, 'dataType'),
-    output:
-      props.data.output.type === 'array'
-        ? metadataConvertToTableTree(props.data.output.elementType.properties || [], 'dataType')
-        : metadataConvertToTableTree(props.data.output.properties || [], 'dataType')
-  }
-})
+const modelValue = computed(() => ({
+  input: metadataConvertToTableTree(props.data.inputs, 'dataType'),
+  output:
+    props.data.output.type === 'array'
+      ? metadataConvertToTableTree(props.data.output.elementType.properties || [], 'dataType')
+      : metadataConvertToTableTree(props.data.output.properties || [], 'dataType')
+}))
 
-const handleCancel = () => {
-  emit('cancel')
-}
+const handleCancel = () => emit('cancel')
 </script>
 
 <style scoped lang="less">
-.command-modal {
-  width: 100%;
-}
+.info-header {
+  margin-bottom: 16px;
 
-.command-info {
-  .command-title {
-    font-size: 20px;
-    font-weight: 500;
-    color: #1f1f1f;
-    margin-bottom: 16px;
+  .title {
     display: flex;
     align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
 
-    &-icon {
-      margin-right: 8px;
+    &-content {
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .anticon {
       color: #1890ff;
+      font-size: 20px;
     }
   }
 
-  .command-meta {
-    .command-id,
-    .command-desc {
-      margin-bottom: 8px;
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .meta-item {
+      display: flex;
       font-size: 14px;
+      color: #8c8c8c;
 
-      .label {
-        font-weight: 500;
-      }
-
-      .value {
-        color: #333;
-        max-width: 220px;
+      span {
+        color: #262626;
+        margin-right: 8px;
+        white-space: nowrap;
       }
     }
   }
 }
 
-.command-params {
-  margin-top: 16px;
-  overflow-y: scroll;
+.params-section {
+  max-height: 500px;
+  padding: 4px 0;
 }
 
-.modal-footer {
-  text-align: right;
-
-  .ant-btn {
-    margin-left: 8px;
-  }
+.ant-divider {
+  margin: 16px 0;
 }
 </style>

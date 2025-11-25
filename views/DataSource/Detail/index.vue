@@ -57,10 +57,10 @@
             编辑
           </j-permission-button>
           <j-permission-button
-            v-if="sourceClassify === 'database'"
+            v-if="showTestConnection"
             :hasPermission="`${permission}:state`"
             @click="handleTestDataSource()"
-            :loading="loading"
+            :loading="testLoading"
             type="primary"
           >
             <CheckCircleOutlined />
@@ -74,7 +74,6 @@
           <component
             :is="tabs[tabActiveKey]"
             :info="info"
-            v-model:sourceData="sourceData"
             :sourceClassify="sourceClassify"
           />
         </div>
@@ -91,42 +90,59 @@
 </template>
 
 <script lang="ts" name="Detail" setup>
-import Info from './info/Info.vue'
-import Query from './query/Query.vue'
-import Table from './table/Table.vue'
-import DataList from './dataList/DataList.vue'
-import SourceDetailsAdd from '../components/SourceDetailsAdd.vue'
-import {
-  deleteDataSource,
-  disableDataSource,
-  getDataSourceDetail,
-  getDataSourceTables,
-  refreshTable,
-  testDataSource
-} from '@datasource-manager-ui/api/data/datasource'
+import Info from './info/index.vue'
+import Query from './query/index.vue'
+import Table from './table/index.vue'
+import DataList from './dataList/index.vue'
+import EsIndex from './esIndex/index.vue'
+import RedisKey from './redisKey/index.vue'
+import SourceDetailsAdd from '../components/dataSourceModal/SourceDetailsAdd.vue'
+import { deleteDataSource, disableDataSource, getDataSourceDetail } from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
-import { getSourceClassify } from '../components/table'
+import { DATA_TYPE_ITEM, getTypesDataDetail } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
+import { useTestConnection } from '../composables/useTestConnection'
 
 const permission = 'system/DataSource'
-const loading = ref(false)
+
 const route = useRoute()
 const router = useRouter()
 const sourceId = route.params.id as string
-const sourceData = ref()
+
+const { loading: testLoading, testConnection } = useTestConnection()
 const info = ref({} as SourceDataInfo)
 const list = ref<{ key: string; tab: string }[]>([])
+
 const tabs = {
   Info,
   Table,
   Query,
-  DataList
+  DataList,
+  EsIndex,
+  RedisKey
 } as Record<string, any>
+
 const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
-const sourceClassify = ref<'database' | 'common'>('database')
+
+const sourceClassify = ref<DATA_TYPE_ITEM>()
+
+const baseTabs = [{ key: 'Info', tab: '基本信息' }]
+const endTabs = [{ key: 'DataList', tab: '功能列表' }]
+
+const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
+    { key: 'Table', tab: '表结构' },
+    { key: 'Query', tab: '查询' }
+  ],
+  [DATA_TYPE_ITEM.API_SEND]: [],
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }]
+}
+
 const routeLink = computed(() => ({
   path: `/system/DataSource`,
   query: {
@@ -134,19 +150,17 @@ const routeLink = computed(() => ({
   }
 }))
 
-const onTabChange = async (key: string) => {
+// 是否显示测试连接按钮
+const showTestConnection = computed(() => {
+  return (
+    sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+  )
+})
+
+const onTabChange = (key: string) => {
   tabActiveKey.value = key
-  if (key !== 'Info' && key !== 'DataList') {
-    if (!sourceData.value) {
-      const resp = await refreshTable(route.params.id as string)
-      if (resp.success) {
-        const res = await getDataSourceTables(sourceId)
-        if (res.success) {
-          sourceData.value = res.result
-        }
-      }
-    }
-  }
 }
 
 const showSourceEdit = async () => {
@@ -154,32 +168,8 @@ const showSourceEdit = async () => {
 }
 
 const handleTestDataSource = async () => {
-  loading.value = true
   const { typeId, name, shareConfig } = info.value
-  const { type, url, username, password, schema } = shareConfig
-  const res = await testDataSource({
-    typeId,
-    name,
-    shareConfig: {
-      type,
-      url,
-      username,
-      password,
-      schema,
-      others: {}
-    },
-    shareCluster: true
-  }).catch((err) => {
-    loading.value = false
-  })
-
-  if (res?.result.ok === true) {
-    onlyMessage('连接数据源成功!')
-    loading.value = false
-  } else {
-    onlyMessage(`连接数据源失败,${res?.result?.reason?.cause?.message ?? '请求超时'}`, 'error')
-    loading.value = false
-  }
+  await testConnection(typeId, name, shareConfig)
 }
 
 const handleDeleteOk = async () => {
@@ -201,35 +191,13 @@ const handleDeleteOk = async () => {
 
 const getDetailInfo = async () => {
   const res = await getDataSourceDetail(sourceId)
+
   if (res.status === 200) {
     info.value = res.result
-    sourceClassify.value = getSourceClassify(info.value.searchCode) as 'database' | 'common'
-    const baseList = [
-      {
-        key: 'Info',
-        tab: '基本信息'
-      }
-    ]
+    sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
 
-    if (sourceClassify.value !== 'common') {
-      baseList.push(
-        {
-          key: 'Table',
-          tab: '表结构'
-        },
-        {
-          key: 'Query',
-          tab: '查询'
-        }
-      )
-    }
-    list.value = [
-      ...baseList,
-      {
-        key: 'DataList',
-        tab: '功能列表'
-      }
-    ]
+    const dynamicTabs = dataSourceTabs[sourceClassify.value] || []
+    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
   }
 }
 
@@ -245,6 +213,8 @@ watch(
 onMounted(async () => {
   await getDetailInfo()
 })
+
+provide('INFO', info)
 </script>
 
 <style lang="less" scoped>
@@ -299,7 +269,7 @@ onMounted(async () => {
   margin-top: 24px;
   padding: 24px;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 :deep(.full-page-warp) {

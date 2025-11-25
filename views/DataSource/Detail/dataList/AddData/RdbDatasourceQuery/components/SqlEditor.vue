@@ -12,7 +12,6 @@
       </a-button>
     </div>
     <MonacoEditor
-      ref="editorRef"
       v-model:modelValue="sqlValue"
       :registrationTips="registrationTips"
       language="sql"
@@ -42,7 +41,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'run', 'change'])
 
 const sqlValue = ref(props.modelValue)
-const editorRef = ref()
 
 const handleChange = () => {
   emit('update:modelValue', sqlValue.value)

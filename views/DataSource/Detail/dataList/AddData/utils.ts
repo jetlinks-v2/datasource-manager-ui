@@ -1,5 +1,5 @@
-import { cloneDeep, isArray, isObject } from 'lodash-es'
-import { randomString } from '@jetlinks-web/utils'
+import {isArray, isObject} from 'lodash-es'
+import {randomString} from '@jetlinks-web/utils'
 
 /**
  * 获取值的类型
@@ -16,7 +16,7 @@ export const getValueType = (value: any) => {
     return 'string'
   } else if (typeof value === 'boolean') {
     return 'boolean'
-  } else if (Array.isArray(value)) {
+  } else if (isArray(value)) {
     return 'array'
   } else if (typeof value === 'object' && value !== null) {
     return 'object'
@@ -31,40 +31,22 @@ export const getValueType = (value: any) => {
  */
 export const convertToTableTreeData = (data: Object | Array<any>): any => {
   let _data = {} as any
+
   if (isArray(data)) {
-    _data = { ...data[0] }
+    // 数组转为索引对象
+    _data = Object.fromEntries(data.map((item, index) => [index, item]))
+  } else if (!isObject(data)) {
+    return []
   } else {
-    // 单值类型
-    if (!isObject(data)) {
-      return []
-    }
     _data = { ...data }
   }
+
   return Object.keys(_data).map((k) => {
     const value = _data[k]
-
     const type = getValueType(value)
-    if (typeof value === 'object' && value !== null) {
-      return {
-        key: randomString(5),
-        id: k,
-        name: k,
-        dataType: {
-          type,
-          ...(isArray(value)
-            ? {
-                elementType: {
-                  type: getValueType(value[0]),
-                  properties: convertToTableTreeData(cloneDeep(value))
-                }
-              }
-            : {
-                properties: convertToTableTreeData(cloneDeep(value))
-              })
-        },
-        children: convertToTableTreeData(cloneDeep(value))
-      }
-    } else {
+
+    // 基本类型直接返回
+    if (typeof value !== 'object' || value === null) {
       return {
         key: randomString(5),
         id: k,
@@ -72,50 +54,109 @@ export const convertToTableTreeData = (data: Object | Array<any>): any => {
         dataType: { type }
       }
     }
-  })
-}
 
-export function metadataConvertToTableTree(data: any, typeKey = 'valueType') {
-  const result = data.map((node: any) => {
-    let { id, name, description, valueType } = node
+    // 数组类型
+    if (isArray(value)) {
+      const firstElement = value[0]
+      const elementType = getValueType(firstElement)
 
-    let children = []
-
-    // 处理对象类型的子节点
-    if (valueType?.type === 'object' && valueType.properties) {
-      children = metadataConvertToTableTree(valueType.properties, typeKey)
-      valueType = {
-        ...valueType,
-        properties: children
+      // 对象数组 - 只需要第一个元素的结构作为 properties
+      if (firstElement && typeof firstElement === 'object') {
+        return {
+          key: randomString(5),
+          id: k,
+          name: k,
+          dataType: {
+            type: 'array',
+            elementType: {
+              type: elementType,
+              properties: convertToTableTreeData(firstElement)
+            }
+          },
+          // children 应该是第一个元素的展开，不是整个数组
+          children: convertToTableTreeData(firstElement)
+        }
       }
-    }
 
-    // 处理数组类型的子节点
-    if (valueType?.type === 'array' && valueType?.elementType?.type === 'object' && valueType.elementType?.properties) {
-      children = metadataConvertToTableTree(valueType.elementType.properties, typeKey)
-      valueType = {
-        ...valueType,
-        elementType: {
-          ...valueType.elementType,
-          properties: children
+      // 基本类型数组
+      return {
+        key: randomString(5),
+        id: k,
+        name: k,
+        dataType: {
+          type: 'array',
+          elementType: { type: elementType }
         }
       }
     }
 
-    const obj = {
+    // 对象类型
+    return {
       key: randomString(5),
-      name,
-      id,
-      description,
-      [typeKey]: { ...valueType }
+      id: k,
+      name: k,
+      dataType: {
+        type: 'object',
+        properties: convertToTableTreeData(value)
+      },
+      children: convertToTableTreeData(value)
     }
-    if (children.length > 0) {
-      obj['children'] = children
-    }
-
-    return obj
   })
-  return result
+}
+
+export function metadataConvertToTableTree(data: any, typeKey = 'valueType') {
+  const defaultValueType = {
+    properties: [],
+    name: '对象类型',
+    id: 'object',
+    type: 'object',
+    i18nName: '对象类型'
+  }
+
+  return data.map((node: any) => {
+      let {id, name, description, valueType} = node
+
+      // 如果没有valueType，使用默认的object类型
+      if (!valueType) {
+          valueType = defaultValueType
+      }
+
+      let children = []
+
+      // 处理对象类型的子节点
+      if (valueType?.type === 'object' && valueType.properties) {
+          children = metadataConvertToTableTree(valueType.properties, typeKey)
+          valueType = {
+              ...valueType,
+              properties: children
+          }
+      }
+
+      // 处理数组类型的子节点
+      if (valueType?.type === 'array' && valueType?.elementType?.type === 'object' && valueType.elementType?.properties) {
+          children = metadataConvertToTableTree(valueType.elementType.properties, typeKey)
+          valueType = {
+              ...valueType,
+              elementType: {
+                  ...valueType.elementType,
+                  properties: children
+              }
+          }
+      }
+
+      const obj = {
+          key: randomString(5),
+          name,
+          id,
+          description,
+          [typeKey]: {...valueType}
+      }
+      if (children.length > 0) {
+          obj['children'] = children
+      }
+
+      return obj
+  })
 }
 
 /**
