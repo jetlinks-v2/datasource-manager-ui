@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts" name="IndexContent">
-import { queryEsMetadata, queryEsPager } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import DescriptionItemList, { type DescriptionItem } from '../../info/components/DescriptionItemList.vue'
 
 const props = defineProps<{
@@ -102,6 +102,9 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
+
 const activeKey = ref('basic')
 const fieldData = ref<any[]>([])
 const dataColumns = ref<any[]>([])
@@ -197,10 +200,8 @@ const fieldColumns = [
 const loadIndexMetadata = async () => {
   if (!props.selectedItem?.index) return
 
-  const id = route.params.id as string
-
   try {
-    const res = await queryEsMetadata(id, { index: props.selectedItem.index })
+    const res = await queryDataSource(typeId, dataSourceId, 'QueryMetadata', { index: props.selectedItem.index })
 
     if (res.status === 200 && res.result && res.result.length > 0) {
       const properties = res.result[0].properties || []
@@ -228,7 +229,7 @@ const handleRequest = (request: any) =>
         terms: []
       }
 
-      queryEsPager(route.params.id as string, params)
+      queryDataSource(typeId, dataSourceId, 'QueryPager', params)
         .then((resp: any) => {
           if (resp.result?.data && resp.result.data.length > 0) {
             handleColumns(resp.result.data)

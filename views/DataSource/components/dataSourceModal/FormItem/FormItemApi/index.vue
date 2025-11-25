@@ -172,10 +172,10 @@
   </a-form>
 </template>
 <script lang="ts" name="FormItemApi" setup>
-import { useSourceDetailStore } from '../../sourceDetail'
-import { cloneDeep } from 'lodash-es'
-import { UniversalData } from '../type'
+import { useSourceDetailStore } from '../../../../sourceDetail'
+import { UniversalData } from '../../../type'
 import HeaderParamsTable from './HeaderParamsTable.vue'
+import { cloneDeep } from 'lodash-es'
 
 interface Header {
   key: string
@@ -184,19 +184,18 @@ interface Header {
 }
 
 const props = defineProps({
-  editData: {
+  modelValue: {
     type: Object,
-    default: {}
+    default: () => ({})
   }
 })
 
-const emit = defineEmits(['update:formData'])
+const emit = defineEmits(['update:modelValue'])
 const sourceDetailStore = useSourceDetailStore()
 const formRef = ref()
 const headersTableRef = ref()
 const paramsTableRef = ref()
 
-//表单
 const dynamicValidateForm = ref<{ headers: Header[]; params: Header[] }>({
   headers: [
     {
@@ -256,7 +255,7 @@ const validate = () => {
         formData.value.OAuth2.headers = filteredHeaders
         formData.value.OAuth2.params = filteredParams
 
-        emit('update:formData', formData.value)
+        emit('update:modelValue', formData.value)
         resolve(true)
       })
       .catch((error: any) => {
@@ -265,23 +264,22 @@ const validate = () => {
   })
 }
 
-watch(
-  () => props.editData,
-  (newValue) => {
-    if (newValue && Object.keys(newValue).length > 0) {
-      Object.assign(formData.value, newValue)
-      if (formData.value.authType === 'OAuth2') {
-        dynamicValidateForm.value = {
-          headers: newValue.OAuth2.headers || [],
-          params: newValue.OAuth2.params || []
-        }
+const syncFormData = (newValue: any) => {
+  if (newValue && Object.keys(newValue).length > 0) {
+    Object.assign(formData.value, cloneDeep(newValue))
+    if (formData.value.authType === 'OAuth2') {
+      dynamicValidateForm.value = {
+        headers: newValue.OAuth2?.headers || [],
+        params: newValue.OAuth2?.params || []
       }
     }
-  },
-  {
-    immediate: true,
-    deep: true
   }
+}
+
+watch(
+  () => props.modelValue,
+  (newValue) => syncFormData(newValue),
+  { deep: true }
 )
 
 watch(
@@ -309,9 +307,7 @@ onBeforeUnmount(() => {
   sourceDetailStore.saveHeaderData({ ...dynamicValidateForm.value })
 })
 
-defineExpose({
-  validate
-})
+defineExpose({ validate })
 </script>
 
 <style lang="less" scoped></style>

@@ -1,35 +1,29 @@
 <template>
   <div class="command-config-container">
     <div class="config-section">
-      <TitleComponent
-          data="命令入参配置"
-          :style="{ fontSize: '16px' }"
-      />
+      <TitleComponent data="命令入参配置" />
       <CommandTable
-          ref="CommandTableInputRef"
-          class="config-table"
-          :scroll="{ y: 372 }"
-          :columns="inputColumns"
-          :dataSource="inputDataSource"
-          :preview="preview"
-          @update="handleInputSelectedChange"
+        ref="CommandTableInputRef"
+        class="config-table"
+        :scroll="{ y: 372 }"
+        :columns="inputColumns"
+        :dataSource="inputDataSource"
+        :preview="preview"
+        @update="handleInputSelectedChange"
       />
     </div>
 
     <div class="config-section">
-      <TitleComponent
-          data="命令返回响应配置"
-          :style="{ fontSize: '16px' }"
-      />
+      <TitleComponent data="命令返回响应配置" />
       <CommandTable
-          ref="CommandTableOutputRef"
-          class="config-table"
-          :scroll="{ y: 372 }"
-          :columns="outputColumns"
-          :dataSource="outputDataSource"
-          :preview="preview"
-          :multiple="!preview"
-          @update="handleOutputExpandChange"
+        ref="CommandTableOutputRef"
+        class="config-table"
+        :scroll="{ y: 372 }"
+        :columns="outputColumns"
+        :dataSource="outputDataSource"
+        :preview="preview"
+        :multiple="!preview"
+        @update="handleOutputExpandChange"
       />
     </div>
   </div>
@@ -37,8 +31,8 @@
 
 <script setup lang="ts" name="CommandParams">
 import CommandTable from './CommandTable.vue'
-import {onlyMessage} from '@jetlinks-web/utils'
-import {cloneDeep, isArray} from 'lodash-es'
+import { onlyMessage } from '@jetlinks-web/utils'
+import { cloneDeep, isArray } from 'lodash-es'
 
 const props = defineProps({
   preview: {
@@ -113,19 +107,19 @@ const validateCommandParams = async () => {
 }
 
 watch(
-    () => props.modelValue,
-    (newVal) => {
-      if (newVal) {
-        inputDataSource.value = isArray(newVal.input) ? newVal.input : []
-        outputDataSource.value = isArray(newVal.output) ? newVal.output : []
+  () => props.modelValue,
+  (newVal) => {
+    if (newVal) {
+      inputDataSource.value = isArray(newVal.input) ? newVal.input : []
+      outputDataSource.value = isArray(newVal.output) ? newVal.output : []
 
-        // 只在初始化时全选
-        nextTick(() => {
-          CommandTableOutputRef.value?.selectAll()
-        })
-      }
-    },
-    {deep: true, immediate: true}
+      // 只在初始化时全选
+      nextTick(() => {
+        CommandTableOutputRef.value?.selectAll()
+      })
+    }
+  },
+  { deep: true, immediate: true }
 )
 
 defineExpose({

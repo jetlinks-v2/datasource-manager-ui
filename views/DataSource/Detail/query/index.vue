@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { handleSQL_api } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import { onlyMessage } from '@jetlinks-web/utils'
 
@@ -97,6 +97,8 @@ const props = defineProps({
   sourceData: Object
 })
 const route = useRoute()
+const typeId = route.query.typeId
+const dataSourceId = route.params.id
 const sqlKeywords = useSqlKeywords()
 const activeKey = ref(1)
 const queryData = ref()
@@ -180,7 +182,7 @@ const handleSQL = async () => {
     }
 
     try {
-      const res = await handleSQL_api(route.params.id, params)
+      const res = await queryDataSource(typeId, dataSourceId, 'ExecuteSql', params)
       if (res?.success && res.result?.[0]) {
         results.push(res.result[0].data)
       } else {

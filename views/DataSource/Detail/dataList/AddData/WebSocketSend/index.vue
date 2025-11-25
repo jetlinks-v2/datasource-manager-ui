@@ -36,7 +36,6 @@
       <template #checkTest="{ params }">
         <CheckTest
           ref="checkTestRef"
-          :formData="expression"
           :queryParams="params"
           :historyParams="data.param"
           @update:data="handleCheckTestSave"
@@ -71,15 +70,11 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
 import { convertParamsToObject, transformArray } from '../components/utils'
-import { testWebSocketDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { WebSocketProtocol } from '../type'
 import { cloneDeep } from 'lodash-es'
 
 const props = defineProps({
-  dataSourceId: {
-    type: String,
-    required: true
-  },
   formRef: {
     type: Object,
     default: () => ({})
@@ -91,6 +86,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:expression'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const expression = ref()
 const protocol = ref<WebSocketProtocol>('ws://')
 const checkTestRef = ref()
@@ -206,7 +204,7 @@ const handleSend = async () => {
           expression: _expression
         }
 
-        const res = await testWebSocketDataSource(props.dataSourceId, sendParams)
+        const res = await queryDataSource(typeId, dataSourceId, 'WebSocketExprRequest', sendParams)
 
         if (res.status === 200) {
           checkTestDataSource.value = res.result?.payload || {}

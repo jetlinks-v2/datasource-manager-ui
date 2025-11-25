@@ -62,7 +62,7 @@
 
 <script setup lang="ts" name="IndexList">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
-import { queryEsIndexPager, refreshEsIndex } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 
 const emit = defineEmits(['select'])
@@ -71,6 +71,8 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const scrollContainerRef = ref<HTMLElement>()
 const loading = ref(false)
 const total = ref(0)
@@ -86,10 +88,8 @@ const handleRefresh = async () => {
   refreshLoading.value = true
 
   try {
-    const id = route.params.id as string
-
     const indexes = allData.value.map((item) => item.index) || []
-    const res = await refreshEsIndex(id, {
+    const res = await queryDataSource(typeId, dataSourceId, 'Refresh', {
       index: indexes
     })
 
@@ -112,7 +112,6 @@ const loadIndexData = async (append = false) => {
   if (loading.value) return
   if (append && !hasMore.value) return
 
-  const id = route.params.id as string
   loading.value = true
 
   try {
@@ -127,7 +126,7 @@ const loadIndexData = async (append = false) => {
       params.indexPattern = searchQuery.value.trim()
     }
 
-    const res = await queryEsIndexPager(id, params)
+    const res = await queryDataSource(typeId, dataSourceId, 'QueryIndexPager', params)
 
     if (res.status === 200) {
       const { data = [], total: totalCount = 0 } = res.result
@@ -192,9 +191,8 @@ onMounted(() => {
 
 <style scoped lang="less">
 .index-sidebar {
-  width: 240px;
-  min-width: 240px;
-  max-width: 240px;
+  width: 250px;
+  flex: 0 0 250px;
   height: 100%;
   display: flex;
   flex-direction: column;

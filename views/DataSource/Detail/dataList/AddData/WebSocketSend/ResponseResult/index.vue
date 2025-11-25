@@ -1,10 +1,7 @@
 <template>
   <div class="response-container">
     <div class="response-header">
-      <TitleComponent
-        data="响应结果"
-        :style="{ fontSize: '16px' }"
-      />
+      <TitleComponent data="响应结果" />
       <div
         class="response-meta"
         v-if="data.status"

@@ -84,7 +84,7 @@
 
 <script setup lang="ts" name="RdbDatasourceQuery">
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
-import { queryByPage } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnSchema, Key, TableSchema } from './type'
 import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import TableList from '@datasource-manager-ui/views/DataSource/Detail/table/components/TableList.vue'
@@ -96,14 +96,13 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
-  },
-  dataSourceId: {
-    type: String,
-    default: ''
   }
 })
 
 const emit = defineEmits(['update:configuration'])
+const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const sqlKeywords = useSqlKeywords()
 const sqlValue = ref<string>('')
 const tips = ref()
@@ -262,7 +261,7 @@ const handleSearch = (e: any) => {
 const handleRequest = (request: any) =>
   new Promise((resolve) => {
     if (request?.table || request?.sql) {
-      queryByPage(props.dataSourceId, request)
+      queryDataSource(typeId, dataSourceId, 'QueryPager', request)
         .then((resp: any) => {
           if (activeTab.value === 'sql') {
             const resultData = resp.result?.data || []

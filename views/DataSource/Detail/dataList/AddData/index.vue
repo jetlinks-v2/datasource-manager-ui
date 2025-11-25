@@ -29,7 +29,6 @@
           :is="currentComponent"
           ref="componentRef"
           :is-edit="isEdit"
-          :data-source-id="info.id"
           :form-ref="formRef"
           :data="formData.configuration"
           @update:expression="handleExpressionUpdate"
@@ -84,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { Modal, message } from 'ant-design-vue'
+import { Modal } from 'ant-design-vue'
 import { cloneDeep, isArray, isObject } from 'lodash-es'
 
 import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
@@ -92,6 +91,7 @@ import ApiSend from './ApiSend/index.vue'
 import BasicForm from './components/BasicForm.vue'
 import WebSocketSend from './WebSocketSend/index.vue'
 import EsDatasourceQuery from './EsDatasourceQuery/index.vue'
+import RedisDatasourceQuery from './RedisDatasourceQuery/index.vue'
 
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
@@ -100,6 +100,7 @@ import { transformArray } from './components/utils'
 import type { TypeId } from '../../type'
 import { DATA_TYPE_ITEM } from '../../../components/table'
 import { FormData } from './type'
+import { onlyMessage } from '@jetlinks-web/utils'
 
 interface Props {
   data?: Record<string, any>
@@ -153,7 +154,8 @@ const COMPONENT_MAP = {
   [DATA_TYPE_ITEM.RDB_DATASOURCE]: RdbDatasourceQuery,
   [DATA_TYPE_ITEM.API_SEND]: ApiSend,
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: WebSocketSend,
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: EsDatasourceQuery,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: RedisDatasourceQuery
 } as const
 
 const isEdit = computed(() => !!props.data?.id)
@@ -185,14 +187,23 @@ const handleCancel = () => {
 }
 
 const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsData: any) => {
+  testDataSource.value = testData
+  dynamicParams.value = dynamicParamsData
+
+  if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
+    formData.configuration = {
+      ...expression,
+      input: dynamicParamsData,
+      output: testData
+    }
+    return
+  }
+
   formData.configuration = {
     ...formData.configuration,
     expression,
     param: dynamicParamsData
   }
-
-  testDataSource.value = testData
-  dynamicParams.value = dynamicParamsData
 }
 
 const handleConfigUpdate = (config: any) => {
@@ -207,6 +218,12 @@ const handleConfigUpdate = (config: any) => {
       formData.configuration = {
         ...formData.configuration,
         rdbDefinition: config
+      }
+      break
+    case DATA_TYPE_ITEM.REDIS_DATASOURCE:
+      formData.configuration = {
+        ...formData.configuration,
+        ...config
       }
       break
     default:
@@ -228,7 +245,7 @@ const handleNextStep = async () => {
     scrollToTop()
   } catch (error) {
     console.error('验证错误:', error)
-    message.error('请检查表单填写是否完整')
+    onlyMessage('请检查表单填写是否完整', 'error')
   } finally {
     loading.value = false
   }
@@ -255,11 +272,17 @@ const handleSave = async () => {
       return
     }
 
+    // Redis 数据源特殊处理
+    if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
+      await saveRedisDataSource()
+      return
+    }
+
     // API 和 WebSocket 通用处理
     await saveCommonDataSource()
   } catch (error: any) {
     console.error('保存失败:', error)
-    message.error(error.message || '操作失败')
+    onlyMessage(error.message || '操作失败', 'error')
   } finally {
     loading.value = false
   }
@@ -298,6 +321,41 @@ const saveEsDataSource = async () => {
   })
 }
 
+// 保存 Redis 数据源
+const saveRedisDataSource = async () => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const isComponentValid = await componentRef.value?.validateAll()
+  if (!isComponentValid) return
+
+  const formDataFromRef = await basicFormRef.value?.getFormData()
+  if (!formDataFromRef) return
+
+  const { input, output } = formDataFromRef.configuration
+
+  const inputConfig = parseTableTreeToMetadata(input)
+
+  // 构建输出配置(固定为数组)
+  const outputConfig = buildOutputConfig(output, true)
+
+  const params = {
+    ...formDataFromRef,
+    configuration: {
+      ...formDataFromRef.configuration,
+      input: inputConfig,
+      output: outputConfig
+    }
+  }
+
+  // 检查输出配置
+  if (!formDataFromRef.configuration.output?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
+  }
+}
+
 // 保存通用数据源
 const saveCommonDataSource = async () => {
   const isFormValid = await validateForm()
@@ -323,7 +381,7 @@ const validateForm = async (): Promise<boolean> => {
     return true
   } catch (error: any) {
     const errorMessage = error.errorFields?.[0]?.errors?.[0] || '表单验证失败'
-    message.error(errorMessage)
+    onlyMessage(errorMessage, 'error')
     return false
   }
 }
@@ -359,6 +417,7 @@ const buildDataSourceParams = (formData: any): FormData => {
   // 构建输出配置
   const outputConfig = buildOutputConfig(output, isDataSourceArray)
 
+  console.log(input, 'buildDataSourceParams')
   return {
     ...formData,
     configuration: {
@@ -429,7 +488,7 @@ const saveDataSource = async (params: any) => {
     throw new Error(isEdit.value ? '编辑失败' : '新增失败')
   }
 
-  message.success(isEdit.value ? '编辑成功' : '新增成功')
+  onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
   emit('ok')
   emit('cancel')
 }
@@ -456,7 +515,8 @@ const initializeFormData = () => {
     [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
     [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
     [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit,
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit
   }
 
   const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
@@ -560,6 +620,12 @@ const handleRdbInit = (data: any) => {
 // ES 类型
 const handleEsInit = (data: any) => {
   formData.configuration = data.configuration || {}
+}
+
+// Redis 类型
+const handleRedisInit = (data: any) => {
+  formData.configuration = data.configuration || {}
+  processInputOutput(data)
 }
 
 onMounted(() => {

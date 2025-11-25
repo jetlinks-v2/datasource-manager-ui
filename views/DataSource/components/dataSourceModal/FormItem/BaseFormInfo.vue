@@ -136,30 +136,25 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { getDataSourceRepeat } from '@datasource-manager-ui/api/data/datasource'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { addDataSourceGroup } from '@datasource-manager-ui/api/data'
-import { BaseFormData } from '../type'
+import { BaseFormData } from '../../type'
 
 const props = defineProps({
-  // 表单数据
   modelValue: {
     type: Object as PropType<BaseFormData>,
     required: true
   },
-  // 数据源名称（显示用）
   datasourceName: {
     type: String,
     required: true
   },
-  // 是否为编辑模式
   isEditor: {
     type: Boolean,
     default: false
   },
-  // 权限前缀
   permission: {
     type: String,
     default: ''
   },
-  // 分类列表
   categoryList: {
     type: Array as PropType<any[]>,
     default: () => []
@@ -168,25 +163,20 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'refreshCategoryList'])
 
-// 表单引用
 const formRef = ref<any>()
 const categoryFormRef = ref<any>()
 
-// 表单数据
 const formData = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
 
-// 分类表单状态
 const categoryFormState = ref<any>({
   name: ''
 })
 
-// 显示新增分类弹窗
 const showAddCategory = ref(false)
 
-// 数据源标识验证器
 const labelKeyValidator = async (_: Rule, value: string) => {
   if (value && !props.isEditor) {
     const resp = await getDataSourceRepeat(value)
@@ -197,7 +187,6 @@ const labelKeyValidator = async (_: Rule, value: string) => {
   }
 }
 
-// 分类名称验证器
 const nameValidator = async (_: Rule, value: string) => {
   if (value) {
     const res = props.categoryList.find((item: any) => item.name === value)
@@ -208,18 +197,15 @@ const nameValidator = async (_: Rule, value: string) => {
   }
 }
 
-// 处理新增分类
 const handleAddCategory = () => {
   showAddCategory.value = true
 }
 
-// 取消新增分类
 const handleCancelAddCategory = () => {
   showAddCategory.value = false
   categoryFormRef.value.resetFields()
 }
 
-// 确认新增分类
 const handleConfirmAddCategory = () => {
   categoryFormRef.value.validate().then(async () => {
     const res = await addDataSourceGroup({ name: categoryFormState.value.name })
@@ -233,21 +219,9 @@ const handleConfirmAddCategory = () => {
   })
 }
 
-// 表单验证方法
-const validate = () => {
-  return formRef.value.validate()
-}
+const validate = () => formRef.value.validate()
 
-// 重置表单
-const resetFields = () => {
-  formRef.value.resetFields()
-}
-
-// 暴露给父组件的方法
-defineExpose({
-  validate,
-  resetFields
-})
+defineExpose({ validate })
 </script>
 
 <style lang="less" scoped>

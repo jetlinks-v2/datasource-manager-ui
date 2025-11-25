@@ -44,33 +44,20 @@
         :maxlength="64"
       />
     </a-form-item>
-
-    <a-button
-      :disabled="!canTestConnection"
-      @click="handleTestConnection"
-      :loading="connectionLoading"
-    >
-      测试连接
-    </a-button>
   </a-form>
 </template>
 
 <script setup lang="ts" name="FormItemEs">
-import { useSourceDetailStore } from '../../sourceDetail'
+import { useSourceDetailStore } from '../../../sourceDetail'
 
-const emit = defineEmits(['update:modelValue', 'testConnection'])
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
-    type: Object,
-    default: () => ({})
-  },
-  editData: {
     type: Object,
     default: () => ({})
   }
 })
 
-const connectionLoading = ref(false)
 const sourceDetailStore = useSourceDetailStore()
 const formRef = ref()
 
@@ -97,24 +84,10 @@ const validateUri = (rule: any, value: string) => {
   return Promise.resolve()
 }
 
-const handleTestConnection = () => {
-  emit('testConnection', formData.value)
-}
-
-const setLoading = (val: boolean) => {
-  connectionLoading.value = val
-}
-
-const validate = () => {
-  return formRef.value.validate()
-}
-
-const resetFields = () => {
-  formRef.value.resetFields()
-}
+const validate = () => formRef.value.validate()
 
 watch(
-  () => props.editData,
+  () => props.modelValue,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
       Object.assign(formData.value, newData)
@@ -135,8 +108,7 @@ watch(
 
 defineExpose({
   validate,
-  setLoading,
-  resetFields
+  canTestConnection
 })
 </script>
 

@@ -68,7 +68,7 @@
 <script setup lang="ts" name="TableList">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
-import { refreshTable, getDataSourceTables } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource, getDataSourceTables } from '@datasource-manager-ui/api/data/datasource'
 
 interface TableSchema {
   name: string
@@ -88,6 +88,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['click', 'loaded'])
 
 const route = useRoute()
+const typeId = route.query.typeId as string
+const dataSourceId = route.params.id as string
 const refreshLoading = ref(false)
 const searchQuery = ref('')
 const sourceData = ref<TableSchema[]>([])
@@ -122,12 +124,11 @@ const handelClick = (clickItem: TableSchema) => {
 }
 
 const handelRefresh = async () => {
-  const id = route.params.id as string
   refreshLoading.value = true
   try {
-    const resp = await refreshTable(id)
+    const resp = await queryDataSource(typeId, dataSourceId, 'Refresh', {})
     if (resp.success) {
-      const res = await getDataSourceTables(id)
+      const res = await getDataSourceTables(dataSourceId)
       if (res.success) {
         sourceData.value = res.result || []
         listData.value = sourceData.value
@@ -148,12 +149,11 @@ const handelRefresh = async () => {
 const loadInitialData = async () => {
   if (sourceData.value.length > 0) return
 
-  const id = route.params.id as string
   refreshLoading.value = true
   try {
-    const resp = await refreshTable(id)
+    const resp = await queryDataSource(typeId, dataSourceId, 'Refresh', {})
     if (resp.success) {
-      const res = await getDataSourceTables(id)
+      const res = await getDataSourceTables(dataSourceId)
       if (res.success) {
         sourceData.value = res.result || []
         listData.value = sourceData.value

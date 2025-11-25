@@ -1,7 +1,10 @@
 <template>
   <div class="check-test-warp">
     <div class="header">
-      <div class="section-title">动态参数</div>
+      <TitleComponent
+        data="动态参数"
+        class="section-title"
+      />
       <slot name="sendOutButton" />
     </div>
     <a-table
@@ -36,10 +39,6 @@ interface ParamItem {
 }
 
 const props = defineProps({
-  formData: {
-    type: Object,
-    required: true
-  },
   queryParams: {
     type: Object,
     default: {
@@ -143,13 +142,9 @@ const init = () => {
 
   const mergedUniqueParams = Array.from(
     new Map(
-      [
-        ...(props.queryParams.query || []),
-        ...(props.queryParams.headers || []),
-        ...(props.queryParams.message || []),
-        ...(props.queryParams.body || []),
-        ...(props.queryParams.uri || [])
-      ].map((param) => [param.key, param])
+      Object.values(props.queryParams)
+        .flat() // 展开所有数组
+        .map((param) => [param.key, param]) // 按照 key 进行去重
     ).values()
   )
 
@@ -194,7 +189,7 @@ defineExpose({
 }
 
 .section-title {
-  font-size: 16px;
+  margin: 0;
 }
 
 .params-table {
