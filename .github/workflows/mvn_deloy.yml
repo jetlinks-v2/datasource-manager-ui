@@ -2,16 +2,16 @@ name: Auto Deploy jetlinks-ui to the JetLinks Maven Repository
 
 on:
   push:
-    branches: ['2.11']
+    branches: [ '2.12' ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: [22.x]
+        node_version: [ 22.x ]
         #        os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v1
       - run: echo ${{github.ref}}
