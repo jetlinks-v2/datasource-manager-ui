@@ -108,11 +108,6 @@ watch(
     justify-content: space-between;
     align-items: center;
 
-    h3 {
-      margin: 0;
-      font-size: 15px;
-    }
-
     .selection-actions {
       white-space: nowrap;
       display: flex;

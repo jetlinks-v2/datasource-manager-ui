@@ -34,7 +34,22 @@
         <a-textarea
           v-model:value="formData.uri"
           :autoSize="{ minRows: 6, maxRows: 6 }"
-          placeholder="mongodb://user:pwd@host1:27017,host2:27017/db?authSource=admin&ssl=true"
+          placeholder="mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true"
+        />
+      </a-form-item>
+
+      <a-form-item
+        name="database"
+        :rules="[
+          { required: true, message: '请输入数据库名称', trigger: 'blur' },
+          { validator: spaceValidator, trigger: 'blur' }
+        ]"
+        label="数据库名称"
+      >
+        <a-input
+          v-model:value="formData.database"
+          placeholder="请输入数据库名称"
+          :maxlength="64"
         />
       </a-form-item>
     </div>
@@ -243,17 +258,18 @@ const canTestConnection = computed(() => {
   const { connectionMode, uri, host, port, database } = formData.value
 
   if (connectionMode === 'url') {
-    return Boolean(uri?.trim())
+    // URL模式下需要uri和database都有值
+    return Boolean(uri?.trim()) && Boolean(database?.trim())
   } else {
     return Boolean(host?.trim()) && hasValue(port) && Boolean(database?.trim())
   }
 })
 
-// 从基本配置构建URI
+// 从基本配置构建URI（不包含database）
 const buildUriFromBasic = () => {
-  const { host, port, database, username, password, authDatabase, sslEnabled } = formData.value
+  const { host, port, username, password, authDatabase, sslEnabled } = formData.value
 
-  if (!host || !port || !database) {
+  if (!host || !port) {
     return ''
   }
 
@@ -283,10 +299,10 @@ const buildUriFromBasic = () => {
 
   const queryString = params.length > 0 ? '?' + params.join('&') : ''
 
-  return `mongodb://${auth}${hostPart}/${database}${queryString}`
+  return `mongodb://${auth}${hostPart}${queryString}`
 }
 
-// 从URI解析基本配置
+// 从URI解析基本配置（不解析database，保留原有database值）
 const parseUriToBasic = (uri: string) => {
   try {
     // 移除 mongodb:// 或 mongodb+srv:// 前缀
@@ -301,15 +317,27 @@ const parseUriToBasic = (uri: string) => {
 
     const [username, password] = auth ? auth.split(':') : ['', '']
 
-    // 解析主机、端口和路径
-    const [hostPart, pathAndQuery] = hostAndPath.split('/')
+    // 解析主机、端口和查询参数（URI中可能有或没有路径部分）
+    let hostPart = hostAndPath
+    let queryString = ''
+
+    // 检查是否有查询参数
+    const queryIndex = hostAndPath.indexOf('?')
+    if (queryIndex !== -1) {
+      hostPart = hostAndPath.substring(0, queryIndex)
+      queryString = hostAndPath.substring(queryIndex + 1)
+    }
+
+    // 移除可能存在的路径部分（/之后的内容，但在?之前）
+    const slashIndex = hostPart.indexOf('/')
+    if (slashIndex !== -1) {
+      hostPart = hostPart.substring(0, slashIndex)
+    }
+
     const [host, portStr] = hostPart.split(',')[0].split(':') // 只取第一个主机
 
-    // 解析数据库和查询参数
-    const [database, queryString] = pathAndQuery ? pathAndQuery.split('?') : ['', '']
-
     // 解析查询参数
-    const params = new URLSearchParams(queryString || '')
+    const params = new URLSearchParams(queryString)
     const authDatabase = params.get('authSource') || ''
     const sslEnabled = params.get('ssl') === 'true'
 
@@ -325,7 +353,6 @@ const parseUriToBasic = (uri: string) => {
     return {
       host: host || '',
       port: portStr ? parseInt(portStr, 10) : undefined,
-      database: database || '',
       username: username || '',
       password: password || '',
       authDatabase: authDatabase || '',
@@ -337,7 +364,6 @@ const parseUriToBasic = (uri: string) => {
     return {
       host: '',
       port: undefined,
-      database: '',
       username: '',
       password: '',
       authDatabase: '',

@@ -5,7 +5,7 @@
       <div class="content-item">
         <div class="visual-query-container">
           <CollectionList
-            :initialSelectedCollection="initialCollectionName"
+            :initialSelectedCollection="props.data?.collection || ''"
             @click="selectCollection"
             @loaded="handleCollectionsLoaded"
           >
@@ -82,10 +82,7 @@ interface CollectionSchema {
 
 interface Props {
   data?: {
-    collection?: {
-      name: string
-      fields: FieldSchema[]
-    }
+    collection?: string
     [key: string]: any
   }
 }
@@ -104,9 +101,7 @@ const resultColumns = ref<any[]>([])
 const filterFields = ref<any[]>([])
 const filterFormData = ref<any>({ terms: [] })
 const initLoading = ref(false)
-const initialCollectionName = ref('')
 const allCollectionsData = ref<CollectionSchema[]>([])
-const isInitializing = ref(false)
 const queryKey = ref(0)
 
 const resultQueryParams = ref<any>({
@@ -126,7 +121,6 @@ const termsItem = {
 
 const handleCollectionsLoaded = (collections: CollectionSchema[]) => {
   allCollectionsData.value = collections
-  isInitializing.value = false
 }
 
 const handleQuery = () => {
@@ -192,20 +186,30 @@ const selectCollection = async (data: { clickItem: CollectionSchema; sourceData:
         width: 150,
         ellipsis: true
       }))
+
+      // 检查是否需要回显过滤条件
+      const savedTerms = props.data?.others?.terms || []
+      if (savedTerms.length > 0 && props.data?.collection === clickItem.name) {
+        // 等待字段渲染完成后设置过滤条件
+        nextTick(() => {
+          filterFormData.value = { terms: [...savedTerms] }
+        })
+      } else {
+        filterFormData.value = { terms: [] }
+      }
     } else {
       filterFields.value = []
       resultColumns.value = []
+      filterFormData.value = { terms: [] }
     }
   } catch (error) {
     console.error('加载集合数据失败:', error)
     filterFields.value = []
     resultColumns.value = []
+    filterFormData.value = { terms: [] }
   } finally {
     initLoading.value = false
   }
-
-  // 重置过滤条件
-  filterFormData.value = { terms: [] }
 
   resultQueryParams.value = {
     collection: selectedCollection.value,
@@ -213,7 +217,7 @@ const selectCollection = async (data: { clickItem: CollectionSchema; sourceData:
     pageSize: 12
   }
 
-  // 选择集合后自动查询一次（空条件）
+  // 选择集合后自动查询一次
   queryKey.value = Date.now()
 }
 
@@ -298,28 +302,9 @@ const validateAll = async () => {
 }
 
 onMounted(() => {
-  nextTick(async () => {
-    try {
-      if (props.data?.collection) {
-        const collectionName =
-          typeof props.data.collection === 'string' ? props.data.collection : props.data.collection.name
-
-        if (collectionName) {
-          isInitializing.value = true
-          initialCollectionName.value = collectionName
-          selectedCollection.value = collectionName
-        }
-
-        if (props.data.others?.terms) {
-          filterFormData.value.terms = props.data.others.terms
-        } else if (props.data.terms) {
-          filterFormData.value.terms = props.data.terms
-        }
-      }
-    } catch (error) {
-      console.error('初始化数据失败', error)
-    }
-  })
+  if (props.data?.collection) {
+    selectedCollection.value = props.data.collection
+  }
 })
 
 defineExpose({

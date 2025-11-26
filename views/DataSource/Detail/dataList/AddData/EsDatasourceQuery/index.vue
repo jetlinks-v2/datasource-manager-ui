@@ -8,7 +8,10 @@
           @select="selectIndex"
         >
           <template #header>
-            <h3 style="margin: 0; font-size: 15px">索引列表</h3>
+            <TitleComponent
+              data="索引列表"
+              :style="{ margin: 0 }"
+            />
           </template>
         </IndexList>
 

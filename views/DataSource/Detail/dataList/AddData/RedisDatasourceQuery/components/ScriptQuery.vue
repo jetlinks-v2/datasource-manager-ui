@@ -51,7 +51,9 @@
         ref="checkTestRef"
         :query-params="queryParams"
         :history-params="historyParams"
+        :advanced-mode="isAdvancedMode"
         @update:data="handleParamsUpdate"
+        @update:advanced-mode="handleAdvancedModeChange"
       >
         <template #sendOutButton>
           <a-space>
@@ -111,7 +113,7 @@ import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 import { convertParamsToObject } from '../../components/utils'
 import { convertToTableTreeData, parseTableTreeToMetadata } from '../../utils'
-import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 
 interface Props {
   data?: {
@@ -175,6 +177,7 @@ const queryParams = ref<Record<string, any>>({
   query: []
 })
 const historyParams = ref<Record<string, string>>({})
+const isAdvancedMode = ref(false)
 
 // 执行相关
 const executing = ref(false)
@@ -200,6 +203,11 @@ const handleVariablesChange = (variables: string[]) => {
 // 处理动态参数更新
 const handleParamsUpdate = (params: Array<{ name: string; value: string }>) => {
   dynamicParams.value = params
+}
+
+// 更新高级模式状态
+const handleAdvancedModeChange = (value: boolean) => {
+  isAdvancedMode.value = value
 }
 
 // 执行脚本
@@ -263,12 +271,20 @@ const validateAll = async () => {
     return false
   }
 
+  if (!checkTestRef.value?.validateAll()) {
+    onlyMessage('请检查动态参数', 'error')
+    return false
+  }
+
   emit(
     'update:expression',
     {
       script: scriptContent.value,
       outputType: outputType.value,
-      provider: 'script'
+      provider: 'script',
+      others: {
+        isAdvancedMode: isAdvancedMode.value
+      }
     },
     JSON.parse(resultJson.value || '{}'),
     convertParamsToObject(dynamicParams.value || [])
@@ -292,6 +308,16 @@ watch(
     historyParams.value = value
   },
   { immediate: true, deep: true }
+)
+
+watch(
+  () => props.data?.others?.isAdvancedMode,
+  (value) => {
+    if (value !== undefined) {
+      isAdvancedMode.value = value
+    }
+  },
+  { immediate: true }
 )
 
 watch(

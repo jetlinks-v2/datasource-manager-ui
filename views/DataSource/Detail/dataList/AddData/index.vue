@@ -24,7 +24,7 @@
       </a-steps>
 
       <!-- 步骤内容 -->
-      <div v-show="currentStep === 0">
+      <div v-show="currentStep === STEP_CONFIG.DETAIL">
         <component
           :is="currentComponent"
           ref="componentRef"
@@ -36,7 +36,7 @@
         />
       </div>
 
-      <div v-show="currentStep === 1">
+      <div v-show="currentStep === STEP_CONFIG.COMMAND">
         <BasicForm
           ref="basicFormRef"
           :model-value="formData"
@@ -53,7 +53,7 @@
     <template #footer>
       <div class="footer-wrapper">
         <a-button
-          v-if="currentStep > 0"
+          v-if="currentStep > STEP_CONFIG.DETAIL"
           class="prev-btn"
           @click="handlePrevStep"
         >
@@ -61,7 +61,7 @@
         </a-button>
 
         <a-button
-          v-if="currentStep < 1"
+          v-if="currentStep < STEP_CONFIG.COMMAND"
           type="primary"
           :loading="loading"
           @click="handleNextStep"
@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { Modal } from 'ant-design-vue'
-import { cloneDeep, isArray, isObject } from 'lodash-es'
+import { isArray, isObject, omit } from 'lodash-es'
 
 import RdbDatasourceQuery from './RdbDatasourceQuery/index.vue'
 import ApiSend from './ApiSend/index.vue'
@@ -95,12 +95,12 @@ import RedisDatasourceQuery from './RedisDatasourceQuery/index.vue'
 import MongoDatasourceQuery from './MongoDatasourceQuery/index.vue'
 
 import { addDataSourceCommand, editDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
-import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
+import { parseTableTreeToMetadata, metadataConvertToTableTree, convertToTableTreeData } from './utils'
 import { transformArray } from './components/utils'
 
 import type { TypeId } from '../../type'
 import { DATA_TYPE_ITEM } from '../../../components/table'
-import { FormData } from './type'
+import type { FormData, QueryParam, OutputConfig, ApiMethod } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
 
 interface Props {
@@ -118,12 +118,25 @@ const emit = defineEmits<{
   ok: []
 }>()
 
+// 常量定义
+const STEP_CONFIG = {
+  DETAIL: 0 as number,
+  COMMAND: 1 as number
+}
+
+const PROVIDER_TYPE = {
+  DEFINITION: 'definition',
+  EXPRESSION: 'expression',
+  GENERAL_QUERY: 'generalQuery',
+  PIPELINE: 'pipeline'
+} as const
+
 const route = useRoute()
 const formRef = ref()
 const componentRef = ref()
 const basicFormRef = ref()
 
-const currentStep = ref(0)
+const currentStep = ref(STEP_CONFIG.DETAIL)
 const loading = ref(false)
 const testDataSource = ref<any>()
 const dynamicParams = ref<any[]>([])
@@ -164,16 +177,16 @@ const currentComponent = computed(() => COMPONENT_MAP[sourceClassify.value])
 
 const modalTitle = computed(() => (isEdit.value ? '编辑功能' : '新增功能'))
 const modalWidth = computed(() => {
-  if (currentStep.value === 1) {
-    if (
-      sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-      sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-      formData.configuration.provider === 'generalQuery'
-    ) {
-      return '600px'
-    }
+  if (currentStep.value !== STEP_CONFIG.COMMAND) {
+    return '1200px'
   }
-  return '1200px'
+
+  const narrowWidthTypes = [DATA_TYPE_ITEM.RDB_DATASOURCE, DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE] as TypeId[]
+
+  return narrowWidthTypes.includes(sourceClassify.value) ||
+    formData.configuration.provider === PROVIDER_TYPE.GENERAL_QUERY
+    ? '600px'
+    : '1200px'
 })
 
 const modalBodyStyle = computed(() => ({
@@ -188,30 +201,23 @@ const handleCancel = () => {
 }
 
 const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsData: any) => {
-  testDataSource.value = testData
-  dynamicParams.value = dynamicParamsData
+  testDataSource.value = convertToTableTreeData(testData)
+  dynamicParams.value = convertToTableTreeData(dynamicParamsData)
 
-  if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
-    formData.configuration = {
-      ...expression,
-      input: dynamicParamsData,
-      output: testData
-    }
+  if (
+    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE
+  ) {
+    formData.configuration = expression
     return
   }
-
-  if (sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE) {
-    formData.configuration = {
-      ...formData.configuration,
-      ...expression
-    }
-    return
-  }
+  const _expression = omit(expression, 'others') as FormData['configuration']['expression']
 
   formData.configuration = {
     ...formData.configuration,
-    expression,
-    param: dynamicParamsData
+    expression: _expression,
+    param: dynamicParamsData,
+    others: expression.others
   }
 }
 
@@ -240,8 +246,15 @@ const handleConfigUpdate = (config: any) => {
   }
 }
 
-const handleFormUpdate = (newData: any) => {
+const handleFormUpdate = (newData: Partial<FormData>) => {
   Object.assign(formData, newData)
+}
+
+// 统一错误处理
+const handleError = (error: any, defaultMessage: string) => {
+  console.error(defaultMessage, error)
+  const message = error?.message || error?.errorFields?.[0]?.errors?.[0] || defaultMessage
+  onlyMessage(message, 'error')
 }
 
 const handleNextStep = async () => {
@@ -253,8 +266,7 @@ const handleNextStep = async () => {
     currentStep.value++
     scrollToTop()
   } catch (error) {
-    console.error('验证错误:', error)
-    onlyMessage('请检查表单填写是否完整', 'error')
+    handleError(error, '请检查表单填写是否完整')
   } finally {
     loading.value = false
   }
@@ -265,190 +277,38 @@ const handlePrevStep = () => {
   scrollToTop()
 }
 
-const handleSave = async () => {
-  try {
-    loading.value = true
-
-    // RDB 数据源特殊处理
-    if (sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE) {
-      await saveRdbDataSource()
-      return
-    }
-
-    // Elasticsearch 数据源特殊处理
-    if (sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE) {
-      await saveEsDataSource()
-      return
-    }
-
-    // Redis 数据源特殊处理
-    if (sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE) {
-      await saveRedisDataSource()
-      return
-    }
-
-    // MongoDB 数据源特殊处理
-    if (sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE) {
-      await saveMongoDataSource()
-      return
-    }
-
-    // API 和 WebSocket 通用处理
-    await saveCommonDataSource()
-  } catch (error: any) {
-    console.error('保存失败:', error)
-    onlyMessage(error.message || '操作失败', 'error')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 保存 RDB 数据源
-const saveRdbDataSource = async () => {
-  const isFormValid = await validateForm()
-  if (!isFormValid) return
-
-  const isComponentValid = await componentRef.value?.validateAll()
-  if (!isComponentValid) return
-
-  await saveDataSource({
-    ...formData,
-    configuration: {
-      rdbDefinition: formData.configuration.rdbDefinition,
-      provider: 'definition'
-    }
-  })
-}
-
-// 保存 ES 数据源
-const saveEsDataSource = async () => {
-  const isFormValid = await validateForm()
-  if (!isFormValid) return
-
-  const isComponentValid = await componentRef.value?.validateAll()
-  if (!isComponentValid) return
-
-  await saveDataSource({
-    ...formData,
-    configuration: {
-      elasticsearchConfig: formData.configuration.elasticsearchConfig
-    }
-  })
-}
-
-// 保存 Redis 数据源
-const saveRedisDataSource = async () => {
-  const isFormValid = await validateForm()
-  if (!isFormValid) return
-
-  const isComponentValid = await componentRef.value?.validateAll()
-  if (!isComponentValid) return
-
-  const formDataFromRef = await basicFormRef.value?.getFormData()
-  if (!formDataFromRef) return
-
-  const { input, output } = formDataFromRef.configuration
-
-  const inputConfig = parseTableTreeToMetadata(input)
-
-  // 构建输出配置(固定为数组)
-  const outputConfig = buildOutputConfig(output, true)
-
-  const params = {
-    ...formDataFromRef,
-    configuration: {
-      ...formDataFromRef.configuration,
-      input: inputConfig,
-      output: outputConfig
-    }
-  }
-
-  // 检查输出配置
-  if (!formDataFromRef.configuration.output?.length) {
-    await confirmSaveWithoutOutput(params)
-  } else {
-    await saveDataSource(params)
-  }
-}
-
-// 保存 MongoDB 数据源
-const saveMongoDataSource = async () => {
-  const isFormValid = await validateForm()
-  if (!isFormValid) return
-
-  const isComponentValid = await componentRef.value?.validateAll()
-  if (!isComponentValid) return
-
-  const formDataFromRef = await basicFormRef.value?.getFormData()
-  if (!formDataFromRef) return
-
-  // 如果provider是generalQuery，直接保存，排除input和output字段
-  if (formDataFromRef.configuration?.provider === 'generalQuery') {
-    const { input, output, ...restConfiguration } = formDataFromRef.configuration
-    const params = {
-      ...formDataFromRef,
-      configuration: restConfiguration
-    }
-    await saveDataSource(params)
-    return
-  }
-
-  const { input, output } = formDataFromRef.configuration
-
-  const inputConfig = parseTableTreeToMetadata(input)
-
-  // 构建输出配置(固定为数组)
-  const outputConfig = buildOutputConfig(output, true)
-
-  const params = {
-    ...formDataFromRef,
-    configuration: {
-      ...formDataFromRef.configuration,
-      input: inputConfig,
-      output: outputConfig
-    }
-  }
-
-  // 检查输出配置
-  if (!formDataFromRef.configuration.output?.length) {
-    await confirmSaveWithoutOutput(params)
-  } else {
-    await saveDataSource(params)
-  }
-}
-
-// 保存通用数据源
-const saveCommonDataSource = async () => {
-  const isFormValid = await validateForm()
-  if (!isFormValid) return
-
-  const formDataFromRef = await basicFormRef.value?.getFormData()
-  if (!formDataFromRef) return
-
-  const params = buildDataSourceParams(formDataFromRef)
-
-  // 检查输出配置
-  if (!formDataFromRef.configuration.output?.length) {
-    await confirmSaveWithoutOutput(params)
-  } else {
-    await saveDataSource(params)
-  }
-}
-
 // 验证表单
 const validateForm = async (): Promise<boolean> => {
   try {
     await formRef.value?.validate()
     return true
-  } catch (error: any) {
-    const errorMessage = error.errorFields?.[0]?.errors?.[0] || '表单验证失败'
-    onlyMessage(errorMessage, 'error')
+  } catch (error: unknown) {
+    handleError(error, '表单验证失败')
     return false
   }
 }
 
+// 公共验证逻辑
+const validateFormAndComponent = async (): Promise<boolean> => {
+  return (await validateForm()) && (await componentRef.value?.validateAll())
+}
+
+// 保存数据源
+const saveDataSource = async (params: FormData): Promise<void> => {
+  const api = isEdit.value ? editDataSourceCommand : addDataSourceCommand
+  const response = await api(params)
+
+  if (!response.success) {
+    throw new Error(isEdit.value ? '编辑失败' : '新增失败')
+  }
+
+  onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
+  emit('ok')
+  emit('cancel')
+}
+
 // 确认保存无输出配置
-const confirmSaveWithoutOutput = (params: any) => {
+const confirmSaveWithoutOutput = (params: FormData): Promise<boolean> => {
   return new Promise((resolve) => {
     Modal.confirm({
       title: '提示',
@@ -464,40 +324,45 @@ const confirmSaveWithoutOutput = (params: any) => {
   })
 }
 
-// 构建数据源参数
-const buildDataSourceParams = (formData: any): FormData => {
-  const isDataSourceArray = isEdit.value
-    ? props.data?.configuration?.output?.type === 'array'
-    : isArray(testDataSource.value)
-
-  const { expression, input, output } = formData.configuration
-
-  // 构建表达式配置
-  const baseExpression = buildExpression(expression)
-
-  // 构建输出配置
-  const outputConfig = buildOutputConfig(output, isDataSourceArray)
-
-  console.log(input, 'buildDataSourceParams')
-  return {
-    ...formData,
-    configuration: {
-      ...formData.configuration,
-      expression: baseExpression,
-      input: parseTableTreeToMetadata(input),
-      output: outputConfig,
-      provider: 'expression'
-    }
+// 构建输出配置
+const buildOutputConfig = (output: unknown, isArray: boolean): OutputConfig => {
+  const baseConfig = {
+    name: isArray ? '数组' : '对象',
+    id: isArray ? 'array' : 'object',
+    type: (isArray ? 'array' : 'object') as 'array' | 'object'
   }
+
+  if (isArray) {
+    return {
+      ...baseConfig,
+      elementType: {
+        type: 'object',
+        properties: parseTableTreeToMetadata(output as unknown[])
+      }
+    } as OutputConfig
+  }
+
+  return {
+    ...baseConfig,
+    properties: parseTableTreeToMetadata(output as unknown[])
+  } as OutputConfig
 }
 
 // 构建表达式
-const buildExpression = (expression: any) => {
+const buildExpression = (expression?: any): any => {
+  if (!expression) {
+    return {
+      uri: { url: '' },
+      queryParams: [],
+      headers: []
+    }
+  }
+
   const { queryParams, headers, uri, message, method } = expression
 
-  const baseExpression: any = {
-    queryParams: transformArray(queryParams),
-    headers: transformArray(headers),
+  const baseExpression: FormData['configuration']['expression'] = {
+    queryParams: transformArray(queryParams) as QueryParam[],
+    headers: transformArray(headers) as QueryParam[],
     uri: {
       url: sourceClassify.value === DATA_TYPE_ITEM.API_SEND ? uri.url.split('?')[0] : uri.url
     }
@@ -510,48 +375,157 @@ const buildExpression = (expression: any) => {
 
   // API 添加 method
   if (sourceClassify.value === DATA_TYPE_ITEM.API_SEND) {
-    baseExpression.method = method
+    baseExpression.method = method as ApiMethod
   }
 
   return baseExpression
 }
 
-// 构建输出配置
-const buildOutputConfig = (output: any, isArray: boolean) => {
-  const baseConfig = {
-    name: isArray ? '数组' : '对象',
-    id: isArray ? 'array' : 'object',
-    type: isArray ? 'array' : 'object'
-  }
+// 构建数据源参数
+const buildDataSourceParams = (formDataValue: FormData): FormData => {
+  const isDataSourceArray = isEdit.value
+    ? props.data?.configuration?.output?.type === 'array'
+    : isArray(testDataSource.value)
 
-  if (isArray) {
-    return {
-      ...baseConfig,
-      elementType: {
-        type: 'object',
-        properties: parseTableTreeToMetadata(output)
-      }
-    }
-  }
+  const { expression, input, output } = formDataValue.configuration
+
+  // 构建表达式配置
+  const baseExpression = buildExpression(expression)
+
+  // 构建输出配置
+  const outputConfig = buildOutputConfig(output, isDataSourceArray)
 
   return {
-    ...baseConfig,
-    properties: parseTableTreeToMetadata(output)
+    ...formDataValue,
+    configuration: {
+      ...formDataValue.configuration,
+      expression: baseExpression,
+      input: parseTableTreeToMetadata(input as any[]),
+      output: outputConfig,
+      provider: PROVIDER_TYPE.EXPRESSION
+    }
   }
 }
 
-// 保存数据源
-const saveDataSource = async (params: any) => {
-  const api = isEdit.value ? editDataSourceCommand : addDataSourceCommand
-  const response = await api(params)
+// 保存带输入输出的数据源（Redis和MongoDB公共逻辑）
+const saveDataSourceWithInputOutput = async (): Promise<void> => {
+  if (!(await validateFormAndComponent())) return
 
-  if (!response.success) {
-    throw new Error(isEdit.value ? '编辑失败' : '新增失败')
+  const formDataFromRef = (await basicFormRef.value?.getFormData()) as FormData | undefined
+  if (!formDataFromRef) return
+
+  // 如果provider是generalQuery，直接保存，排除input和output字段
+  if (formDataFromRef.configuration?.provider === PROVIDER_TYPE.GENERAL_QUERY) {
+    const { input, output, ...restConfiguration } = formDataFromRef.configuration
+    const params: FormData = {
+      ...formDataFromRef,
+      configuration: restConfiguration
+    }
+    await saveDataSource(params)
+    return
   }
 
-  onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
-  emit('ok')
-  emit('cancel')
+  const { input, output } = formDataFromRef.configuration
+  const inputConfig = parseTableTreeToMetadata(input as any[])
+  // 构建输出配置(固定为数组)
+  const outputConfig = buildOutputConfig(output, true)
+
+  const params: FormData = {
+    ...formDataFromRef,
+    configuration: {
+      ...formDataFromRef.configuration,
+      input: inputConfig,
+      output: outputConfig
+    }
+  }
+
+  // 检查输出配置
+  const outputArray = formDataFromRef.configuration.output as any[]
+  if (!outputArray?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
+  }
+}
+
+// 保存 RDB 数据源
+const saveRdbDataSource = async (): Promise<void> => {
+  if (!(await validateFormAndComponent())) return
+
+  await saveDataSource({
+    ...formData,
+    configuration: {
+      rdbDefinition: formData.configuration.rdbDefinition,
+      provider: PROVIDER_TYPE.DEFINITION
+    }
+  })
+}
+
+// 保存 ES 数据源
+const saveEsDataSource = async (): Promise<void> => {
+  if (!(await validateFormAndComponent())) return
+
+  await saveDataSource({
+    ...formData,
+    configuration: {
+      elasticsearchConfig: formData.configuration.elasticsearchConfig
+    }
+  })
+}
+
+// 保存 Redis 数据源
+const saveRedisDataSource = async () => {
+  await saveDataSourceWithInputOutput()
+}
+
+// 保存 MongoDB 数据源
+const saveMongoDataSource = async () => {
+  await saveDataSourceWithInputOutput()
+}
+
+// 保存通用数据源
+const saveCommonDataSource = async (): Promise<void> => {
+  const isFormValid = await validateForm()
+  if (!isFormValid) return
+
+  const formDataFromRef = (await basicFormRef.value?.getFormData()) as FormData | undefined
+  if (!formDataFromRef) return
+
+  const params = buildDataSourceParams(formDataFromRef)
+
+  // 检查输出配置
+  const outputArray = formDataFromRef.configuration.output as unknown[]
+  if (!outputArray?.length) {
+    await confirmSaveWithoutOutput(params)
+  } else {
+    await saveDataSource(params)
+  }
+}
+
+// 保存策略映射
+const SAVE_HANDLERS: Record<TypeId, () => Promise<void>> = {
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: saveRdbDataSource,
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: saveEsDataSource,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: saveRedisDataSource,
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: saveMongoDataSource,
+  [DATA_TYPE_ITEM.API_SEND]: saveCommonDataSource,
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: saveCommonDataSource
+}
+
+const handleSave = async () => {
+  try {
+    loading.value = true
+    const handler = SAVE_HANDLERS[sourceClassify.value]
+    if (handler) {
+      await handler()
+    } else {
+      throw new Error(`不支持的数据源类型: ${sourceClassify.value}`)
+    }
+  } catch (error: unknown) {
+    handleError(error, '操作失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 滚动到顶部
@@ -564,36 +538,100 @@ const scrollToTop = () => {
   })
 }
 
-// 初始化数据
-const initializeFormData = () => {
-  const data = cloneDeep(props.data)
-  if (!data || !Object.keys(data).length) return
+// API 类型
+const handleApiSendInit = (data: FormData) => {
+  const { expression } = data.configuration
+  if (!expression) return
 
-  // 合并表单数据
-  mergeFormData(data)
+  const { queryParams, headers, uri } = expression
 
-  const DATA_SOURCE_HANDLERS = {
-    [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
-    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
-    [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
-    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit,
-    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit,
-    [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: handleMongoInit
+  formData.configuration.expression = {
+    ...expression,
+    queryParams: transformExpressionParams(queryParams),
+    headers: transformExpressionParams(headers)
   }
 
-  const handler = DATA_SOURCE_HANDLERS[sourceClassify.value]
-  handler?.(data)
+  if (uri?.url) {
+    const queryString = buildQueryString(formData.configuration.expression?.queryParams as QueryParam[])
+    if (queryString) {
+      const separator = uri.url.includes('?') ? '&' : '?'
+      if (formData.configuration.expression) {
+        formData.configuration.expression.uri.url = `${uri.url}${separator}${queryString}`
+      }
+    }
+  }
+
+  processInputOutput(data)
+}
+
+// WebSocket 类型
+const handleWebSocketInit = (data: FormData) => {
+  const { expression } = data.configuration
+  if (!expression) return
+
+  const { queryParams, headers, message } = expression
+
+  formData.configuration.expression = {
+    ...expression,
+    queryParams: transformExpressionParams(queryParams),
+    headers: transformExpressionParams(headers),
+    message: message || {}
+  }
+  processInputOutput(data)
+}
+
+// RDB 类型
+const handleRdbInit = (data: FormData) => {
+  formData.configuration = data.configuration || {}
+}
+
+// ES 类型
+const handleEsInit = (data: FormData) => {
+  formData.configuration = data.configuration || {}
+}
+
+// Redis 类型
+const handleRedisInit = (data: FormData) => {
+  formData.configuration = data.configuration || {}
+  processInputOutput(data)
+}
+
+// MongoDB 类型
+const handleMongoInit = (data: FormData) => {
+  formData.configuration = data.configuration || {}
+  processInputOutput(data)
+}
+
+// 数据源初始化处理器映射
+const DATA_SOURCE_INIT_HANDLERS: Record<string, (data: FormData) => void> = {
+  [DATA_TYPE_ITEM.API_SEND]: handleApiSendInit,
+  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: handleWebSocketInit,
+  [DATA_TYPE_ITEM.RDB_DATASOURCE]: handleRdbInit,
+  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: handleEsInit,
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: handleRedisInit,
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: handleMongoInit
+}
+
+// 初始化数据
+const initializeFormData = () => {
+  if (!Object.keys(props.data || {}).length) return
+
+  // 合并表单数据
+  mergeFormData(props.data)
+
+  const handler = DATA_SOURCE_INIT_HANDLERS[sourceClassify.value]
+  handler?.(props.data as FormData)
 }
 
 // 合并表单数据
 const mergeFormData = (data: any) => {
   Object.keys(formData).forEach((key) => {
-    if (!data.hasOwnProperty(key)) return
+    if (!(key in data)) return
 
     const value = data[key]
     const currentValue = (formData as any)[key]
 
-    if (isObject(currentValue) && !isArray(currentValue)) {
+    if (isObject(currentValue) && !isArray(currentValue) && isObject(value)) {
       Object.assign(currentValue, value)
     } else {
       ;(formData as any)[key] = value
@@ -615,13 +653,13 @@ const processInputOutput = (data: any) => {
   const { input, output } = data.configuration
 
   if (input) {
-    formData.configuration.input = metadataConvertToTableTree(input, 'dataType')
+    dynamicParams.value = metadataConvertToTableTree(input, 'dataType')
   }
 
   if (output?.type === 'array') {
-    formData.configuration.output = metadataConvertToTableTree(output.elementType?.properties, 'dataType')
+    testDataSource.value = metadataConvertToTableTree(output.elementType?.properties, 'dataType')
   } else if (output?.type === 'object') {
-    formData.configuration.output = metadataConvertToTableTree(output.properties, 'dataType')
+    testDataSource.value = metadataConvertToTableTree(output.properties, 'dataType')
   }
 }
 
@@ -633,72 +671,9 @@ const buildQueryString = (queryParams: any[] = []) => {
     .join('&')
 }
 
-// API 类型
-const handleApiSendInit = (data: any) => {
-  const { expression } = data.configuration
-  if (!expression) return
-
-  const { queryParams, headers, uri } = expression
-
-  formData.configuration.expression = {
-    ...expression,
-    queryParams: transformExpressionParams(queryParams),
-    headers: transformExpressionParams(headers)
-  }
-
-  if (uri?.url) {
-    const queryString = buildQueryString(formData.configuration.expression.queryParams)
-    if (queryString) {
-      const separator = uri.url.includes('?') ? '&' : '?'
-      formData.configuration.expression.uri.url = `${uri.url}${separator}${queryString}`
-    }
-  }
-
-  processInputOutput(data)
-}
-
-// WebSocket 类型
-const handleWebSocketInit = (data: any) => {
-  const { expression } = data.configuration
-  if (!expression) return
-
-  const { queryParams, headers, message } = expression
-
-  formData.configuration.expression = {
-    ...expression,
-    queryParams: transformExpressionParams(queryParams),
-    headers: transformExpressionParams(headers),
-    message: message || {}
-  }
-
-  processInputOutput(data)
-}
-
-// RDB 类型
-const handleRdbInit = (data: any) => {
-  formData.configuration = data.configuration || {}
-}
-
-// ES 类型
-const handleEsInit = (data: any) => {
-  formData.configuration = data.configuration || {}
-}
-
-// Redis 类型
-const handleRedisInit = (data: any) => {
-  formData.configuration = data.configuration || {}
-  processInputOutput(data)
-}
-
-// MongoDB 类型
-const handleMongoInit = (data: any) => {
-  formData.configuration = data.configuration || {}
-  processInputOutput(data)
-}
-
 onMounted(() => {
   if (isEdit.value) {
-    currentStep.value = 1
+    currentStep.value = STEP_CONFIG.COMMAND
   }
 
   initializeFormData()

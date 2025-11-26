@@ -1,5 +1,5 @@
-type ConnectionMode = 'basic' | 'url'
-type TypeId = 'rdb' | 'api' | 'websocket' | 'elasticsearch' | 'redis' | 'mongodb'
+export type ConnectionMode = 'basic' | 'url'
+export type TypeId = 'rdb' | 'api' | 'websocket' | 'elasticsearch' | 'redis' | 'mongodb'
 export interface SourceDataInfo {
   id: string
   name: string

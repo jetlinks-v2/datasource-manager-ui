@@ -486,7 +486,7 @@ const handleDataType = (item: any) => {
       }
     }
   }
-  return item.dataType ? item.dataType : { type: 'int' }
+  return item.dataType ? item.dataType : { type: item.type || typeof item.value || 'int' }
 }
 
 // 监听 dataSource

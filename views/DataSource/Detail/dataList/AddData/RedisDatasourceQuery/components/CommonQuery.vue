@@ -69,11 +69,13 @@
 <script setup lang="ts" name="CommonQuery">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnType } from 'ant-design-vue/es/table'
-import StringType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/StringType.vue'
-import HashType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/HashType.vue'
-import ListType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/ListType.vue'
-import SetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/SetType.vue'
-import ZsetType from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes/ZsetType.vue'
+import {
+  StringType,
+  HashType,
+  ListType,
+  SetType,
+  ZsetType
+} from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes'
 import { convertParamsToObject } from '../../components/utils'
 import { cloneDeep } from 'lodash-es'
 
@@ -195,25 +197,13 @@ const validateAll = async () => {
 watch(
   () => props.data,
   (newData) => {
-    if (newData.pattern && newData.pattern !== '*') {
+    if (newData?.pattern) {
       searchPattern.value = newData.pattern
+      loadQueryResults(newData.pattern)
     }
   },
   { immediate: true }
 )
-
-onMounted(() => {
-  nextTick(() => {
-    try {
-      if (props.data.pattern) {
-        searchPattern.value = props.data.pattern
-      }
-      loadQueryResults(searchPattern.value)
-    } catch (error) {
-      console.error('初始化数据失败', error)
-    }
-  })
-})
 
 defineExpose({
   validateAll

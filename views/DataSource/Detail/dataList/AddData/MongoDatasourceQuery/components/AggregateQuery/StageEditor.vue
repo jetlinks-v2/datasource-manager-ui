@@ -49,6 +49,7 @@
           :height="'100%'"
           :show-format-btn="false"
           :show-minimap="false"
+          :format-on-blur="true"
           variable-pattern="\$\{[A-Za-z_][A-Za-z0-9_]*\}"
           @update:model-value="handleBodyChange"
           @variables-change="handleVariablesChange"

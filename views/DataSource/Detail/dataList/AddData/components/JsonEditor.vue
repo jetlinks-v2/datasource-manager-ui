@@ -105,16 +105,6 @@ const ERROR_MESSAGES: ErrorMessagesMap = {
   18: '存在重复的键名'
 }
 
-// 动态生成变量错误提示信息
-const getVariableErrorMessage = (): string => {
-  // 根据 variablePattern 生成示例
-  if (props.variablePattern.includes('\\$\\{')) {
-    return '模板变量不能使用双引号包裹，例如 "${variable}" 是非法的，应直接使用 ${variable}'
-  } else {
-    return '模板变量不能使用双引号包裹，例如 "{{variable}}" 是非法的，应直接使用 {{variable}'
-  }
-}
-
 // 变量正则表达式（根据 props 动态生成）
 const VARIABLE_REGEX = computed(() => new RegExp(props.variablePattern, 'g'))
 const PLACEHOLDER_REGEX = /"__VAR_PLACEHOLDER_(\d+)__"/g
@@ -233,7 +223,7 @@ const validateAndMark = (value: string): boolean => {
 
     markers.push({
       severity: monaco.MarkerSeverity.Error,
-      message: getVariableErrorMessage(),
+      message: '变量不能使用双引号包裹，请检查变量格式是否正确',
       startLineNumber: startPos.lineNumber,
       startColumn: startPos.column,
       endLineNumber: endPos.lineNumber,
@@ -426,7 +416,8 @@ const initEditor = (): void => {
     tabSize: 2,
     folding: true,
     wordWrap: 'on',
-    formatOnPaste: true
+    formatOnPaste: true,
+    fixedOverflowWidgets: true
   })
 
   monacoInstance.value = instance

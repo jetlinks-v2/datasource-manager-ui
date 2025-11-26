@@ -62,7 +62,15 @@ interface CollectionSchema {
   fields: any[]
 }
 
-const emit = defineEmits(['click'])
+interface Props {
+  initialSelectedCollection?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  initialSelectedCollection: ''
+})
+
+const emit = defineEmits(['click', 'loaded'])
 
 const route = useRoute()
 const typeId = route.query.typeId as string
@@ -115,12 +123,28 @@ const loadInitialData = async () => {
       }))
       listData.value = sourceData.value
 
+      // 通知父组件集合已加载
+      emit('loaded', listData.value)
+
       if (listData.value.length > 0) {
-        handleClick(listData.value[0])
+        // 如果有初始选中的集合，选中它；否则选中第一个
+        if (props.initialSelectedCollection) {
+          const targetCollection = listData.value.find(
+            (item) => item.name === props.initialSelectedCollection
+          )
+          if (targetCollection) {
+            handleClick(targetCollection)
+          } else {
+            handleClick(listData.value[0])
+          }
+        } else {
+          handleClick(listData.value[0])
+        }
       }
     }
   } catch (error) {
     console.error('加载集合失败:', error)
+    emit('loaded', [])
   } finally {
     loading.value = false
   }

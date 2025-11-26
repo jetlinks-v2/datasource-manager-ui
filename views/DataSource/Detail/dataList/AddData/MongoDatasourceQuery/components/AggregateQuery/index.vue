@@ -1,8 +1,23 @@
 <template>
   <div class="mongo-aggregate-query-container">
-    <!-- 上部分：聚合阶段和编辑器 -->
+    <!-- 上部分：三列布局 - 集合列表、聚合阶段和编辑器 -->
     <div class="pipeline-section">
-      <!-- 左侧：聚合阶段列表 -->
+      <!-- 左侧：集合列表 -->
+      <div class="collection-list-wrapper">
+        <CollectionList
+          :initialSelectedCollection="initialCollectionName"
+          @click="selectCollection"
+        >
+          <template #header>
+            <TitleComponent
+              data="集合列表"
+              :style="{ margin: 0 }"
+            />
+          </template>
+        </CollectionList>
+      </div>
+
+      <!-- 中间：聚合阶段列表 -->
       <div class="pipeline-stages-wrapper">
         <PipelineStages
           :stages="pipelineStages"
@@ -32,7 +47,9 @@
         ref="checkTestRef"
         :query-params="queryParams"
         :history-params="historyParams"
+        :advanced-mode="isAdvancedMode"
         @update:data="handleParamsUpdate"
+        @update:advanced-mode="handleAdvancedModeChange"
       >
         <template #sendOutButton>
           <a-button
@@ -81,11 +98,11 @@
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
 import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
+import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/collection/components/CollectionList.vue'
 import PipelineStages from './PipelineStages.vue'
 import StageEditor from './StageEditor.vue'
 import TitleComponent from '@/components/TitleComponent/index.vue'
 import { convertParamsToObject } from '../../../components/utils'
-import { convertToTableTreeData, parseTableTreeToMetadata } from '../../../utils'
 import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
 
 interface PipelineStage {
@@ -94,10 +111,15 @@ interface PipelineStage {
   body: string
 }
 
+interface CollectionSchema {
+  name: string
+  fields: any[]
+}
+
 interface Props {
   data?: {
     collection?: string
-    pipeline?: PipelineStage[]
+    pipeline?: string
     argsValue?: Record<string, string>
     [key: string]: any
   }
@@ -118,6 +140,10 @@ const datasourceId = route.params.id as string
 
 const checkTestRef = ref<any>()
 
+// 集合
+const selectedCollection = ref('')
+const initialCollectionName = ref('')
+
 // 聚合管道
 const pipelineStages = ref<PipelineStage[]>([])
 const currentStageIndex = ref<number | null>(null)
@@ -129,15 +155,12 @@ const currentStage = computed(() => {
 })
 
 // 动态参数
-const parsedParams = ref<string[]>([])
 const dynamicParams = ref<any>([])
-const inputParams = ref<any>({})
-const queryParams = ref<Record<string, any>>({
-  query: []
-})
+const queryParams = ref<Record<string, any>>({ query: [] })
 const historyParams = ref<Record<string, string>>({})
+const isAdvancedMode = ref(false)
 
-// 执行相关
+// 执行结果
 const executing = ref(false)
 const hasResult = ref(false)
 const executionSuccess = ref(false)
@@ -199,7 +222,7 @@ const handleReorder = (fromIndex: number, toIndex: number) => {
 const handleStageTypeChange = (type: string) => {
   if (currentStage.value) {
     currentStage.value.type = type
-    currentStage.value.body = getDefaultBody(type)
+    currentStage.value.body = getDefaultBody()
   }
 }
 
@@ -212,28 +235,87 @@ const handleBodyChange = (body: string) => {
 
 // 处理变量变化
 const handleVariablesChange = (variables: string[]) => {
-  parsedParams.value = variables
-
-  const queryParamsArray: Array<{ key: string }> = []
-  variables.forEach((param) => {
-    queryParamsArray.push({ key: param })
-  })
-
   queryParams.value = {
-    query: queryParamsArray
+    query: variables.map((param) => ({ key: param }))
   }
 }
 
 // 获取默认内容
-const getDefaultBody = (type: string): string => {
-  return '{}'
+const getDefaultBody = (): string => '{}'
+
+// 解析 pipeline 字符串，处理 body 为原始字符串的情况
+const parsePipelineString = (pipelineStr: string): PipelineStage[] => {
+  const stages: PipelineStage[] = []
+  // 移除外层数组括号
+  const content = pipelineStr.trim().slice(1, -1)
+
+  let depth = 0
+  let start = 0
+
+  // 按顶层逗号分割各个 stage
+  for (let i = 0; i < content.length; i++) {
+    const char = content[i]
+    if (char === '{') depth++
+    else if (char === '}') depth--
+    else if (char === ',' && depth === 0) {
+      const stageStr = content.slice(start, i).trim()
+      if (stageStr) {
+        const parsed = parseStageString(stageStr)
+        if (parsed) stages.push(parsed)
+      }
+      start = i + 1
+    }
+  }
+
+  // 处理最后一个 stage
+  const lastStageStr = content.slice(start).trim()
+  if (lastStageStr) {
+    const parsed = parseStageString(lastStageStr)
+    if (parsed) stages.push(parsed)
+  }
+
+  return stages
 }
 
-const handleParamsUpdate = (params: Array<{ name: string; value: string }>) => {
+// 解析单个 stage 字符串，如 {"$match":{...}}
+const parseStageString = (stageStr: string): PipelineStage | null => {
+  // 匹配 {"$xxx": 后面的内容
+  const match = stageStr.match(/^\s*\{\s*"(\$\w+)"\s*:\s*/)
+  if (!match) return null
+
+  const stageType = match[1]
+  const bodyStart = match[0].length
+  // body 是从 stageType 后的冒号到最后一个 } 之前的内容
+  const body = stageStr.slice(bodyStart, -1).trim()
+
+  return {
+    id: randomString(8),
+    type: stageType,
+    body
+  }
+}
+
+// 选择集合
+const selectCollection = (data: { clickItem: CollectionSchema }) => {
+  selectedCollection.value = data.clickItem.name
+}
+
+// 更新动态参数
+const handleParamsUpdate = (params: Array<{ name: string; value: any }>) => {
   dynamicParams.value = params
 }
 
+// 更新高级模式状态
+const handleAdvancedModeChange = (value: boolean) => {
+  isAdvancedMode.value = value
+}
+
 const handleExecute = async () => {
+  if (!selectedCollection.value) {
+    onlyMessage('请先选择集合', 'error')
+    return
+  }
+
   if (pipelineStages.value.length === 0) {
     onlyMessage('请至少添加一个聚合阶段', 'error')
     return
@@ -243,22 +325,23 @@ const handleExecute = async () => {
   hasResult.value = false
 
   try {
-    inputParams.value = convertParamsToObject(dynamicParams.value || [])
-
-    const pipelineArray = pipelineStages.value.map((stage) => {
-      const bodyWithParams = stage.body.replace(/\$\{(\w+)\}/g, (_, key) => {
-        const value = inputParams.value[key]
-        return typeof value === 'number' ? String(value) : `"${value}"`
+    // 构建 pipeline 字符串
+    const pipelineArray = pipelineStages.value.map((stage) => ({ [stage.type]: stage.body }))
+    const pipelineString = `[${pipelineArray
+      .map((stage) => {
+        const stageType = Object.keys(stage)[0]
+        const stageBody = stage[stageType]
+        return `{"${stageType}":${stageBody}}`
       })
-      return { [stage.type]: JSON.parse(bodyWithParams) }
-    })
-
-    const input = parseTableTreeToMetadata(convertToTableTreeData(inputParams.value))
+      .join(',')}]`
+    // 转换动态参数
+    const argsValue = convertParamsToObject(dynamicParams.value || [])
 
     const res = await queryDataSource(typeId, datasourceId, 'AggregateQuery', {
-      pipeline: pipelineArray,
-      input,
-      argsValue: inputParams.value
+      collection: selectedCollection.value,
+      pipeline: pipelineString,
+      executeType: 'DYNAMIC',
+      argsValue
     })
 
     executionSuccess.value = res.success
@@ -294,35 +377,58 @@ const handleExecute = async () => {
 }
 
 const validateAll = async () => {
+  if (!selectedCollection.value) {
+    onlyMessage('请先选择集合', 'error')
+    return false
+  }
+
   if (pipelineStages.value.length === 0) {
     onlyMessage('请至少添加一个聚合阶段', 'error')
     return false
   }
 
-  for (const stage of pipelineStages.value) {
-    try {
-      JSON.parse(stage.body)
-    } catch (error) {
-      onlyMessage(`阶段 ${stage.type} 的 JSON 格式错误`, 'error')
-      return false
-    }
+  if (!checkTestRef.value.validateAll()) {
+    onlyMessage('请检查参数配置', 'error')
+    return false
   }
 
-  const pipelineArray = pipelineStages.value.map((stage) => ({
-    [stage.type]: JSON.parse(stage.body)
-  }))
+  // 构建 pipeline 字符串
+  const pipelineArray = pipelineStages.value.map((stage) => ({ [stage.type]: stage.body }))
+  const pipelineString = `[${pipelineArray
+    .map((stage) => {
+      const stageType = Object.keys(stage)[0]
+      const stageBody = stage[stageType]
+      return `{"${stageType}":${stageBody}}`
+    })
+    .join(',')}]`
 
-  const input = parseTableTreeToMetadata(convertToTableTreeData(inputParams.value))
+  // 构建 output（从执行结果中解析）
+  let outputData: any[] = []
+  if (resultJson.value && executionSuccess.value) {
+    try {
+      const result = JSON.parse(resultJson.value)
+      if (Array.isArray(result) && result.length > 0) {
+        outputData = JSON.parse(resultJson.value)
+      }
+    } catch {}
+  }
+
+  // 转换动态参数为 argsValue 格式
+  const argsValue = convertParamsToObject(dynamicParams.value || [])
 
   emit(
     'update:expression',
     {
-      pipeline: JSON.stringify(pipelineArray),
-      input,
-      provider: 'pipeline'
+      collection: selectedCollection.value,
+      pipeline: pipelineString,
+      provider: 'pipeline',
+      argsValue,
+      others: {
+        isAdvancedMode: isAdvancedMode.value
+      }
     },
-    JSON.parse(resultJson.value || '{}'),
-    inputParams.value
+    outputData,
+    argsValue
   )
   return true
 }
@@ -331,41 +437,31 @@ watch(
   () => props.data,
   (value) => {
     if (value && Object.keys(value).length > 0) {
+      // 回显集合名称
+      if (value.collection) {
+        initialCollectionName.value = value.collection
+        selectedCollection.value = value.collection
+      }
+
+      // 回显管道阶段
       if (value.pipeline) {
         try {
-          let pipelineData = value.pipeline
-          if (typeof pipelineData === 'string') {
-            pipelineData = JSON.parse(pipelineData)
-          }
+          const parsedStages = parsePipelineString(value.pipeline)
 
-          if (Array.isArray(pipelineData)) {
-            pipelineStages.value = pipelineData.map((stageObj: any) => {
-              const stageType = Object.keys(stageObj)[0]
-              const stageBody = stageObj[stageType]
-              return {
-                id: randomString(8),
-                type: stageType,
-                body: JSON.stringify(stageBody, null, 2)
-              }
-            })
-            if (pipelineStages.value.length > 0) {
-              currentStageIndex.value = 0
-            }
+          if (parsedStages.length > 0) {
+            pipelineStages.value = parsedStages
+            currentStageIndex.value = 0
+            return
           }
         } catch (error) {
-          console.error('解析 pipeline 失败', error)
+          console.error('解析 pipeline 失败:', error)
         }
       }
     }
 
+    // 初始化默认阶段
     if (pipelineStages.value.length === 0) {
-      pipelineStages.value = [
-        {
-          id: randomString(8),
-          type: '$match',
-          body: '{}'
-        }
-      ]
+      pipelineStages.value = [{ id: randomString(8), type: '$match', body: '{}' }]
       currentStageIndex.value = 0
     }
   },
@@ -381,19 +477,15 @@ watch(
   { immediate: true, deep: true }
 )
 
-// 组件挂载时确保至少有一个阶段
-onMounted(() => {
-  if (pipelineStages.value.length === 0) {
-    pipelineStages.value = [
-      {
-        id: randomString(8),
-        type: '$match',
-        body: '{}'
-      }
-    ]
-    currentStageIndex.value = 0
-  }
-})
+watch(
+  () => props.data?.others?.isAdvancedMode,
+  (value) => {
+    if (value !== undefined) {
+      isAdvancedMode.value = value
+    }
+  },
+  { immediate: true }
+)
 
 defineExpose({
   validateAll
@@ -429,10 +521,18 @@ defineExpose({
     margin-bottom: 12px;
     gap: 4px;
 
+    .collection-list-wrapper {
+      width: 250px;
+      flex: 0 0 250px;
+      height: 100%;
+    }
+
     .pipeline-stages-wrapper {
       width: 250px;
       flex: 0 0 250px;
       height: 100%;
+      border-left: 1px solid #eee;
+      padding-left: 12px;
     }
 
     .stage-editor-wrapper {
