@@ -121,6 +121,11 @@ defineExpose({
     width: 32px;
     transition: all 0.3s;
 
+    .ant-btn {
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
     &.expanded {
       flex-grow: 1;
       width: 100%;
