@@ -63,7 +63,7 @@ import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
 import { TOKEN_KEY } from '@jetlinks-web/constants'
 import { getToken, onlyMessage } from '@jetlinks-web/utils'
 import { fileBatchUpload, FileStatic } from '@datasource-manager-ui/api/comm' // 导入封装好的上传接口
-import {getBaseApi} from "@/utils";
+import { BASE_API } from '@jetlinks-web/constants'
 
 const props = defineProps({
   value: {
@@ -124,7 +124,7 @@ const props = defineProps({
 const emit = defineEmits(['update:value', 'change', 'remove'])
 const fileList = ref([] as any[])
 const loading = ref(false)
-const action = computed(() => `${getBaseApi()}${FileStatic}${props.publicAccess ? '' : '?options=publicAccess'}`)
+const action = computed(() => `${BASE_API}${FileStatic}${props.publicAccess ? '' : '?options=publicAccess'}`)
 const visible = ref(false)
 const currentPreviewIndex = ref(0)
 const previewImage = ref<any>([])
