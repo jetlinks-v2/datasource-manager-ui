@@ -2,7 +2,7 @@
   <div>
     <a-table
       :data-source="tableData"
-      :columns="columns"
+      :columns="filteredColumns"
       :pagination="false"
       row-key="key"
       :row-selection="multiple ? rowSelection : undefined"
@@ -61,10 +61,10 @@
         <!-- 操作列 -->
         <template v-else-if="column.dataIndex === 'operate'">
           <a-button
+            v-if="!preview"
             type="link"
             danger
             @click="() => handleDelete(index)"
-            :disabled="preview"
           >
             <AIcon type="DeleteOutlined" />
           </a-button>
@@ -73,14 +73,13 @@
     </a-table>
 
     <div
+      v-if="addButton && !preview"
       class="add-button-wrapper"
-      v-if="addButton"
     >
       <a-button
         type="dashed"
         block
         @click="handleAdd"
-        :disabled="preview"
       >
         <AIcon type="PlusOutlined" />
         新增参数
@@ -145,6 +144,14 @@ const placeholders: Record<string, string> = {
   name: '请输入名称',
   description: '请输入说明'
 }
+
+// 根据预览模式过滤列
+const filteredColumns = computed(() => {
+  if (props.preview) {
+    return props.columns.filter((col: any) => col.dataIndex !== 'operate')
+  }
+  return props.columns
+})
 
 const selectedKeys = ref<(string | number)[]>([])
 const rowSelection = computed(() => ({
@@ -479,7 +486,7 @@ const handleDataType = (item: any) => {
       }
     }
   }
-  return item.dataType ? item.dataType : { type: 'int' }
+  return item.dataType ? item.dataType : { type: item.type || typeof item.value || 'int' }
 }
 
 // 监听 dataSource

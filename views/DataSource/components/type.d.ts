@@ -65,3 +65,16 @@ export interface RedisData {
   password: string
   delimiter: string
 }
+
+export interface MongoData {
+  connectionMode: ConnectionMode
+  uri: string
+  host: string
+  port: number
+  database: string
+  authDatabase?: string
+  username?: string
+  password?: string
+  sslEnabled?: boolean
+  options?: Record<string, string>
+}

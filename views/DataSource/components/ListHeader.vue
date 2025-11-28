@@ -30,7 +30,9 @@
           type="text"
           @click="handleSearchClick"
         >
-          <AIcon type="SearchOutlined" />
+          <template #icon>
+            <AIcon type="SearchOutlined" />
+          </template>
         </a-button>
       </div>
 

@@ -1,23 +1,11 @@
 <template>
   <div class="redis-datasource-query-container">
-    <div class="header">
-      <div class="segmented-control">
-        <a-button
-          class="segmented-control__button"
-          :class="{ active: activeTab === 'pattern' }"
-          @click="handleActiveTabChange('pattern')"
-        >
-          通用查询
-        </a-button>
-        <a-button
-          class="segmented-control__button"
-          :class="{ active: activeTab === 'script' }"
-          @click="handleActiveTabChange('script')"
-        >
-          脚本查询
-        </a-button>
-      </div>
-    </div>
+    <a-segmented
+      v-model:value="activeTab"
+      :options="tabOptions"
+      block
+      class="query-tabs"
+    />
 
     <div class="content">
       <CommonQuery
@@ -64,6 +52,11 @@ const activeTab = ref('pattern')
 const scriptQueryRef = ref<any>()
 const commonQueryRef = ref<any>()
 
+const tabOptions = [
+  { label: '通用查询', value: 'pattern' },
+  { label: '脚本查询', value: 'script' }
+]
+
 // 脚本查询数据
 const scriptData = computed(() => props.data || {})
 
@@ -74,11 +67,6 @@ watch(
   },
   { immediate: true }
 )
-
-const handleActiveTabChange = (tab: string) => {
-  if (activeTab.value === tab) return
-  activeTab.value = tab
-}
 
 const handleCommonExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
   emit('update:expression', expression, resultJson, inputs)
@@ -108,42 +96,9 @@ defineExpose({
   height: 100%;
   overflow: hidden;
 
-  .header {
-    display: flex;
-    justify-content: flex-start;
-    padding: 0 16px;
-
-    .segmented-control {
-      display: inline-flex;
-      border: 1px solid #d9d9d9;
-      border-radius: 6px;
-      overflow: hidden;
-      background-color: #f5f5f5;
-
-      &__button {
-        background-color: transparent;
-        color: #595959;
-        border: none;
-        flex: 1;
-        min-width: 100px;
-        transition: all 0.3s ease;
-
-        &:not(:first-child) {
-          border-left: 1px solid #d9d9d9;
-        }
-
-        &.active {
-          background-color: #ffffff;
-          color: #2f54eb;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
-    }
+  .query-tabs {
+    margin-left: 16px;
+    width: 350px;
   }
 
   .content {

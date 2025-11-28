@@ -96,6 +96,7 @@ import Table from './table/index.vue'
 import DataList from './dataList/index.vue'
 import EsIndex from './esIndex/index.vue'
 import RedisKey from './redisKey/index.vue'
+import Collection from './collection/index.vue'
 import SourceDetailsAdd from '../components/dataSourceModal/SourceDetailsAdd.vue'
 import { deleteDataSource, disableDataSource, getDataSourceDetail } from '@datasource-manager-ui/api/data/datasource'
 import { SourceDataInfo } from './type'
@@ -121,7 +122,8 @@ const tabs = {
   Query,
   DataList,
   EsIndex,
-  RedisKey
+  RedisKey,
+  Collection
 } as Record<string, any>
 
 const showSourceAdd = ref(false)
@@ -140,7 +142,8 @@ const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
   [DATA_TYPE_ITEM.API_SEND]: [],
   [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
   [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }]
+  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }],
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: [{ key: 'Collection', tab: '集合管理' }]
 }
 
 const routeLink = computed(() => ({
@@ -155,7 +158,8 @@ const showTestConnection = computed(() => {
   return (
     sourceClassify.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
     sourceClassify.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+    sourceClassify.value === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
+    sourceClassify.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE
   )
 })
 

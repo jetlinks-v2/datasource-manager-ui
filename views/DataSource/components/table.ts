@@ -1,7 +1,6 @@
 import DataApi from '@datasource-manager-ui/assets/svg/data-api.svg'
 import DataDm from '@datasource-manager-ui/assets/svg/data-dm.svg'
 import DataEsApi from '@datasource-manager-ui/assets/svg/data-es-api.svg'
-import DataExcel from '@datasource-manager-ui/assets/svg/data-excel.svg'
 import DataMariadb from '@datasource-manager-ui/assets/svg/data-mariadb.svg'
 import DataMongodb from '@datasource-manager-ui/assets/svg/data-mongodb.svg'
 import DataMysql from '@datasource-manager-ui/assets/svg/data-mysql.svg'
@@ -17,7 +16,8 @@ export enum DATA_TYPE_ITEM {
   API_SEND = 'api', // 通用表单 (API)
   WEBSOCKET_DATASOURCE = 'websocket', // WebSocket表单
   ELASTICSEARCH_DATASOURCE = 'elasticsearch', // Elasticsearch表单
-  REDIS_DATASOURCE = 'redis' // Redis表单
+  REDIS_DATASOURCE = 'redis', // Redis表单
+  MONGODB_DATASOURCE = 'mongodb' // MongoDB表单
 }
 
 //数据源类型
@@ -30,7 +30,6 @@ export const DATASOURCE_TYPE = {
   ORACLE: 'oracle',
   SQLSERVER: 'sqlserver',
   MONGODB: 'mongodb',
-  EXCEL: 'excel',
   DAMENG: 'dm',
   REDIS: 'redis',
   ELASTICSEARCH: 'elasticsearch'
@@ -45,7 +44,6 @@ export const DATASOURCE_NAME = {
   [DATASOURCE_TYPE.ORACLE]: 'Oracle',
   [DATASOURCE_TYPE.SQLSERVER]: 'SQLServer',
   [DATASOURCE_TYPE.MONGODB]: 'MongoDB',
-  [DATASOURCE_TYPE.EXCEL]: 'Excel',
   [DATASOURCE_TYPE.DAMENG]: '达梦数据库',
   [DATASOURCE_TYPE.REDIS]: 'Redis',
   [DATASOURCE_TYPE.ELASTICSEARCH]: 'Elasticsearch'
@@ -74,12 +72,6 @@ export const typesData = [
           reconnectionIntervals: 5000,
           payloadType: 'JSON'
         }
-      },
-      {
-        icon: DataExcel,
-        value: DATASOURCE_TYPE.EXCEL,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.EXCEL],
-        disable: true
       }
     ]
   },
@@ -151,7 +143,7 @@ export const typesData = [
         icon: DataMongodb,
         value: DATASOURCE_TYPE.MONGODB,
         name: DATASOURCE_NAME[DATASOURCE_TYPE.MONGODB],
-        disable: true
+        formType: DATA_TYPE_ITEM.MONGODB_DATASOURCE
       },
       {
         icon: DataRedis,

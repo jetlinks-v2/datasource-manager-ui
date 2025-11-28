@@ -34,11 +34,19 @@
 </template>
 
 <script setup lang="ts">
-import { ColumnSchema, Key } from '../type'
+import TitleComponent from '@/components/TitleComponent/index.vue'
+
+interface FieldSchema {
+  name: string
+  type: string
+  comment?: string
+}
+
+type Key = string | number
 
 const props = defineProps({
   fields: {
-    type: Array as () => ColumnSchema[],
+    type: Array as () => FieldSchema[],
     default: () => []
   },
   selectedKeys: {
@@ -99,11 +107,6 @@ watch(
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    h3 {
-      margin: 0;
-      font-size: 15px;
-    }
 
     .selection-actions {
       white-space: nowrap;

@@ -69,8 +69,24 @@
 </template>
 
 <script lang="ts" name="SourceDetailsAdd" setup>
-import { BaseFormInfo, FormItemApi, FormItemRdb, FormItemWebSocket, FormItemEs, FormItemRedis } from './FormItem'
-import { RelationData, WebSocketData, BaseFormData, UniversalData, ElasticsearchData, RedisData } from '../type'
+import {
+  BaseFormInfo,
+  FormItemApi,
+  FormItemRdb,
+  FormItemWebSocket,
+  FormItemEs,
+  FormItemRedis,
+  FormItemMongo
+} from './FormItem'
+import {
+  RelationData,
+  WebSocketData,
+  BaseFormData,
+  UniversalData,
+  ElasticsearchData,
+  RedisData,
+  MongoData
+} from '../type'
 import { DATASOURCE_NAME, getTypesDataDetail, DATASOURCE_TYPE, DATA_TYPE_ITEM } from '../table'
 import { useSourceDetailStore } from '../../sourceDetail'
 import { useTestConnection } from '../../composables/useTestConnection'
@@ -107,6 +123,7 @@ const FormItemRdbRef = ref<any>()
 const formItemWebSocketRef = ref<any>()
 const formItemEsRef = ref<any>()
 const formItemRedisRef = ref<any>()
+const formItemMongoRef = ref<any>()
 
 const sourceDetailStore = useSourceDetailStore()
 const { loading: testLoading, testConnection } = useTestConnection()
@@ -122,7 +139,9 @@ const baseFormData = ref<BaseFormData>({
 const formData = ref<any>({
   relationData: {} as RelationData,
   universalData: {} as UniversalData,
-  websocketData: cloneDeep(activeType.value.defaultConfig) as WebSocketData,
+  websocketData: {
+    payloadType: 'JSON'
+  } as WebSocketData,
   elasticsearchData: {
     uri: '',
     pathPrefix: '',
@@ -136,7 +155,10 @@ const formData = ref<any>({
     password: '',
     databaseIndex: undefined,
     delimiter: ':'
-  } as unknown as RedisData
+  } as unknown as RedisData,
+  mongoData: {
+    connectionMode: 'basic'
+  } as MongoData
 })
 
 const registry = {
@@ -164,6 +186,11 @@ const registry = {
     component: FormItemRedis,
     ref: formItemRedisRef,
     formKey: 'redisData'
+  },
+  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: {
+    component: FormItemMongo,
+    ref: formItemMongoRef,
+    formKey: 'mongoData'
   }
 } as Record<string, { component: any; ref: any; formKey: string }>
 
@@ -175,7 +202,8 @@ const showTestConnection = computed(() => {
   return (
     formType.value === DATA_TYPE_ITEM.RDB_DATASOURCE ||
     formType.value === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
-    formType.value === DATA_TYPE_ITEM.REDIS_DATASOURCE
+    formType.value === DATA_TYPE_ITEM.REDIS_DATASOURCE ||
+    formType.value === DATA_TYPE_ITEM.MONGODB_DATASOURCE
   )
 })
 

@@ -108,7 +108,7 @@
       v-else
       class="empty-state"
     >
-      <j-empty description="请选择一个键查看详情" />
+      <j-empty description="暂无数据" />
     </div>
   </div>
 </template>
