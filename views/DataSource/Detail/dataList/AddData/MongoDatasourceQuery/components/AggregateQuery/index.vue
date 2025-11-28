@@ -5,6 +5,7 @@
       <!-- 左侧：集合列表 -->
       <div class="collection-list-wrapper">
         <CollectionList
+          ref="collectionListRef"
           :initialSelectedCollection="initialCollectionName"
           @click="selectCollection"
         >
@@ -20,6 +21,7 @@
       <!-- 中间：聚合阶段列表 -->
       <div class="pipeline-stages-wrapper">
         <PipelineStages
+          ref="pipelineStagesRef"
           :stages="pipelineStages"
           :current-index="currentStageIndex"
           :max-stages-reached="pipelineStages.length >= 20"
@@ -95,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { onlyMessage, randomString } from '@jetlinks-web/utils'
+import { onlyMessage } from '@jetlinks-web/utils'
 import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/collection/components/CollectionList.vue'
@@ -104,12 +106,15 @@ import StageEditor from './StageEditor.vue'
 import TitleComponent from '@/components/TitleComponent/index.vue'
 import { convertParamsToObject } from '../../../components/utils'
 import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
-
-interface PipelineStage {
-  id: string
-  type: string
-  body: string
-}
+import {
+  type PipelineStage,
+  collectAllVariables,
+  validateStagesContent,
+  parsePipelineString,
+  buildPipelineString,
+  createDefaultStage,
+  checkAdvancedModeRequired
+} from '../../utils/pipelineParser'
 
 interface CollectionSchema {
   name: string
@@ -139,12 +144,11 @@ const typeId = route.query.typeId as string
 const datasourceId = route.params.id as string
 
 const checkTestRef = ref<any>()
+const pipelineStagesRef = ref<any>()
 
-// 集合
 const selectedCollection = ref('')
 const initialCollectionName = ref('')
 
-// 聚合管道
 const pipelineStages = ref<PipelineStage[]>([])
 const currentStageIndex = ref<number | null>(null)
 const currentStage = computed(() => {
@@ -154,30 +158,24 @@ const currentStage = computed(() => {
   return null
 })
 
-// 动态参数
 const dynamicParams = ref<any>([])
 const queryParams = ref<Record<string, any>>({ query: [] })
 const historyParams = ref<Record<string, string>>({})
 const isAdvancedMode = ref(false)
 
-// 执行结果
 const executing = ref(false)
 const hasResult = ref(false)
 const executionSuccess = ref(false)
 const resultJson = ref('')
 
-// 添加阶段
 const handleAddStage = () => {
-  const newStage: PipelineStage = {
-    id: randomString(8),
-    type: '$match',
-    body: '{}'
-  }
+  const newStage = createDefaultStage('$match')
   pipelineStages.value.push(newStage)
   currentStageIndex.value = pipelineStages.value.length - 1
+  // 添加阶段后重新收集动态参数
+  updateQueryParams()
 }
 
-// 移除阶段
 const handleRemoveStage = (index: number) => {
   // 至少保留一个阶段
   if (pipelineStages.value.length <= 1) {
@@ -191,14 +189,14 @@ const handleRemoveStage = (index: number) => {
   } else if (currentStageIndex.value !== null && currentStageIndex.value > index) {
     currentStageIndex.value--
   }
+  // 删除阶段后重新收集动态参数
+  updateQueryParams()
 }
 
-// 选择阶段
 const selectStage = (index: number) => {
   currentStageIndex.value = index
 }
 
-// 重新排序
 const handleReorder = (fromIndex: number, toIndex: number) => {
   const item = pipelineStages.value[fromIndex]
   pipelineStages.value.splice(fromIndex, 1)
@@ -218,12 +216,14 @@ const handleReorder = (fromIndex: number, toIndex: number) => {
   }
 }
 
-// 阶段类型改变
 const handleStageTypeChange = (type: string) => {
   if (currentStage.value) {
-    currentStage.value.type = type
-    currentStage.value.body = getDefaultBody()
+    const newStage = createDefaultStage(type)
+    currentStage.value.type = newStage.type
+    currentStage.value.body = newStage.body
   }
+  // 类型改变后重新收集动态参数
+  updateQueryParams()
 }
 
 // 阶段内容改变
@@ -231,68 +231,22 @@ const handleBodyChange = (body: string) => {
   if (currentStage.value) {
     currentStage.value.body = body
   }
+  // 内容改变后，重新收集所有阶段的动态参数
+  updateQueryParams()
 }
 
-// 处理变量变化
-const handleVariablesChange = (variables: string[]) => {
+// 更新查询参数（收集所有阶段的动态参数）
+const updateQueryParams = () => {
+  const allVariables = collectAllVariables(pipelineStages.value)
   queryParams.value = {
-    query: variables.map((param) => ({ key: param }))
+    query: allVariables.map((param) => ({ key: param }))
   }
 }
 
-// 获取默认内容
-const getDefaultBody = (): string => '{}'
-
-// 解析 pipeline 字符串，处理 body 为原始字符串的情况
-const parsePipelineString = (pipelineStr: string): PipelineStage[] => {
-  const stages: PipelineStage[] = []
-  // 移除外层数组括号
-  const content = pipelineStr.trim().slice(1, -1)
-
-  let depth = 0
-  let start = 0
-
-  // 按顶层逗号分割各个 stage
-  for (let i = 0; i < content.length; i++) {
-    const char = content[i]
-    if (char === '{') depth++
-    else if (char === '}') depth--
-    else if (char === ',' && depth === 0) {
-      const stageStr = content.slice(start, i).trim()
-      if (stageStr) {
-        const parsed = parseStageString(stageStr)
-        if (parsed) stages.push(parsed)
-      }
-      start = i + 1
-    }
-  }
-
-  // 处理最后一个 stage
-  const lastStageStr = content.slice(start).trim()
-  if (lastStageStr) {
-    const parsed = parseStageString(lastStageStr)
-    if (parsed) stages.push(parsed)
-  }
-
-  return stages
-}
-
-// 解析单个 stage 字符串，如 {"$match":{...}}
-const parseStageString = (stageStr: string): PipelineStage | null => {
-  // 匹配 {"$xxx": 后面的内容
-  const match = stageStr.match(/^\s*\{\s*"(\$\w+)"\s*:\s*/)
-  if (!match) return null
-
-  const stageType = match[1]
-  const bodyStart = match[0].length
-  // body 是从 stageType 后的冒号到最后一个 } 之前的内容
-  const body = stageStr.slice(bodyStart, -1).trim()
-
-  return {
-    id: randomString(8),
-    type: stageType,
-    body
-  }
+// 处理变量变化（当前阶段的变量变化）
+const handleVariablesChange = () => {
+  // 重新收集所有阶段的变量
+  updateQueryParams()
 }
 
 // 选择集合
@@ -310,6 +264,8 @@ const handleAdvancedModeChange = (value: boolean) => {
   isAdvancedMode.value = value
 }
 
+// 注：解析和验证逻辑已移至 utils/pipelineParser.ts
+
 const handleExecute = async () => {
   if (!selectedCollection.value) {
     onlyMessage('请先选择集合', 'error')
@@ -321,19 +277,31 @@ const handleExecute = async () => {
     return
   }
 
+  // 验证阶段内容
+  const validation = validateStagesContent(pipelineStages.value)
+  if (!validation.valid) {
+    onlyMessage(validation.errorMessage, 'error')
+    // 定位到错误的阶段并滚动
+    currentStageIndex.value = validation.errorIndex
+    nextTick(() => {
+      pipelineStagesRef.value?.scrollToStage(validation.errorIndex)
+    })
+    return
+  }
+
+  // 检查是否需要高级模式
+  const advancedCheck = checkAdvancedModeRequired(pipelineStages.value)
+  if (advancedCheck.required && !isAdvancedMode.value) {
+    onlyMessage(`${advancedCheck.reason}，请切换到高级模式`, 'warning')
+    return
+  }
+
   executing.value = true
   hasResult.value = false
 
   try {
     // 构建 pipeline 字符串
-    const pipelineArray = pipelineStages.value.map((stage) => ({ [stage.type]: stage.body }))
-    const pipelineString = `[${pipelineArray
-      .map((stage) => {
-        const stageType = Object.keys(stage)[0]
-        const stageBody = stage[stageType]
-        return `{"${stageType}":${stageBody}}`
-      })
-      .join(',')}]`
+    const pipelineString = buildPipelineString(pipelineStages.value)
     // 转换动态参数
     const argsValue = convertParamsToObject(dynamicParams.value || [])
 
@@ -349,7 +317,13 @@ const handleExecute = async () => {
     hasResult.value = true
 
     if (res.success) {
-      onlyMessage('聚合执行成功')
+      nextTick(() => {
+        onlyMessage('聚合执行成功')
+        const modalBody = document.querySelector('.ant-modal-body')
+        if (modalBody) {
+          modalBody.scrollTop = modalBody.scrollHeight
+        }
+      })
     }
   } catch (error: any) {
     executionSuccess.value = false
@@ -366,13 +340,6 @@ const handleExecute = async () => {
     onlyMessage(error.message || '聚合执行失败', 'error')
   } finally {
     executing.value = false
-
-    nextTick(() => {
-      const modalBody = document.querySelector('.ant-modal-body')
-      if (modalBody) {
-        modalBody.scrollTop = modalBody.scrollHeight
-      }
-    })
   }
 }
 
@@ -387,20 +354,25 @@ const validateAll = async () => {
     return false
   }
 
+  // 验证阶段内容
+  const validation = validateStagesContent(pipelineStages.value)
+  if (!validation.valid) {
+    onlyMessage(validation.errorMessage, 'error')
+    // 定位到错误的阶段并滚动
+    currentStageIndex.value = validation.errorIndex
+    nextTick(() => {
+      pipelineStagesRef.value?.scrollToStage(validation.errorIndex)
+    })
+    return false
+  }
+
   if (!checkTestRef.value.validateAll()) {
     onlyMessage('请检查参数配置', 'error')
     return false
   }
 
   // 构建 pipeline 字符串
-  const pipelineArray = pipelineStages.value.map((stage) => ({ [stage.type]: stage.body }))
-  const pipelineString = `[${pipelineArray
-    .map((stage) => {
-      const stageType = Object.keys(stage)[0]
-      const stageBody = stage[stageType]
-      return `{"${stageType}":${stageBody}}`
-    })
-    .join(',')}]`
+  const pipelineString = buildPipelineString(pipelineStages.value)
 
   // 构建 output（从执行结果中解析）
   let outputData: any[] = []
@@ -451,6 +423,10 @@ watch(
           if (parsedStages.length > 0) {
             pipelineStages.value = parsedStages
             currentStageIndex.value = 0
+            // 回显后收集所有阶段的动态参数
+            nextTick(() => {
+              updateQueryParams()
+            })
             return
           }
         } catch (error) {
@@ -461,8 +437,12 @@ watch(
 
     // 初始化默认阶段
     if (pipelineStages.value.length === 0) {
-      pipelineStages.value = [{ id: randomString(8), type: '$match', body: '{}' }]
+      pipelineStages.value = [createDefaultStage('$match')]
       currentStageIndex.value = 0
+      // 初始化后收集动态参数
+      nextTick(() => {
+        updateQueryParams()
+      })
     }
   },
   { immediate: true, deep: true }
@@ -487,8 +467,23 @@ watch(
   { immediate: true }
 )
 
+// Refs
+const collectionListRef = ref<any>()
+
+// 对外暴露的方法
+const getSelectedCollection = () => selectedCollection.value
+
+const setSelectedCollection = (collectionName: string) => {
+  if (!collectionName || collectionName === selectedCollection.value) return
+
+  selectedCollection.value = collectionName
+  collectionListRef.value?.setSelectedCollection(collectionName)
+}
+
 defineExpose({
-  validateAll
+  validateAll,
+  getSelectedCollection,
+  setSelectedCollection
 })
 </script>
 

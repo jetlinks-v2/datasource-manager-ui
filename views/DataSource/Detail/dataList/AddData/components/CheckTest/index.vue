@@ -10,8 +10,6 @@
           v-model:checked="isAdvancedMode"
           checked-children="高级"
           un-checked-children="普通"
-          size="small"
-          style="width: 80px"
         />
       </div>
       <slot name="sendOutButton" />
@@ -402,6 +400,7 @@ defineExpose({
 }
 
 .section-title {
+  width: 80px;
   margin: 0;
 }
 

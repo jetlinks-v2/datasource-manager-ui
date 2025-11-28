@@ -129,9 +129,7 @@ const loadInitialData = async () => {
       if (listData.value.length > 0) {
         // 如果有初始选中的集合，选中它；否则选中第一个
         if (props.initialSelectedCollection) {
-          const targetCollection = listData.value.find(
-            (item) => item.name === props.initialSelectedCollection
-          )
+          const targetCollection = listData.value.find((item) => item.name === props.initialSelectedCollection)
           if (targetCollection) {
             handleClick(targetCollection)
           } else {
@@ -150,8 +148,22 @@ const loadInitialData = async () => {
   }
 }
 
+// 对外暴露的方法
+const setSelectedCollection = (collectionName: string) => {
+  if (!collectionName || selectedItem.value === collectionName) return
+
+  const targetCollection = listData.value.find((item) => item.name === collectionName)
+  if (targetCollection) {
+    selectedItem.value = collectionName
+  }
+}
+
 onMounted(() => {
   loadInitialData()
+})
+
+defineExpose({
+  setSelectedCollection
 })
 </script>
 

@@ -5,7 +5,8 @@
       <div class="content-item">
         <div class="visual-query-container">
           <CollectionList
-            :initialSelectedCollection="props.data?.collection || ''"
+            ref="collectionListRef"
+            :initialSelectedCollection="selectedCollection || props.data?.collection || ''"
             @click="selectCollection"
             @loaded="handleCollectionsLoaded"
           >
@@ -97,25 +98,18 @@ const typeId = route.query.typeId as string
 const datasourceId = route.params.id as string
 
 const selectedCollection = ref('')
-const resultColumns = ref<any[]>([])
+const allCollectionsData = ref<CollectionSchema[]>([])
 const filterFields = ref<any[]>([])
 const filterFormData = ref<any>({ terms: [] })
-const initLoading = ref(false)
-const allCollectionsData = ref<CollectionSchema[]>([])
+const resultColumns = ref<any[]>([])
+const resultQueryParams = ref<any>({ pageIndex: 0, pageSize: 12 })
 const queryKey = ref(0)
+const initLoading = ref(false)
 
-const resultQueryParams = ref<any>({
-  pageIndex: 0,
-  pageSize: 12
-})
-
-// 定义 terms 字段项
 const termsItem = {
   id: 'terms',
   name: '过滤条件',
-  valueType: {
-    type: 'object'
-  },
+  valueType: { type: 'object' },
   expands: {}
 }
 
@@ -124,9 +118,7 @@ const handleCollectionsLoaded = (collections: CollectionSchema[]) => {
 }
 
 const handleQuery = () => {
-  // 点击查询按钮时触发查询
   queryKey.value = Date.now()
-
   nextTick(() => {
     const modalBody = document.querySelector('.ant-modal-body')
     if (modalBody) {
@@ -135,7 +127,6 @@ const handleQuery = () => {
   })
 }
 
-// 选择集合
 const selectCollection = async (data: { clickItem: CollectionSchema; sourceData: CollectionSchema[] }) => {
   const { clickItem } = data
   selectedCollection.value = clickItem.name
@@ -294,21 +285,58 @@ const validateAll = async () => {
         terms: filterFormData.value.terms?.filter((t: any) => t.column && t.termType) || []
       },
       provider: 'generalQuery'
-    },
-    {},
-    {}
+    }
   )
   return true
 }
 
+// Refs
+const collectionListRef = ref<any>()
+const pendingSelectedCollection = ref('')
+
+// 生命周期
 onMounted(() => {
   if (props.data?.collection) {
     selectedCollection.value = props.data.collection
   }
 })
 
+// 对外暴露的方法
+const getSelectedCollection = () => selectedCollection.value
+
+const setSelectedCollection = (collectionName: string) => {
+  if (!collectionName || collectionName === selectedCollection.value) return
+
+  if (allCollectionsData.value.length > 0) {
+    const targetCollection = allCollectionsData.value.find((item) => item.name === collectionName)
+    if (targetCollection) {
+      collectionListRef.value?.setSelectedCollection(collectionName)
+      selectCollection({ clickItem: targetCollection, sourceData: allCollectionsData.value })
+    }
+  } else {
+    // 集合列表还未加载，等待加载完成后再设置
+    pendingSelectedCollection.value = collectionName
+  }
+}
+
+// 监听集合列表加载完成，处理待选中的集合
+watch(allCollectionsData, (collections) => {
+  if (collections.length > 0 && pendingSelectedCollection.value) {
+    const targetCollection = collections.find((item) => item.name === pendingSelectedCollection.value)
+    if (targetCollection) {
+      nextTick(() => {
+        collectionListRef.value?.setSelectedCollection(pendingSelectedCollection.value)
+        selectCollection({ clickItem: targetCollection, sourceData: collections })
+        pendingSelectedCollection.value = ''
+      })
+    }
+  }
+})
+
 defineExpose({
-  validateAll
+  validateAll,
+  getSelectedCollection,
+  setSelectedCollection
 })
 </script>
 

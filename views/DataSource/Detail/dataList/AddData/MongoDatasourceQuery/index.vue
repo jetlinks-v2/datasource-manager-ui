@@ -12,7 +12,7 @@
         v-show="activeTab === 'generalQuery'"
         ref="commonQueryRef"
         :data="data"
-        @update:expression="handleCommonExpressionUpdate"
+        @update:expression="handleExpressionUpdate"
       />
 
       <AggregateQuery
@@ -21,7 +21,7 @@
         :data="aggregateData"
         :is-edit="isEdit"
         :form-ref="formRef"
-        @update:expression="handleAggregateExpressionUpdate"
+        @update:expression="handleExpressionUpdate"
       />
     </div>
   </div>
@@ -48,9 +48,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:expression'])
 
-const activeTab = ref('generalQuery')
 const commonQueryRef = ref<any>()
 const aggregateQueryRef = ref<any>()
+
+const activeTab = ref('generalQuery')
+const sharedSelectedCollection = ref('')
 
 const tabOptions = [
   { label: '通用查询', value: 'generalQuery' },
@@ -59,6 +61,30 @@ const tabOptions = [
 
 const aggregateData = computed(() => props.data || {})
 
+const handleExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
+  emit('update:expression', expression, resultJson, inputs)
+}
+
+const validateAll = async () => {
+  const currentRef = activeTab.value === 'pipeline' ? aggregateQueryRef.value : commonQueryRef.value
+  return currentRef?.validateAll()
+}
+
+watch(activeTab, (newTab, oldTab) => {
+  if (!oldTab) return
+
+  const oldRef = oldTab === 'generalQuery' ? commonQueryRef.value : aggregateQueryRef.value
+  const newRef = newTab === 'generalQuery' ? commonQueryRef.value : aggregateQueryRef.value
+
+  if (oldRef) {
+    sharedSelectedCollection.value = oldRef.getSelectedCollection()
+  }
+
+  if (newRef && sharedSelectedCollection.value) {
+    nextTick(() => newRef.setSelectedCollection(sharedSelectedCollection.value))
+  }
+})
+
 watch(
   () => props.data?.provider,
   (provider) => {
@@ -66,22 +92,6 @@ watch(
   },
   { immediate: true }
 )
-
-const handleCommonExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
-  emit('update:expression', expression, resultJson, inputs)
-}
-
-const handleAggregateExpressionUpdate = (expression: any, resultJson: any, inputs: any) => {
-  emit('update:expression', expression, resultJson, inputs)
-}
-
-const validateAll = async () => {
-  if (activeTab.value === 'pipeline') {
-    return aggregateQueryRef.value?.validateAll()
-  } else {
-    return commonQueryRef.value?.validateAll()
-  }
-}
 
 defineExpose({
   validateAll

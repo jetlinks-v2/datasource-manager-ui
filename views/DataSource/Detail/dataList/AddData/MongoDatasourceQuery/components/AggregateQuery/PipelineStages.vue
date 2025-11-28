@@ -8,7 +8,6 @@
       <a-button
         size="small"
         type="text"
-        :disabled="maxStagesReached"
         @click="handleAddStage"
       >
         <template #icon>
@@ -17,10 +16,14 @@
       </a-button>
     </div>
 
-    <div class="stages-list">
+    <div
+      ref="stagesListRef"
+      class="stages-list"
+    >
       <div
         v-for="(stage, index) in stages"
         :key="stage.id"
+        :ref="(el) => setStageRef(el, index)"
         class="stage-item"
         :class="{ active: currentIndex === index, dragging: dragIndex === index }"
         draggable="true"
@@ -39,7 +42,6 @@
           <span class="stage-type">{{ stage.type }}</span>
         </div>
         <a-button
-          v-if="stages.length > 1"
           type="text"
           size="small"
           danger
@@ -58,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { onlyMessage } from '@jetlinks-web/utils'
 import TitleComponent from '@/components/TitleComponent/index.vue'
 
 interface PipelineStage {
@@ -66,7 +69,7 @@ interface PipelineStage {
   body: string
 }
 
-defineProps<{
+const props = defineProps<{
   stages: PipelineStage[]
   currentIndex: number | null
   maxStagesReached?: boolean
@@ -75,8 +78,24 @@ defineProps<{
 const emit = defineEmits(['add', 'remove', 'select', 'reorder'])
 
 const dragIndex = ref<number | null>(null)
+const stagesListRef = ref<HTMLElement | null>(null)
+const stageRefs = ref<Map<number, HTMLElement>>(new Map())
+
+// 设置阶段元素的 ref
+const setStageRef = (el: any, index: number) => {
+  if (el) {
+    stageRefs.value.set(index, el)
+  } else {
+    stageRefs.value.delete(index)
+  }
+}
 
 const handleAddStage = () => {
+  // 检查是否超过 20 个阶段
+  if (props.stages.length >= 20) {
+    onlyMessage('管道阶段数量已达到上限（20个），无法继续添加', 'warning')
+    return
+  }
   emit('add')
 }
 
@@ -106,6 +125,21 @@ const handleDrop = (toIndex: number) => {
   }
   handleDragEnd()
 }
+
+// 滚动到指定的阶段
+const scrollToStage = (index: number) => {
+  const stageElement = stageRefs.value.get(index)
+  if (stageElement) {
+    stageElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest'
+    })
+  }
+}
+
+defineExpose({
+  scrollToStage
+})
 </script>
 
 <style scoped lang="less">

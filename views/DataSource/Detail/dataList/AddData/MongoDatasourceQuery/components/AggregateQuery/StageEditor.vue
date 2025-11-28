@@ -9,7 +9,6 @@
         <a-popover
           trigger="click"
           placement="bottomLeft"
-          :overlayStyle="{ width: '500px' }"
         >
           <template #content>
             <HelpDocument />
@@ -33,6 +32,9 @@
       <a-select
         :value="stage?.type"
         :options="stageTypeOptions"
+        show-search
+        placeholder="输入或选择阶段类型"
+        :filter-option="filterOption"
         style="width: 300px"
         @change="handleTypeChange"
       />
@@ -45,7 +47,7 @@
       />
       <div class="editor-container">
         <JsonEditor
-          :model-value="stage?.body || '{}'"
+          :model-value="stage?.body || ''"
           :height="'100%'"
           :show-format-btn="false"
           :show-minimap="false"
@@ -62,12 +64,7 @@
 <script setup lang="ts">
 import JsonEditor from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/JsonEditor.vue'
 import HelpDocument from './HelpDocument.vue'
-
-interface PipelineStage {
-  id: string
-  type: string
-  body: string
-}
+import { type PipelineStage, getStageTypeOptions } from '../../utils/pipelineParser'
 
 defineProps<{
   stage: PipelineStage | null
@@ -75,18 +72,14 @@ defineProps<{
 
 const emit = defineEmits(['update:type', 'update:body', 'variables-change'])
 
-const stageTypeOptions = [
-  { value: '$match', label: '$match - 条件过滤' },
-  { value: '$project', label: '$project - 字段投影/计算' },
-  { value: '$group', label: '$group - 分组聚合' },
-  { value: '$sort', label: '$sort - 排序' },
-  { value: '$limit', label: '$limit - 限制条数' },
-  { value: '$skip', label: '$skip - 跳过条数' },
-  { value: '$lookup', label: '$lookup - 关联集合' },
-  { value: '$unwind', label: '$unwind - 拆分数组' },
-  { value: '$addFields', label: '$addFields - 添加计算字段' },
-  { value: '$facet', label: '$facet - 多路子管道' }
-]
+// 从工具函数获取阶段类型选项
+const stageTypeOptions = getStageTypeOptions()
+
+// 过滤选项
+const filterOption = (input: string, option: any) => {
+  const keyword = input.toLowerCase()
+  return option.value.toLowerCase().includes(keyword) || option.label.toLowerCase().includes(keyword)
+}
 
 const handleTypeChange = (value: any) => {
   emit('update:type', value as string)
