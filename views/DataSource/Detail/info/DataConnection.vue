@@ -1,6 +1,6 @@
 <template>
   <div v-if="isShow">
-    <div class="title">数据连接</div>
+    <div class="title">{{ $t('DataSource.DataConn.100011-0') }}</div>
     <a-descriptions
       :column="3"
       v-if="isDatabase"
@@ -14,7 +14,7 @@
           :label="item.label"
           v-if="item.condition"
         >
-          <template v-if="item.label === '密码'">
+          <template v-if="item.label === $t('DataSource.FormRelation.100006-17')">
             <a-space>
               <j-ellipsis>
                 <span :class="{ 'password-mask': !showDatabasePassword && databaseData.password }">
@@ -44,10 +44,10 @@
         :column="3"
         bordered
       >
-        <a-descriptions-item label="API地址">
+        <a-descriptions-item :label="$t('DataSource.DataConn.100011-6')">
           <j-ellipsis>{{ commonData?.baseUrl || '--' }}</j-ellipsis>
         </a-descriptions-item>
-        <a-descriptions-item label="鉴权方式">
+        <a-descriptions-item :label="$t('DataSource.FormUniversal.100007-3')">
           <j-ellipsis>{{ authTypeText || '--' }}</j-ellipsis>
         </a-descriptions-item>
 
@@ -61,7 +61,7 @@
             :key="itemIndex"
           >
             <a-descriptions-item :label="item.label">
-              <template v-if="item.label === '密码'">
+              <template v-if="item.label === $t('DataSource.FormRelation.100006-17')">
                 <a-space>
                   <j-ellipsis>
                     <span :class="{ 'password-mask': !showBasicPassword && commonData.authConfig.basic.password }">
@@ -112,7 +112,7 @@
               <a-space>
                 <span style="white-space: nowrap">Client ID</span>
                 <a-tooltip>
-                  <template #title>应用唯一标识</template>
+                  <template #title>{{ $t('DataSource.FormUniversal.100007-16') }}</template>
                   <AIcon
                     type="QuestionCircleFilled"
                     style="color: #777"
@@ -129,7 +129,7 @@
               <a-space>
                 <div style="white-space: nowrap">Client Secret</div>
                 <a-tooltip>
-                  <template #title>应用唯一标识的密钥</template>
+                  <template #title>{{ $t('DataSource.FormUniversal.100007-18') }}</template>
                   <AIcon
                     type="QuestionCircleFilled"
                     style="color: #777"
@@ -163,7 +163,7 @@
 
       <div v-if="authType === 'OAuth2'">
         <TitleComponent
-          data="请求头"
+          :data="$t('DataSource.FormUniversal.100007-20')"
           style="margin-top: 24px"
         />
         <a-table
@@ -175,7 +175,7 @@
           size="small"
         />
         <TitleComponent
-          data="参数"
+          :data="$t('DataSource.FormUniversal.100007-21')"
           style="margin-top: 24px"
         />
         <a-table
@@ -193,6 +193,9 @@
 
 <script lang="ts" name="DataConnection" setup>
 import { datasourceParseUrl, DATASOURCE_TYPE, typesData } from '../../components/table'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{ info: any; sourceClassify: 'database' | 'common' }>()
 const { info, sourceClassify } = toRefs(props)
@@ -251,35 +254,44 @@ const columns = [
   { title: 'Value', dataIndex: 'value', width: '50%' }
 ]
 
-const authTypeDic = {
-  basic: '基本认证',
-  bearer: 'bearer认证',
-  OAuth2: 'OAuth2认证',
-  none: '不鉴权'
-} as Record<string, string>
+const authTypeDic = computed(
+  () =>
+    ({
+      basic: $t('DataSource.DataConn.100011-7'),
+      bearer: $t('DataSource.DataConn.100011-8'),
+      OAuth2: $t('DataSource.DataConn.100011-9'),
+      none: $t('DataSource.DataConn.100011-10')
+    } as Record<string, string>)
+)
 
 const isDatabase = computed(() => sourceClassify.value === 'database')
 const isCommon = computed(() => sourceClassify.value === 'common')
 
 const databaseItems = computed(() => [
   {
-    label: '连接方式',
-    value: databaseData.connectionMode === 'basic' ? '通过基本配置连接' : '连接URL',
+    label: $t('DataSource.FormRelation.100006-0'),
+    value:
+      databaseData.connectionMode === 'basic' ? $t('DataSource.DataConn.100011-1') : $t('DataSource.DataConn.100011-2'),
     condition: true
   },
   {
-    label: databaseData.connectionMode === 'basic' ? '数据库地址' : '连接地址',
+    label:
+      databaseData.connectionMode === 'basic' ? $t('DataSource.DataConn.100011-3') : $t('DataSource.DataConn.100011-4'),
     value: databaseData.connectionMode === 'basic' ? databaseData.host : databaseData.url,
     condition: true
   },
-  { label: '端口', value: databaseData.port || '--', condition: databaseData.connectionMode === 'basic' },
   {
-    label: '服务名',
+    label: $t('DataSource.FormRelation.100006-7'),
+    value: databaseData.port || '--',
+    condition: databaseData.connectionMode === 'basic'
+  },
+  {
+    label: $t('DataSource.FormRelation.100006-9'),
     value: databaseData.databaseName,
     condition: databaseData.searchCode === DATASOURCE_TYPE.ORACLE && databaseData.connectionMode === 'basic'
   },
   {
-    label: '数据库名称',
+    label: $t('DataSource.FormRelation.100006-12'),
     value:
       databaseData.searchCode !== DATASOURCE_TYPE.SQLSERVER
         ? databaseData.databaseName
@@ -289,17 +301,17 @@ const databaseItems = computed(() => [
       databaseData.searchCode !== DATASOURCE_TYPE.DAMENG &&
       databaseData.connectionMode === 'basic'
   },
-  { label: 'schema', value: databaseData.schema || '--', condition: true },
-  { label: '用户名', value: databaseData.username || '--', condition: true },
-  { label: '密码', value: databaseData.password || '--', condition: true }
+  { label: $t('DataSource.DataConn.100011-5'), value: databaseData.schema || '--', condition: true },
+  { label: $t('DataSource.FormRelation.100006-15'), value: databaseData.username || '--', condition: true },
+  { label: $t('DataSource.FormRelation.100006-17'), value: databaseData.password || '--', condition: true }
 ])
 const authTypes = ref<any[]>([])
 const handleAuthType = () => {
   const basic = {
     type: 'basic',
     items: [
-      { label: '用户名', value: commonData.authConfig.basic.username || '--' },
-      { label: '密码', value: commonData.authConfig.basic.password || '--' }
+      { label: $t('DataSource.FormRelation.100006-15'), value: commonData.authConfig.basic.username || '--' },
+      { label: $t('DataSource.FormRelation.100006-17'), value: commonData.authConfig.basic.password || '--' }
     ]
   }
 
@@ -311,9 +323,19 @@ const handleAuthType = () => {
   const oauth2 = {
     type: 'OAuth2',
     items: [
-      { label: '模式', value: commonData.authConfig.oauth2.grantType === 'client_credentials' ? '客户端凭证' : '--' },
-      { label: 'Token地址', value: commonData.authConfig.oauth2.tokenUrl || '--' },
-      { label: '请求方式', value: commonData.authConfig.oauth2.tokenRequestType === 'POST_URI' ? 'URL参数' : '请求体' },
+      {
+        label: $t('DataSource.FormUniversal.100007-9'),
+        value:
+          commonData.authConfig.oauth2.grantType === 'client_credentials' ? $t('DataSource.DataConn.100011-11') : '--'
+      },
+      { label: $t('DataSource.DataConn.100011-12'), value: commonData.authConfig.oauth2.tokenUrl || '--' },
+      {
+        label: $t('DataSource.FormUniversal.100007-13'),
+        value:
+          commonData.authConfig.oauth2.tokenRequestType === 'POST_URI'
+            ? $t('DataSource.DataConn.100011-13')
+            : $t('DataSource.FormUniversal.100007-15')
+      },
       { label: 'Scope', value: commonData.authConfig.oauth2.scope || '--' }
     ]
   }
@@ -333,7 +355,7 @@ watch(
         commonData.headers = headers
         commonData.parameters = parameters
         authType.value = commonData.authConfig.authType
-        authTypeText.value = authTypeDic[commonData.authConfig.authType]
+        authTypeText.value = authTypeDic.value[commonData.authConfig.authType]
         requestHeaderData.value = commonData.headers
         argumentData.value = commonData.parameters
         handleAuthType()

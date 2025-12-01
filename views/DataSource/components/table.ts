@@ -10,6 +10,7 @@ import DataOracle from '@datasource-manager-ui/assets/svg/data-orcale.svg'
 import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
+import i18n from '@/locales'
 
 //数据源类型
 export const DATASOURCE_TYPE = {
@@ -27,7 +28,7 @@ export const DATASOURCE_TYPE = {
   ESAPI: 'es_api'
 }
 
-export const DATASOURCE_NAME = {
+export const DATASOURCE_NAME: Record<string, string> = {
   [DATASOURCE_TYPE.API]: 'API',
   [DATASOURCE_TYPE.WEBSOCKET]: 'WebSocket',
   [DATASOURCE_TYPE.MYSQL]: 'MySQL',
@@ -37,14 +38,14 @@ export const DATASOURCE_NAME = {
   [DATASOURCE_TYPE.SQLSERVER]: 'SQLServer',
   [DATASOURCE_TYPE.MONGODB]: 'MongoDB',
   [DATASOURCE_TYPE.EXCEL]: 'Excel',
-  [DATASOURCE_TYPE.DAMENG]: '达梦数据库',
+  [DATASOURCE_TYPE.DAMENG]: i18n.global.t('DataSource.common.100026-0'),
   [DATASOURCE_TYPE.REDIS]: 'Redis',
   [DATASOURCE_TYPE.ESAPI]: 'ES API'
 }
 
 export const typesData = [
   {
-    title: '通用库',
+    title: i18n.global.t('DataSource.TypeAdd.100004-3'),
     value: 'common',
     types: [
       {
@@ -73,7 +74,7 @@ export const typesData = [
     ]
   },
   {
-    title: '数据库',
+    title: i18n.global.t('DataSource.TypeAdd.100004-4'),
     value: 'database',
     types: [
       {

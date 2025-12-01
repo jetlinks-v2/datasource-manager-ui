@@ -18,6 +18,9 @@ import { randomString } from '@jetlinks-web/utils'
 import CommandTable from './CommandParams/CommandTable.vue'
 import { defaultParamsColumns } from './setting'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -42,7 +45,7 @@ const getData = () => {
   const hasError = commandTableRef.value.validateAllData()
   if (hasError) {
     return {
-      error: '请完善结构体配置'
+      error: $t('DataSource.Object.100031-0')
     }
   }
 

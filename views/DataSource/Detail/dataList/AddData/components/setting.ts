@@ -5,45 +5,44 @@ import IDate from './Date.vue'
 import IText from './Text.vue'
 import IArray from './Array.vue'
 import IObject from './Object.vue'
+import i18n from '@/locales'
+
 // API数据源类型选项
 export const defaultApiDataTypeOptions = [
-  { label: 'int(整数型)', value: 'int' },
-  {
-    label: 'long(长整数型)',
-    value: 'long'
-  },
-  { label: 'float(单精度浮点型)', value: 'float' },
-  { label: 'double(双精度浮点型)', value: 'double' },
-  { label: 'text(字符串)', value: 'string' },
-  { label: 'boolean(布尔型)', value: 'boolean' },
-  { label: 'date(时间型)', value: 'date' },
-  { label: 'enum(枚举型)', value: 'enum' },
-  { label: 'array(数组)', value: 'array' },
-  { label: 'object(结构体)', value: 'object' }
+  { label: 'int', value: 'int' },
+  { label: 'long', value: 'long' },
+  { label: 'float', value: 'float' },
+  { label: 'double', value: 'double' },
+  { label: 'text', value: 'string' },
+  { label: 'boolean', value: 'boolean' },
+  { label: 'date', value: 'date' },
+  { label: 'enum', value: 'enum' },
+  { label: 'array', value: 'array' },
+  { label: 'object', value: 'object' }
 ]
 
 // 参数配置表默认列
 export const defaultParamsColumns = [
   {
-    title: '参数标识',
+    title: i18n.global.t('DataSource.CommandParams.100024-2'),
     dataIndex: 'id',
     key: 'id',
     width: '30%'
   },
   {
-    title: '数据类型',
+    title: i18n.global.t('DataSource.DataTypeEditor.100038-0'),
     dataIndex: 'dataType',
     key: 'dataType',
     width: '30%'
   },
   {
-    title: '参数名',
+    title: i18n.global.t('DataSource.CommandParams.100024-3'),
     dataIndex: 'name',
     key: 'name',
     width: '30%'
   },
   {
-    title: '操作',
+    title: i18n.global.t('DataSource.table.100003-8'),
     dataIndex: 'operate',
     key: 'operate',
     align: 'center',
@@ -68,7 +67,7 @@ export function useDataTypeManagement() {
   const typeDefaults = {
     float: { scale: 0 },
     double: { scale: 0 },
-    boolean: { trueValue: 'true', trueText: '是', falseValue: 'false', falseText: '否' },
+    boolean: { trueValue: 'true', trueText: 'true', falseValue: 'false', falseText: 'false' },
     date: { format: 'yyyy-MM-dd HH:mm:ss' },
     string: { expands: { maxLength: 1 } },
     enum: { elements: [], type: 'enum' },
@@ -96,20 +95,20 @@ export function useDataTypeManagement() {
   // 验证数据类型
   const validateDataType = (record: any, mode: 'treeTable' | 'defaultTable' = 'defaultTable'): string => {
     if (!record.dataType?.type) {
-      return '请选择数据类型'
+      return i18n.global.t('DataSource.DataType.100032-0')
     }
     const isTree = mode === 'treeTable'
     const special = ['object', 'array'].includes(record.dataType.type)
     if (!isTree || (isTree && !special)) {
       if (record.dataType.type === 'enum' && !record.dataType.elements) {
-        return '请配置枚举项'
+        return i18n.global.t('DataSource.Enum.100030-4')
       }
       if (record.dataType.type === 'object' && !record.dataType.properties) {
-        return '请配置对象'
+        return i18n.global.t('DataSource.Object.100031-0')
       }
       if (record.dataType.type === 'array') {
         if (record.dataType.elementType.type === 'object' && !record.dataType.elementType.properties) {
-          return '请配置数组元素'
+          return i18n.global.t('DataSource.Object.100031-0')
         }
       }
     }

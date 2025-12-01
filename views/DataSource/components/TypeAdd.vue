@@ -1,14 +1,14 @@
 <template>
   <a-modal
     :open="true"
-    title="新增数据源连接"
+    :title="$t('DataSource.TypeAdd.100004-0')"
     @cancel="emit('close')"
     centered
     :width="616"
     :bodyStyle="{ maxHeight: '75vh', padding: '8px' }"
   >
     <a-row class="data-source-modal">
-      <TitleComponent data="类型" />
+      <TitleComponent :data="$t('DataSource.TypeAdd.100004-1')" />
       <a-col :span="24">
         <div
           v-for="(dataTypeItem, index) in dataType"
@@ -59,7 +59,7 @@
           type="primary"
           @click="handleClickNext"
         >
-          下一步
+          {{ $t('DataSource.TypeAdd.100004-2') }}
         </a-button>
       </a-space>
     </template>
@@ -70,6 +70,9 @@
 import { typesData } from './table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['close'])
 const props = defineProps({

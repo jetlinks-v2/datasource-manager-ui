@@ -1,7 +1,7 @@
 <template>
   <a-modal
     open
-    :title="isEdit ? '编辑功能' : '新增功能'"
+    :title="isEdit ? $t('DataSource.AddData.100016-0') : $t('DataSource.AddData.100016-1')"
     centered
     :maskClosable="false"
     @cancel="emit('cancel')"
@@ -17,8 +17,8 @@
         :current="currentStep"
         class="mb-6"
       >
-        <a-step title="详细配置" />
-        <a-step title="命令生成" />
+        <a-step :title="$t('DataSource.AddData.100016-2')" />
+        <a-step :title="$t('DataSource.AddData.100016-3')" />
       </a-steps>
 
       <div v-show="currentStep === 0">
@@ -54,7 +54,7 @@
             v-if="currentStep > 0"
             @click="prev"
           >
-            上一步
+            {{ $t('DataSource.SourceAdd.100005-11') }}
           </a-button>
         </div>
 
@@ -63,14 +63,14 @@
           type="primary"
           @click="next"
         >
-          下一步
+          {{ $t('DataSource.TypeAdd.100004-2') }}
         </a-button>
         <a-button
           v-else
           type="primary"
           @click="handleSave"
         >
-          保存
+          {{ $t('DataSource.AddData.100016-4') }}
         </a-button>
       </div>
     </template>
@@ -89,6 +89,9 @@ import { parseTableTreeToMetadata, metadataConvertToTableTree } from './utils'
 import { transformArray } from './ApiSend/utils'
 import { isArray, isObject } from 'lodash-es'
 import { Modal } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -176,7 +179,7 @@ const next = async (): Promise<void> => {
     if (componentValid) {
       currentStep.value++
     } else {
-      console.log('验证失败', { componentValid })
+      console.log($t('DataSource.AddData.100016-10'), { componentValid })
     }
   } catch (e) {
     console.error('Validation error:', e)
@@ -227,7 +230,7 @@ const handleSave = async () => {
           },
           input: parseTableTreeToMetadata(formData.configuration.input),
           output: {
-            name: isDataSourceArray ? '数组' : '对象',
+            name: isDataSourceArray ? $t('DataSource.AddData.100016-11') : $t('DataSource.AddData.100016-12'),
             id: isDataSourceArray ? 'array' : 'object',
             type: isDataSourceArray ? 'array' : 'object',
             ...(isDataSourceArray
@@ -247,10 +250,10 @@ const handleSave = async () => {
 
       if (!formData.configuration.output.length) {
         Modal.confirm({
-          title: '提示',
-          content: '命令返回响应配置为空，是否继续保存',
-          cancelText: '取消',
-          okText: '确定',
+          title: $t('DataSource.DataList.100014-2'),
+          content: $t('DataSource.AddData.100016-5'),
+          cancelText: $t('DataSource.SourceAdd.100005-12'),
+          okText: $t('DataSource.SourceAdd.100005-13'),
           onOk: () => onSaveData(params)
         })
       } else {
@@ -276,11 +279,11 @@ const onSaveData = async (formData: any) => {
   const res = isEdit.value ? await editDataSourceCommand(formData) : await addDataSourceCommand(formData)
 
   if (res.success) {
-    onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
+    onlyMessage(isEdit.value ? $t('DataSource.AddData.100016-6') : $t('DataSource.AddData.100016-7'))
     emit('ok')
     emit('cancel')
   } else {
-    onlyMessage(isEdit.value ? '编辑失败' : '新增失败', 'error')
+    onlyMessage(isEdit.value ? $t('DataSource.AddData.100016-8') : $t('DataSource.AddData.100016-9'), 'error')
   }
 }
 

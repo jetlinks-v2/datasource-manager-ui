@@ -1,8 +1,8 @@
 <template>
   <div class="tables-container">
     <div class="title">
-      <h3>数据库表</h3>
-      <a-tooltip title="刷新表">
+      <h3>{{ $t('DataSource.TableSelector.100043-0') }}</h3>
+      <a-tooltip :title="$t('DataSource.TableSelector.100043-1')">
         <a-button
           type="text"
           @click="$emit('refresh')"
@@ -33,7 +33,7 @@
             <div class="table-name">{{ table.name }}</div>
           </j-ellipsis>
         </div>
-        <span class="table-col">{{ table.columns.length }}个字段</span>
+        <span class="table-col">{{ $t('DataSource.TableSelector.100043-2', { count: table.columns.length }) }}</span>
       </div>
     </div>
   </div>
@@ -41,6 +41,9 @@
 
 <script setup lang="ts">
 import { TableSchema } from '../type'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 defineProps({
   tables: {

@@ -1,3 +1,5 @@
+import i18n from '@/locales'
+
 export const fieldColumns = [
   {
     dataIndex: 'primaryKey',
@@ -8,44 +10,44 @@ export const fieldColumns = [
     align: 'center'
   },
   {
-    title: '序号',
+    title: i18n.global.t('DataSource.Detail.table.100009-0'),
     dataIndex: 'index',
     key: 'index',
     width: 100,
-    scopedSlots: true,
+    scopedSlots: true
   },
   {
-    title: '名称',
+    title: i18n.global.t('DataSource.table.100003-0'),
     dataIndex: 'name',
     key: 'name',
     ellipsis: true
   },
   {
-    title: '注释',
+    title: i18n.global.t('DataSource.Detail.table.100009-1'),
     dataIndex: 'comment',
     key: 'comment',
     ellipsis: true
   },
   {
-    title: '字段类型',
+    title: i18n.global.t('DataSource.Detail.table.100009-2'),
     dataIndex: 'type',
     key: 'type',
-    width: 180,
+    width: 180
   },
   {
-    title: '长度',
+    title: i18n.global.t('DataSource.Detail.table.100009-3'),
     dataIndex: 'length',
     key: 'length',
-    width: 120,
+    width: 120
   },
   {
-    title: '精度',
+    title: i18n.global.t('DataSource.Detail.table.100009-4'),
     dataIndex: 'scale',
     key: 'scale',
-    width: 120,
+    width: 120
   },
   {
-    title: '是否为空',
+    title: i18n.global.t('DataSource.Detail.table.100009-5'),
     dataIndex: 'notnull',
     key: 'notnull',
     width: 100,

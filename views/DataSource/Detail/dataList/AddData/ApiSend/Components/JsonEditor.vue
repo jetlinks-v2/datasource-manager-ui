@@ -10,13 +10,16 @@
       color="gold"
       class="format-btn"
     >
-      格式化
+      {{ $t('common.format') }}
     </a-tag>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 import { parse, parseTree, format, applyEdits, ParseError } from 'jsonc-parser'
 
 interface ErrorMessagesMap {
@@ -69,27 +72,27 @@ const editorContainer = ref<HTMLElement | null>(null)
 // shallowRef 避免深层响应式追踪
 const monacoInstance = shallowRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
-const ERROR_MESSAGES: ErrorMessagesMap = {
-  1: '包含无效的符号',
-  2: '数字格式不正确',
-  3: '缺少属性名称',
-  4: '缺少属性值',
-  5: '缺少冒号 (:) 分隔符',
-  6: '缺少逗号 (,) 分隔符',
-  7: '缺少右花括号 (})',
-  8: '缺少右方括号 (])',
-  9: '意外的文件结尾',
-  10: '无效的注释格式',
-  11: '注释未正确结束',
-  12: '字符串未正确结束',
-  13: '数字未正确结束',
-  14: '无效的 Unicode 字符',
-  15: '无效的转义字符',
-  16: '包含非法字符',
-  17: '未知的解析错误',
-  18: '存在重复的键名',
-  19: '模板变量不能使用双引号包裹，例如 "{{variable}}" 是非法的，应直接使用 {{variable}}'
-}
+const ERROR_MESSAGES = computed<ErrorMessagesMap>(() => ({
+  1: $t('DataSource.JsonEditor.100035-0'),
+  2: $t('DataSource.JsonEditor.100035-1'),
+  3: $t('DataSource.JsonEditor.100035-2'),
+  4: $t('DataSource.JsonEditor.100035-3'),
+  5: $t('DataSource.JsonEditor.100035-4'),
+  6: $t('DataSource.JsonEditor.100035-5'),
+  7: $t('DataSource.JsonEditor.100035-6'),
+  8: $t('DataSource.JsonEditor.100035-7'),
+  9: $t('DataSource.JsonEditor.100035-8'),
+  10: $t('DataSource.JsonEditor.100035-9'),
+  11: $t('DataSource.JsonEditor.100035-10'),
+  12: $t('DataSource.JsonEditor.100035-11'),
+  13: $t('DataSource.JsonEditor.100035-12'),
+  14: $t('DataSource.JsonEditor.100035-13'),
+  15: $t('DataSource.JsonEditor.100035-14'),
+  16: $t('DataSource.JsonEditor.100035-15'),
+  17: $t('DataSource.JsonEditor.100035-16'),
+  18: $t('DataSource.JsonEditor.100035-17'),
+  19: $t('DataSource.JsonEditor.100035-18')
+}))
 
 // 变量正则表达式
 const VARIABLE_REGEX = /\{\{[^{}]*\}\}/g
@@ -100,7 +103,7 @@ const JSON_PARSE_OPTIONS = { allowTrailingComma: true, disallowComments: true }
 const JSON_FORMAT_OPTIONS = { insertSpaces: true, tabSize: 2 }
 
 const getErrorMessage = (code: number): string => {
-  return ERROR_MESSAGES[code] || ERROR_MESSAGES[17]
+  return ERROR_MESSAGES.value[code] || ERROR_MESSAGES.value[17]
 }
 
 const getReplacedContentAndMapping = (text: string): { replacedText: string; mapping: VariableMapping[] } => {
@@ -208,7 +211,7 @@ const validateAndMark = (value: string): boolean => {
 
     markers.push({
       severity: monaco.MarkerSeverity.Error,
-      message: ERROR_MESSAGES[19] || '包含非法的模板变量格式',
+      message: ERROR_MESSAGES.value[19] || $t('DataSource.JsonEditor.100035-19'),
       startLineNumber: startPos.lineNumber,
       startColumn: startPos.column,
       endLineNumber: endPos.lineNumber,

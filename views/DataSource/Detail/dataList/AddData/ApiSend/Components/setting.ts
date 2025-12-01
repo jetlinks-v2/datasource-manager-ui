@@ -1,4 +1,5 @@
 import type { TableColumnType } from 'ant-design-vue'
+import i18n from '@/locales'
 
 export interface ParamItem {
   key: string
@@ -14,34 +15,37 @@ export const DEFAULT_PARAM_ITEM: ParamItem = {
 }
 
 // 请求参数表格列
-export const paramColumns: TableColumnType<ParamItem>[] = [
+export const getParamColumns = (): TableColumnType<ParamItem>[] => [
   {
-    title: '启用',
+    title: i18n.global.t('DataSource.OtherConfig.100033-6'),
     key: 'enable',
     dataIndex: 'enable',
     width: '60px',
     align: 'center'
   },
   {
-    title: '键名',
+    title: i18n.global.t('DataSource.Response.100023-3'),
     key: 'key',
     dataIndex: 'key'
   },
   {
-    title: '值',
+    title: i18n.global.t('DataSource.Response.100023-4'),
     key: 'value',
     dataIndex: 'value'
   },
   {
-    title: '说明',
+    title: i18n.global.t('DataSource.table.100003-6'),
     key: 'description',
     dataIndex: 'description'
   },
   {
-    title: '操作',
+    title: i18n.global.t('DataSource.table.100003-8'),
     key: 'operate',
     dataIndex: 'operate',
     width: '60px',
     align: 'center'
   }
 ]
+
+// 保持向后兼容
+export const paramColumns = getParamColumns()

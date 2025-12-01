@@ -1,7 +1,7 @@
 <template>
   <div class="query-result">
     <div class="title">
-      <h3>查询结果预览</h3>
+      <h3>{{ $t('DataSource.QueryResults.100041-0') }}</h3>
     </div>
     <j-pro-table
       :columns="columns"
@@ -15,6 +15,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 defineProps({
   columns: {
     type: Array,

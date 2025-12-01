@@ -1,6 +1,6 @@
 <template>
   <div class="response-container">
-    <div class="title">响应结果</div>
+    <div class="title">{{ $t('DataSource.Response.100023-0') }}</div>
 
     <a-tabs
       v-model="activeTab"
@@ -8,7 +8,7 @@
     >
       <a-tab-pane
         key="body"
-        tab="响应体"
+        :tab="$t('DataSource.Response.100023-1')"
       >
         <monaco-editor
           ref="editorRef"
@@ -22,7 +22,7 @@
       <!-- 请求头 -->
       <a-tab-pane
         key="request"
-        tab="请求头"
+        :tab="$t('DataSource.RequestParams.100021-1')"
       >
         <a-table
           :columns="columns"
@@ -35,7 +35,7 @@
 
       <a-tab-pane
         key="headers"
-        tab="响应头"
+        :tab="$t('DataSource.Response.100023-2')"
       >
         <a-table
           :columns="columns"
@@ -57,6 +57,9 @@
 
 <script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -65,20 +68,20 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['blur'])
-const columns = [
+const columns = computed(() => [
   {
-    title: '键名',
+    title: $t('DataSource.Response.100023-3'),
     dataIndex: 'key',
     key: 'key',
     ellipsis: true
   },
   {
-    title: '值',
+    title: $t('DataSource.Response.100023-4'),
     dataIndex: 'value',
     key: 'value',
     ellipsis: true
   }
-]
+])
 
 const jsonData = ref('{}')
 const activeTab = ref('body')
@@ -128,7 +131,7 @@ watch(
       jsonData.value = JSON.stringify(newVal, null, 2)
     } catch (error) {
       jsonData.value = '{}'
-      onlyMessage('响应体解析失败', 'error')
+      onlyMessage($t('DataSource.Response.100023-5'), 'error')
     }
   }
 )

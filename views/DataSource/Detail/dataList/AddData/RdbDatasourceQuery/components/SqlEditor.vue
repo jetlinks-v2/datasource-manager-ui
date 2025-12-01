@@ -8,7 +8,7 @@
         :disabled="!modelValue"
       >
         <AIcon type="PlayCircleOutlined" />
-        运行
+        {{ $t('DataSource.SqlEditor.100046-0') }}
       </a-button>
     </div>
     <MonacoEditor
@@ -24,6 +24,9 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 const props = defineProps({
   modelValue: {
     type: String,

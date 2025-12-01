@@ -2,7 +2,7 @@
   <div class="command-config-container">
     <!-- 命令入参配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令入参配置</h3>
+      <h3 class="section-title">{{ $t('DataSource.CommandParams.100024-0') }}</h3>
       <CommandTable
         ref="CommandTableInputRef"
         class="config-table"
@@ -16,7 +16,7 @@
 
     <!-- 命令返回响应配置 -->
     <div class="config-section">
-      <h3 class="section-title">命令返回响应配置</h3>
+      <h3 class="section-title">{{ $t('DataSource.CommandParams.100024-1') }}</h3>
       <CommandTable
         ref="CommandTableOutputRef"
         class="config-table"
@@ -35,6 +35,9 @@
 import CommandTable from './CommandTable.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { cloneDeep, isArray } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   preview: {
@@ -50,31 +53,31 @@ const props = defineProps({
 const CommandTableInputRef = ref()
 const CommandTableOutputRef = ref()
 
-const columns = [
+const columns = computed(() => [
   {
-    title: '参数标识',
+    title: $t('DataSource.CommandParams.100024-2'),
     dataIndex: 'id',
     key: 'id'
   },
   {
-    title: '类型',
+    title: $t('DataSource.table.100003-4'),
     dataIndex: 'dataType',
     key: 'dataType'
   },
   {
-    title: '参数名字',
+    title: $t('DataSource.CommandParams.100024-3'),
     dataIndex: 'name',
     key: 'name'
   },
   {
-    title: '说明',
+    title: $t('DataSource.table.100003-6'),
     dataIndex: 'description',
     key: 'description'
   }
-]
+])
 
-const inputColumns = columns.filter((item) => item.dataIndex !== 'select')
-const outputColumns = props.preview ? inputColumns : columns
+const inputColumns = computed(() => columns.value.filter((item) => item.dataIndex !== 'select'))
+const outputColumns = computed(() => (props.preview ? inputColumns.value : columns.value))
 
 const inputDataSource = ref<any[]>([])
 const outputDataSource = ref<any[]>([])
@@ -91,13 +94,13 @@ const validateCommandParams = async () => {
   let hasError = false
   hasError = CommandTableInputRef.value.validateAllData()
   if (hasError) {
-    onlyMessage('请检查命令入参配置', 'error')
+    onlyMessage($t('DataSource.CommandParams.100024-4'), 'error')
     return false
   }
 
   hasError = CommandTableOutputRef.value.validateAllData()
   if (hasError) {
-    onlyMessage('请检查命令返回响应配置', 'error')
+    onlyMessage($t('DataSource.CommandParams.100024-5'), 'error')
     return false
   }
 

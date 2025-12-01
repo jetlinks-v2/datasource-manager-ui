@@ -6,14 +6,14 @@
       layout="vertical"
     >
       <a-form-item
-        label="元素类型"
+        :label="$t('DataSource.Array.100040-0')"
         :name="['elementType', 'type']"
-        :rules="[{ required: true, message: '请选择元素类型' }]"
+        :rules="[{ required: true, message: $t('DataSource.Array.100040-1') }]"
       >
         <a-select
           v-model:value="formData.elementType.type"
           style="width: 100%"
-          placeholder="请选择元素类型"
+          :placeholder="$t('DataSource.Array.100040-1')"
           :disabled="readonly"
           :options="typeOptions"
         />
@@ -34,6 +34,9 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
 import { defaultApiDataTypeOptions } from './setting'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 import IFloat from './Float.vue'
 import IBoolean from './Boolean.vue'
 import IDate from './Date.vue'
@@ -82,11 +85,11 @@ const getData = async () => {
     }
   } else if (childData?.type === 'object') {
     return {
-      error: '请完善结构体配置'
+      error: $t('DataSource.Object.100031-0')
     }
   } else if (childData?.type === 'enum') {
     return {
-      error: '请完善枚举项信息'
+      error: $t('DataSource.Enum.100030-4')
     }
   } else {
     return { ...formData }

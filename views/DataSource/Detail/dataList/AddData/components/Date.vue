@@ -6,13 +6,13 @@
       ref="formRef"
     >
       <a-form-item
-        label="时间格式"
+        :label="$t('DataSource.Date.100029-0')"
         name="format"
-        :rules="[{ required: true, message: '请选择时间格式' }]"
+        :rules="[{ required: true, message: $t('DataSource.Date.100029-1') }]"
       >
         <a-select
           v-model:value="formData.format"
-          placeholder="请选择时间格式"
+          :placeholder="$t('DataSource.Date.100029-1')"
           style="width: 100%"
           :options="formatOptions"
           :filter-option="filterOption"
@@ -25,6 +25,9 @@
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {

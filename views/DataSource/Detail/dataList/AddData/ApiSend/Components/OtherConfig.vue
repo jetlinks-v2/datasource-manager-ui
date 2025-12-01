@@ -1,10 +1,10 @@
 <template>
   <a-modal
     v-model:open="visible"
-    title="其他配置"
+    :title="$t('DataSource.OtherConfig.100033-0')"
     @ok="handleOk"
     @cancel="handleCancel"
-    ok-text="保存"
+    :ok-text="$t('DataSource.OtherConfig.100033-1')"
     :destroy-on-close="true"
   >
     <a-form
@@ -15,9 +15,9 @@
       autocomplete="off"
     >
       <a-form-item
-        label="参数类型"
+        :label="$t('DataSource.OtherConfig.100033-2')"
         name="paramType"
-        :rules="[{ required: true, message: '请选择参数类型' }]"
+        :rules="[{ required: true, message: $t('DataSource.OtherConfig.100033-3') }]"
       >
         <a-radio-group
           v-model:value="formData.paramType"
@@ -29,30 +29,30 @@
             value="fixed"
             style="flex-grow: 1"
           >
-            固定参数
+            {{ $t('DataSource.OtherConfig.100033-7') }}
           </a-radio-button>
           <a-radio-button
             value="dynamic"
             style="flex-grow: 1"
           >
-            动态参数
+            {{ $t('DataSource.OtherConfig.100033-8') }}
           </a-radio-button>
         </a-radio-group>
       </a-form-item>
       <a-form-item
         v-if="formData.paramType === 'fixed'"
-        label="固定值"
+        :label="$t('DataSource.OtherConfig.100033-4')"
         name="defaultValue"
-        :rules="[{ required: true, message: '请输入固定值' }]"
+        :rules="[{ required: true, message: $t('DataSource.OtherConfig.100033-5') }]"
       >
         <a-input
           v-model:value="formData.defaultValue"
-          placeholder="请输入固定值"
+          :placeholder="$t('DataSource.OtherConfig.100033-5')"
           :maxlength="64"
         />
       </a-form-item>
       <a-form-item
-        label="是否必填"
+        :label="$t('DataSource.OtherConfig.100033-6')"
         name="required"
       >
         <a-switch v-model:checked="formData.required" />
@@ -61,6 +61,9 @@
   </a-modal>
 </template>
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 const emit = defineEmits(['save'])
 
 const formRef = ref()
