@@ -15,19 +15,19 @@
           </j-ellipsis>
         </div>
         <j-ellipsis>
-          <div class="badge">标识：{{ data.id }}</div>
+          <div class="badge">{{ $t('DataSource.TableCard.100019-0', { id: data.id }) }}</div>
         </j-ellipsis>
       </div>
       <a-divider class="divider" />
       <div class="card-content">
         <div class="content-row">
-          <div class="label">说明：</div>
+          <div class="label">{{ $t('DataSource.TableCard.100019-1') }}</div>
           <j-ellipsis>
             <div class="text">{{ data.description || '--' }}</div>
           </j-ellipsis>
         </div>
         <div class="content-row horizontal">
-          <div class="label">创建时间：</div>
+          <div class="label">{{ $t('DataSource.TableCard.100019-2') }}</div>
           <div class="text date">{{ dayjs(createTime).format('YYYY-MM-DD HH:mm:ss') }}</div>
         </div>
       </div>
@@ -37,6 +37,9 @@
 
 <script lang="ts" name="TaleCard" setup>
 import dayjs from 'dayjs'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {

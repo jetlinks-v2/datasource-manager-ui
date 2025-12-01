@@ -5,7 +5,7 @@
   >
     <a-tab-pane
       key="params"
-      tab="查询参数"
+      :tab="$t('DataSource.RequestParams.100021-0')"
       force-render
     >
       <ParamConfigTable
@@ -18,7 +18,7 @@
     </a-tab-pane>
     <a-tab-pane
       key="headers"
-      tab="请求头"
+      :tab="$t('DataSource.RequestParams.100021-1')"
       force-render
     >
       <ParamConfigTable
@@ -31,7 +31,7 @@
     </a-tab-pane>
     <a-tab-pane
       key="body"
-      tab="请求体"
+      :tab="$t('DataSource.RequestParams.100021-2')"
       force-render
     >
       <div class="request-body-container">
@@ -51,7 +51,7 @@
           v-if="bodyFormat === 'none'"
           class="no-body-message"
         >
-          此请求不包含请求体数据
+          {{ $t('DataSource.RequestParams.100021-4') }}
         </div>
 
         <div class="body-content">
@@ -83,7 +83,7 @@
     </a-tab-pane>
     <a-tab-pane
       key="check"
-      tab="测试"
+      :tab="$t('DataSource.RequestParams.100021-3')"
       force-render
     >
       <slot
@@ -102,6 +102,9 @@ import JsonEditor from '../Components/JsonEditor.vue'
 import { paramColumns, type ParamItem } from '../Components/setting'
 import { useAllParams } from '../../utils'
 import { convertParamsToObject, findBodyJsonParams, findQueryParams, findUriParams } from '../utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 type BodyFormatType = 'none' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'application/json'
 
 const props = defineProps({
@@ -259,12 +262,12 @@ const validateAll = async (): Promise<boolean> => {
     const validations = [
       {
         ref: requestParamTableRef.value,
-        message: '请检查查询参数输入项',
+        message: $t('DataSource.RequestParams.100021-5'),
         _activeKey: 'params'
       },
       {
         ref: requestHeaderTableRef.value,
-        message: '请检查请求头输入项',
+        message: $t('DataSource.RequestParams.100021-6'),
         _activeKey: 'headers'
       }
     ] as { ref: any; message: string; _activeKey: string }[]
@@ -273,17 +276,17 @@ const validateAll = async (): Promise<boolean> => {
     const bodyValidations = {
       'multipart/form-data': {
         ref: formDataParamTableRef.value,
-        message: '请检查请求体输入项',
+        message: $t('DataSource.RequestParams.100021-7'),
         _activeKey: 'body'
       },
       'application/x-www-form-urlencoded': {
         ref: urlEncodedParamTableRef.value,
-        message: '请检查请求体输入项',
+        message: $t('DataSource.RequestParams.100021-7'),
         _activeKey: 'body'
       },
       'application/json': {
         ref: jsonEditorRef.value,
-        message: '请检查请求体输入项',
+        message: $t('DataSource.RequestParams.100021-7'),
         _activeKey: 'body'
       }
     } as Record<BodyFormatType, { ref: any; message: string; _activeKey: string }>
@@ -303,7 +306,7 @@ const validateAll = async (): Promise<boolean> => {
     return true
   } catch (error) {
     console.error('验证失败:', error)
-    onlyMessage('请检查表单输入项', 'error')
+    onlyMessage($t('DataSource.RequestParams.100021-8'), 'error')
     return false
   }
 }

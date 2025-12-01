@@ -18,7 +18,7 @@
           v-model:value="record.dataType.type"
           class="form-error"
           style="width: 100%"
-          placeholder="请选择数据类型"
+          :placeholder="$t('DataSource.DataType.100032-0')"
           :options="dataTypeOptions"
           :disabled="disabled"
           @blur="$emit('verify')"
@@ -32,7 +32,7 @@
       v-else
       v-model:value="record.dataType.type"
       style="width: 85%"
-      placeholder="请选择数据类型"
+      :placeholder="$t('DataSource.DataType.100032-0')"
       :options="dataTypeOptions"
       :disabled="disabled"
       @blur="$emit('verify')"
@@ -76,6 +76,9 @@
 <script setup lang="ts">
 import { useDataTypeManagement } from '../setting'
 import DataTypeEditor from './DataTypeEditor.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   record: {

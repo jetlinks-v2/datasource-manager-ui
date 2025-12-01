@@ -1,7 +1,7 @@
 <template>
   <div class="check-test-warp">
     <div class="header">
-      <div class="section-title">动态参数</div>
+      <div class="section-title">{{ $t('DataSource.CheckTest.100022-0') }}</div>
       <slot name="sendOutButton" />
     </div>
     <a-table
@@ -18,7 +18,7 @@
           <FormItem
             :error="formErrors[index]?.value"
             :value="record.value"
-            placeholder="请输入参数值"
+            :placeholder="$t('DataSource.CheckTest.100022-3')"
             @change="(val) => handleFieldChange(val, 'value', record, index)"
           />
         </template>
@@ -29,6 +29,9 @@
 
 <script setup lang="ts">
 import FormItem from '../../../../../components/FormItem.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface ParamItem {
   name: string
@@ -54,20 +57,20 @@ const props = defineProps({
 type ValidatorKey = 'value'
 type ValidatorFn = (value: string, record: ParamItem, index: number) => string
 
-const responseTreeTableColumns = [
+const responseTreeTableColumns = computed(() => [
   {
-    title: '参数名',
+    title: $t('DataSource.CheckTest.100022-1'),
     dataIndex: 'name',
     key: 'name',
     width: '20%',
     ellipsis: true
   },
   {
-    title: '参数值',
+    title: $t('DataSource.CheckTest.100022-2'),
     dataIndex: 'value',
     key: 'value'
   }
-]
+])
 
 const emit = defineEmits(['update:data'])
 const dynamicParams = ref<ParamItem[]>([])
@@ -76,7 +79,7 @@ const formErrors = ref<Record<number, Record<string, string>>>({})
 const validators: Record<ValidatorKey, ValidatorFn> = {
   value: (value: string, record: ParamItem) => {
     // if (!value?.trim()) return '请输入值'
-    if (value.length > 64) return '值长度不能超过64个字符'
+    if (value.length > 64) return $t('DataSource.CheckTest.100022-4')
     return ''
   }
 }

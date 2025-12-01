@@ -12,7 +12,7 @@
         <template v-if="column.dataIndex === 'value'">
           <FormItem
             v-model:value="record[column.dataIndex]"
-            placeholder="请输入值"
+            :placeholder="$t('DataSource.Boolean.100028-2')"
             :disabled="readonly"
             :error="formItemErrors[record.key]?.value"
             @change="(val: string) => handleFieldChange(val, 'value', record)"
@@ -21,7 +21,7 @@
         <template v-if="column.dataIndex === 'text'">
           <FormItem
             v-model:value="record[column.dataIndex]"
-            placeholder="请输入标题"
+            :placeholder="$t('DataSource.Boolean.100028-1')"
             :disabled="readonly"
             :error="formItemErrors[record.key]?.text"
             @change="(val: string) => handleFieldChange(val, 'text', record)"
@@ -34,7 +34,7 @@
             @click="handleDelete(index)"
           >
             <template #icon>
-              <a-tooltip title="删除">
+              <a-tooltip :title="$t('DataSource.Enum.100030-0')">
                 <AIcon type="DeleteOutlined" />
               </a-tooltip>
             </template>
@@ -50,16 +50,18 @@
       <template #icon>
         <AIcon type="PlusOutlined" />
       </template>
-      新增枚举项
+      {{ $t('DataSource.Enum.100030-1') }}
     </a-button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
 import FormItem from '../../../../components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
 
+const { t: $t } = useI18n()
 const props = defineProps({
   data: {
     type: Object,
@@ -76,23 +78,23 @@ const { data, readonly } = toRefs(props)
 const formData = reactive({ elements: [] as any[] })
 const formItemErrors = ref<Record<string, Record<string, string>>>({})
 
-const columns = ref([
+const columns = computed(() => [
   {
-    title: '值',
+    title: $t('DataSource.Enum.100030-2'),
     key: 'value',
     dataIndex: 'value',
     width: '45%',
     componentType: 'input'
   },
   {
-    title: '标题',
+    title: $t('DataSource.Enum.100030-3'),
     key: 'text',
     dataIndex: 'text',
     width: '45%',
     componentType: 'input'
   },
   {
-    title: '操作',
+    title: $t('DataSource.table.100003-8'),
     key: 'operate',
     dataIndex: 'operate',
     width: '10%'
@@ -112,10 +114,10 @@ const handleDelete = (index: number) => {
 
 const validateField = (value: string, field: 'value' | 'text'): string => {
   if (!value) {
-    return field === 'value' ? '请输入值' : '请输入标题'
+    return field === 'value' ? $t('DataSource.Boolean.100028-2') : $t('DataSource.Boolean.100028-1')
   }
   if (value.length > 64) {
-    return '最多可输入64个字符'
+    return $t('DataSource.SourceAdd.100005-4')
   }
   return ''
 }
@@ -153,11 +155,11 @@ const validateData = (): boolean => {
     if ((record.value && !record.text) || (!record.value && record.text)) {
       if (!record.value) {
         hasError = true
-        updateFormError(record.key, 'value', '请输入值')
+        updateFormError(record.key, 'value', $t('DataSource.Boolean.100028-2'))
       }
       if (!record.text) {
         hasError = true
-        updateFormError(record.key, 'text', '请输入标题')
+        updateFormError(record.key, 'text', $t('DataSource.Boolean.100028-1'))
       }
     }
 
@@ -181,7 +183,7 @@ const getData = async () => {
   const isValid = validateData()
   if (!isValid) {
     return {
-      error: '请完善枚举项信息'
+      error: $t('DataSource.Enum.100030-4')
     }
   } else {
     const filteredElements = formData.elements.filter((item) => item.value || item.text)

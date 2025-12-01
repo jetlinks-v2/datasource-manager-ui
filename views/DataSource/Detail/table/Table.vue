@@ -2,17 +2,17 @@
   <div class="table-container">
     <div class="table-sidebar">
       <ListHeader
-        search-placeholder="请输入表名"
+        :search-placeholder="$t('DataSource.Table.100013-0')"
         @search="handleSearch"
       >
         <template #count>
-          共
+          {{ $t('DataSource.Table.100013-1') }}
           <a>&nbsp;{{ listData.length }}&nbsp;</a>
-          个表
+          {{ $t('DataSource.Table.100013-2') }}
         </template>
 
         <template #actions>
-          <a-tooltip title="刷新表">
+          <a-tooltip :title="$t('DataSource.Table.100013-3')">
             <a-button
               type="text"
               @click="handelRefresh"
@@ -67,7 +67,7 @@
       >
         <a-tab-pane
           key="fields"
-          tab="字段"
+          :tab="$t('DataSource.Table.100013-4')"
         >
           <j-pro-table
             v-if="fieldData.length > 0"
@@ -108,7 +108,7 @@
         </a-tab-pane>
         <a-tab-pane
           key="data"
-          tab="数据"
+          :tab="$t('DataSource.Table.100013-5')"
         >
           <template v-if="showDataTable">
             <j-pro-table
@@ -141,6 +141,9 @@ import { SourceDataInfo } from '../type'
 import { getDataSourceTables, queryByPage, refreshTable } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader/index.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:sourceData'])
 const route = useRoute()
@@ -283,11 +286,11 @@ const handelRefresh = async () => {
       if (res.success) {
         getTableList()
         emit('update:sourceData', res.result)
-        onlyMessage('刷新成功', 'success')
+        onlyMessage($t('DataSource.Table.100013-6'), 'success')
       }
     }
   } catch (error) {
-    onlyMessage('刷新失败', 'error')
+    onlyMessage($t('DataSource.Table.100013-7'), 'error')
   } finally {
     refreshLoading.value = false
     loading.value = false

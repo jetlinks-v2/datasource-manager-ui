@@ -8,20 +8,19 @@
           :class="{ active: activeKey === 'dataType' }"
           @click="switchTab('dataType')"
         >
-          数据类型
+          {{ $t('DataSource.DataTypeEditor.100038-0') }}
         </div>
         <div
           class="tab-item"
           :class="{ active: activeKey === 'jsonSchema' }"
           @click="switchTab('jsonSchema')"
         >
-          JSON 表达式
+          {{ $t('DataSource.DataTypeEditor.100038-1') }}
         </div>
       </div>
     </div>
 
     <div class="popover-body">
-      <!-- 数据类型编辑界面 -->
       <div
         v-show="activeKey === 'dataType'"
         class="data-type-content"
@@ -35,7 +34,6 @@
         />
       </div>
 
-      <!-- JSON Schema编辑界面 -->
       <div
         v-show="activeKey === 'jsonSchema'"
         class="tab-content"
@@ -48,7 +46,7 @@
             class="copy-btn"
           >
             <AIcon type="CopyOutlined" />
-            复制
+            {{ $t('DataSource.DataTypeEditor.100038-2') }}
           </a-button>
         </div>
         <div class="editor-container">
@@ -72,14 +70,14 @@
           @click="$emit('cancel')"
           size="small"
         >
-          取消
+          {{ $t('DataSource.DataTypeEditor.100038-3') }}
         </a-button>
         <a-button
           @click="handleConfirm"
           size="small"
           type="primary"
         >
-          确定
+          {{ $t('DataSource.DataTypeEditor.100038-4') }}
         </a-button>
       </a-space>
     </div>
@@ -90,6 +88,9 @@
 import useClipboard from 'vue-clipboard3'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from '../setting'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   dataType: {
@@ -125,75 +126,75 @@ const validateJsonData = (jsonString: string) => {
     const parsedData = JSON.parse(jsonString)
 
     if (!parsedData.type) {
-      onlyMessage('JSON数据中必须包含type字段', 'error')
+      onlyMessage($t('DataSource.DataTypeEditor.100038-5'), 'error')
       return null
     }
 
     if (!validTypes.has(parsedData.type)) {
-      onlyMessage(`数据类型"${parsedData.type}"不支持`, 'error')
+      onlyMessage($t('DataSource.DataType.100032-1', { type: parsedData.type }), 'error')
       return null
     }
 
     if (parsedData.type === 'object') {
       if (!parsedData.properties) {
-        onlyMessage('JSON数据中必须包含properties字段', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-6'), 'error')
         return null
       }
 
       if (!Array.isArray(parsedData.properties)) {
-        onlyMessage('JSON数据object中properties字段必须为数组', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-9'), 'error')
         return null
       }
     }
 
     if (parsedData.type === 'enum') {
       if (!parsedData.elements) {
-        onlyMessage('JSON数据enum中必须包含elements字段', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-10'), 'error')
         return null
       }
 
       if (!Array.isArray(parsedData.elements)) {
-        onlyMessage('JSON数据enum中elements字段必须为数组', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-11'), 'error')
         return null
       }
     }
 
     if (parsedData.type === 'array') {
       if (!parsedData.elementType.type) {
-        onlyMessage('JSON数据elementType中必须包含type字段', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-12'), 'error')
         return null
       }
 
       if (!validTypes.has(parsedData.elementType.type)) {
-        onlyMessage(`数据类型"${parsedData.elementType.type}"不支持`, 'error')
+        onlyMessage($t('DataSource.DataType.100032-1', { type: parsedData.elementType.type }), 'error')
         return null
       }
 
       if (!parsedData.elementType) {
-        onlyMessage('JSON数据array中必须包含elementType字段', 'error')
+        onlyMessage($t('DataSource.DataTypeEditor.100038-7'), 'error')
         return null
       }
 
       if (parsedData.elementType.type === 'enum') {
         if (!parsedData.elementType.elements) {
-          onlyMessage('JSON数据enum中必须包含elements字段', 'error')
+          onlyMessage($t('DataSource.DataTypeEditor.100038-10'), 'error')
           return null
         }
 
         if (!Array.isArray(parsedData.elementType.elements)) {
-          onlyMessage('JSON数据enum中elements字段必须为数组', 'error')
+          onlyMessage($t('DataSource.DataTypeEditor.100038-11'), 'error')
           return null
         }
       }
 
       if (parsedData.elementType.type === 'object') {
         if (!parsedData.elementType.properties) {
-          onlyMessage('JSON数据object中必须包含properties字段', 'error')
+          onlyMessage($t('DataSource.DataTypeEditor.100038-6'), 'error')
           return null
         }
 
         if (!Array.isArray(parsedData.elementType.properties)) {
-          onlyMessage('JSON数据object中properties字段必须为数组', 'error')
+          onlyMessage($t('DataSource.DataTypeEditor.100038-9'), 'error')
           return null
         }
       }

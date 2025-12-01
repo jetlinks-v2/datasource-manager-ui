@@ -21,7 +21,7 @@
           <FormItem
             :error="formErrors[index]?.key"
             :value="record.key"
-            placeholder="请输入键名"
+            :placeholder="$t('DataSource.ParamTable.100034-0')"
             @change="(val) => handleFieldChange(val, 'key', record, index)"
           />
         </template>
@@ -30,7 +30,7 @@
           <FormItem
             :error="formErrors[index]?.value"
             :value="record.value"
-            placeholder="请输入值"
+            :placeholder="$t('DataSource.ParamTable.100034-1')"
             @change="(val) => handleFieldChange(val, 'value', record, index)"
           />
         </template>
@@ -39,7 +39,7 @@
           <FormItem
             :error="formErrors[index]?.description"
             :value="record.description"
-            placeholder="请输入说明"
+            :placeholder="$t('DataSource.ParamTable.100034-2')"
             @change="(val) => handleFieldChange(val, 'description', record, index)"
           />
         </template>
@@ -63,7 +63,7 @@
         @click="handleAdd"
       >
         <PlusOutlined />
-        新增参数
+        {{ $t('DataSource.ParamTable.100034-8') }}
       </a-button>
     </div>
   </div>
@@ -75,6 +75,9 @@ import { cloneDeep } from 'lodash-es'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { DEFAULT_PARAM_ITEM, type ParamItem } from './setting'
 import FormItem from '../../../../../components/FormItem.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   dataSource: ParamItem[]
@@ -95,23 +98,22 @@ type ValidatorFn = (value: string, record: ParamItem, index: number) => string
 // 验证规则
 const validators: Record<ValidatorKey, ValidatorFn> = {
   key: (value: string, record: ParamItem, index: number) => {
-    if (!value) return '请输入键名'
+    if (!value) return $t('DataSource.ParamTable.100034-0')
     if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(value) && !/^\{\{(.*?)\}\}$/.test(value)) {
-      return '只能以字母开头，可包含数字、下划线或连字符'
+      return $t('DataSource.ParamTable.100034-3')
     }
     if (tableData.value.some((item, idx) => idx !== index && item.enable && item.key === value && value !== '')) {
-      return '键名重复'
+      return $t('DataSource.ParamTable.100034-4')
     }
-    if (value.length > 64) return '键名长度不能超过64个字符'
+    if (value.length > 64) return $t('DataSource.ParamTable.100034-5')
     return ''
   },
   value: (value: string) => {
-    // if (!value) return '请输入值'
-    if (value.length > 64) return '值长度不能超过64个字符'
+    if (value.length > 64) return $t('DataSource.ParamTable.100034-6')
     return ''
   },
   description: (value: string) => {
-    if (value.length > 200) return '说明长度不能超过200个字符'
+    if (value.length > 200) return $t('DataSource.ParamTable.100034-7')
     return ''
   }
 }
@@ -204,7 +206,7 @@ watch(
     } else {
       tableData.value = newData.map((item) => item)
     }
-    
+
     nextTick(() => {
       if (props.isValid) {
         validateAll()

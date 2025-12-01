@@ -6,7 +6,7 @@
       ref="formRef"
     >
       <a-form-item
-        label="布尔值"
+        :label="$t('DataSource.Boolean.100028-0')"
         name="trueFalse"
         :rules="[{ required: true, validator: validateInputs, trigger: 'blur' }]"
         :auto-link="false"
@@ -14,14 +14,14 @@
         <div class="input-wrapper">
           <a-input
             v-model:value="formData.trueText"
-            placeholder="请输入标题"
+            :placeholder="$t('DataSource.Boolean.100028-1')"
             :disabled="readonly"
             :maxlength="64"
           />
           <span>-</span>
           <a-input
             v-model:value="formData.trueValue"
-            placeholder="请输入值"
+            :placeholder="$t('DataSource.Boolean.100028-2')"
             :disabled="readonly"
             :maxlength="64"
           />
@@ -29,14 +29,14 @@
         <div class="input-wrapper">
           <a-input
             v-model:value="formData.falseText"
-            placeholder="请输入标题"
+            :placeholder="$t('DataSource.Boolean.100028-1')"
             :disabled="readonly"
             :maxlength="64"
           />
           <span>-</span>
           <a-input
             v-model:value="formData.falseValue"
-            placeholder="请输入值"
+            :placeholder="$t('DataSource.Boolean.100028-2')"
             :disabled="readonly"
             :maxlength="64"
           />
@@ -48,6 +48,9 @@
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -74,7 +77,7 @@ const formData = reactive({
 const validateInputs = (_: any, value: string, callback: Function) => {
   const { trueValue, trueText, falseValue, falseText } = formData
   if (!trueValue || !trueText || !falseValue || !falseText) {
-    callback(new Error('请输入布尔值'))
+    callback(new Error($t('DataSource.Boolean.100028-3')))
   } else {
     callback()
   }

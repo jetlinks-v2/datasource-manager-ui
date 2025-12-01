@@ -8,7 +8,7 @@
       <template #title>
         <div class="page-header">
           <router-link :to="routeLink">
-            <a-button class="back-btn">返回</a-button>
+            <a-button class="back-btn">{{ $t('DataSource.Detail.100008-0') }}</a-button>
           </router-link>
           <j-ellipsis>
             <div class="page-title">{{ info?.name || '--' }}</div>
@@ -21,7 +21,7 @@
           <a-row>
             <a-col :span="8">
               <div class="info-item">
-                <span class="info-label">标识：</span>
+                <span class="info-label">{{ $t('DataSource.Detail.100008-1') }}</span>
                 <div class="info-value">
                   <j-ellipsis>{{ info?.id || '--' }}</j-ellipsis>
                 </div>
@@ -29,7 +29,7 @@
             </a-col>
             <a-col :span="16">
               <div class="info-item">
-                <span class="info-label">说明：</span>
+                <span class="info-label">{{ $t('DataSource.Detail.100008-2') }}</span>
                 <div class="info-value">
                   <j-ellipsis>{{ info?.description || '--' }}</j-ellipsis>
                 </div>
@@ -47,14 +47,14 @@
             @click="handleDeleteOk"
           >
             <DeleteOutlined />
-            删除
+            {{ $t('DataSource.index.100001-10') }}
           </j-permission-button>
           <j-permission-button
             :hasPermission="`${permission}:update`"
             @click="showSourceEdit"
           >
             <EditOutlined />
-            编辑
+            {{ $t('DataSource.List.100002-2') }}
           </j-permission-button>
           <j-permission-button
             v-if="sourceClassify === 'database'"
@@ -64,7 +64,7 @@
             type="primary"
           >
             <CheckCircleOutlined />
-            连接测试
+            {{ $t('DataSource.Detail.100008-3') }}
           </j-permission-button>
         </div>
       </template>
@@ -109,6 +109,9 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { getSourceClassify } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const permission = 'system/DataSource'
 const loading = ref(false)
@@ -174,25 +177,30 @@ const handleTestDataSource = async () => {
   })
 
   if (res?.result.ok === true) {
-    onlyMessage('连接数据源成功!')
+    onlyMessage($t('DataSource.SourceAdd.100005-19'))
     loading.value = false
   } else {
-    onlyMessage(`连接数据源失败,${res?.result?.reason?.cause?.message ?? '请求超时'}`, 'error')
+    onlyMessage(
+      $t('DataSource.SourceAdd.100005-20', {
+        reason: res?.result?.reason?.cause?.message ?? $t('DataSource.SourceAdd.100005-21')
+      }),
+      'error'
+    )
     loading.value = false
   }
 }
 
 const handleDeleteOk = async () => {
   Modal.confirm({
-    title: '删除',
-    content: '删除该数据源后，相关数据将被删除，请谨慎操作',
+    title: $t('DataSource.index.100001-10'),
+    content: $t('DataSource.List.100002-3'),
     onOk: async () => {
       const res = await disableDataSource(sourceId)
       if (res.success) {
         const res = await deleteDataSource(sourceId)
         if (res.success) {
           router.push(routeLink.value)
-          onlyMessage('删除成功')
+          onlyMessage($t('DataSource.List.100002-4'))
         }
       }
     }
@@ -207,7 +215,7 @@ const getDetailInfo = async () => {
     const baseList = [
       {
         key: 'Info',
-        tab: '基本信息'
+        tab: $t('DataSource.Detail.100008-4')
       }
     ]
 
@@ -215,11 +223,11 @@ const getDetailInfo = async () => {
       baseList.push(
         {
           key: 'Table',
-          tab: '表结构'
+          tab: $t('DataSource.Detail.100008-5')
         },
         {
           key: 'Query',
-          tab: '查询'
+          tab: $t('DataSource.Detail.100008-6')
         }
       )
     }
@@ -227,7 +235,7 @@ const getDetailInfo = async () => {
       ...baseList,
       {
         key: 'DataList',
-        tab: '功能列表'
+        tab: $t('DataSource.Detail.100008-7')
       }
     ]
   }

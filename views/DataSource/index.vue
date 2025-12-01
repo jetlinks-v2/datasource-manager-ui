@@ -2,14 +2,14 @@
   <j-page-container>
     <FullPage>
       <div class="datasource-container">
-        <div class="datasource-title">数据源</div>
+        <div class="datasource-title">{{ $t('DataSource.index.100001-0') }}</div>
         <j-permission-button
           type="primary"
           :hasPermission="`${permission}:add`"
           @click="_handleAdd"
         >
           <AIcon type="PlusOutlined" />
-          新增
+          {{ $t('DataSource.index.100001-1') }}
         </j-permission-button>
       </div>
 
@@ -70,7 +70,9 @@ import {
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { Rule } from 'ant-design-vue/es/form'
 import { moduleRegistry } from '@/utils/module-registry'
+import { useI18n } from 'vue-i18n'
 
+const { t: $t } = useI18n()
 const { CategorySelect } = moduleRegistry.getResource('visualization-manager-ui', 'components')
 
 const permission = 'system/DataSource'
@@ -88,10 +90,10 @@ const labelRules: Rule[] = [
           return !clickItem.value?.id || item.id !== clickItem.value?.id
         })
         .find((i: any) => i.name === value)
-      if (!flag && value !== '全部') {
+      if (!flag && value !== $t('DataSource.index.100001-12')) {
         return Promise.resolve()
       } else {
-        return Promise.reject('该名称重复')
+        return Promise.reject($t('DataSource.index.100001-2'))
       }
     },
     trigger: 'blur'
@@ -124,7 +126,7 @@ const getCategoryList = async (searchValue?: string) => {
       categoryList.value = [
         {
           id: DEFAULT_CATEGORY_ID,
-          name: '全部'
+          name: $t('DataSource.index.100001-12')
         },
         ...res.result
       ]
@@ -146,7 +148,7 @@ const _handleAdd = () => {
 const handleChange = async (item: { id?: string; name: string }) => {
   try {
     const isEdit = !!item.id
-    const successMessage = isEdit ? '编辑成功' : '新增成功'
+    const successMessage = isEdit ? $t('DataSource.index.100001-3') : $t('DataSource.index.100001-4')
     const res = isEdit
       ? await updateDataSourceGroup(item.id!, { name: item.name })
       : await addDataSourceGroup({ name: item.name })
@@ -157,7 +159,7 @@ const handleChange = async (item: { id?: string; name: string }) => {
       throw new Error(`API returned status ${res.status}`)
     }
   } catch (error) {
-    const errorMessage = item.id ? '编辑失败' : '新增失败'
+    const errorMessage = item.id ? $t('DataSource.index.100001-5') : $t('DataSource.index.100001-6')
     onlyMessage(errorMessage, 'error')
     console.error('Operation failed:', error)
   } finally {
@@ -170,19 +172,16 @@ const handleSearch = (value: string) => {
 }
 
 const handleClickDelete = async (id: string) => {
-  const text =
-    listLength.value === 0
-      ? '删除该分类？此操作不可撤销'
-      : '将同步删除该分类下的所有数据，删除后可能导致错误或异常。谨慎操作，此操作不可撤销'
+  const text = listLength.value === 0 ? $t('DataSource.index.100001-8') : $t('DataSource.index.100001-9')
   Modal.confirm({
-    title: '确定删除吗？',
+    title: $t('DataSource.index.100001-7'),
     okType: 'danger',
     content: text,
-    okText: '删除',
+    okText: $t('DataSource.index.100001-10'),
     centered: true,
     onOk: async () => {
       const res = await deleteDataSourceGroup(id)
-      onlyMessage('操作成功')
+      onlyMessage($t('DataSource.index.100001-11'))
       if (res.status === 200) {
         clickItem.value = {}
         await getCategoryList()

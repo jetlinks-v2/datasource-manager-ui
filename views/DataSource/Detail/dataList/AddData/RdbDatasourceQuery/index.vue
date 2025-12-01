@@ -6,14 +6,14 @@
         :class="{ active: activeTab === 'visual' }"
         @click="handleActiveTabChange('visual')"
       >
-        可视化查询
+        {{ $t('DataSource.RdbQuery.100025-0') }}
       </a-button>
       <a-button
         class="segmented-control__button"
         :class="{ active: activeTab === 'sql' }"
         @click="handleActiveTabChange('sql')"
       >
-        SQL查询
+        {{ $t('DataSource.RdbQuery.100025-1') }}
       </a-button>
     </div>
 
@@ -88,6 +88,9 @@ import TableSelector from './components/TableSelector.vue'
 import FieldSelector from './components/FieldSelector.vue'
 import SqlEditor from './components/SqlEditor.vue'
 import QueryResults from './components/QueryResults.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -123,10 +126,10 @@ const refreshTable = async () => {
   refreshLoading.value = true
   await getDataSourceTablesData()
     .then(() => {
-      onlyMessage('刷新成功', 'success')
+      onlyMessage($t('DataSource.RdbQuery.100025-2'), 'success')
     })
     .catch(() => {
-      onlyMessage('刷新失败', 'error')
+      onlyMessage($t('DataSource.RdbQuery.100025-3'), 'error')
     })
     .finally(() => {
       refreshLoading.value = false
@@ -225,23 +228,23 @@ const validateSql = () => {
   // 检查是否只包含一条SQL语句
   const sqlStatements = sql.split(';').filter((stmt) => stmt.trim() !== '')
   if (sqlStatements.length > 1) {
-    onlyMessage('当前列表只能输入一条SQL语句', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-5'), 'error')
     return false
   }
 
   if (!sqlUpper.startsWith('SELECT')) {
-    onlyMessage('SQL语句必须以SELECT开头', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-6'), 'error')
     return false
   }
 
   if (!sqlUpper.includes('FROM')) {
-    onlyMessage('SQL语句缺少FROM子句', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-7'), 'error')
     return false
   }
 
   const dangerousKeywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'UPDATE', 'INSERT']
   if (dangerousKeywords.some((keyword) => sqlUpper.includes(keyword))) {
-    onlyMessage('SQL语句不允许包含修改数据的操作', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-8'), 'error')
     return false
   }
   return true
@@ -327,7 +330,7 @@ const validateAll = async () => {
 
   if (activeTab.value === 'visual') {
     if (selectedRowKeys.value.length === 0) {
-      onlyMessage('至少选择一个字段', 'error')
+      onlyMessage($t('DataSource.RdbQuery.100025-9'), 'error')
       return false
     }
   }

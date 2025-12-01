@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title="isEditor ? '编辑' : '新增数据源连接'"
+    :title="isEditor ? $t('DataSource.SourceAdd.100005-0') : $t('DataSource.SourceAdd.100005-1')"
     :open="true"
     :width="700"
     @cancel="cancelModal"
@@ -14,17 +14,17 @@
       layout="vertical"
       labelAlign="left"
     >
-      <a-form-item label="类型">
+      <a-form-item :label="$t('DataSource.table.100003-4')">
         <a-input
           :value="datasourceName"
           disabled
         />
       </a-form-item>
       <a-form-item
-        label="数据源名称"
+        :label="$t('DataSource.SourceAdd.100005-2')"
         :rules="[
-          { required: true, message: '请输入数据源名称!', trigger: 'blur' },
-          { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+          { required: true, message: $t('DataSource.SourceAdd.100005-3'), trigger: 'blur' },
+          { max: 64, message: $t('DataSource.SourceAdd.100005-4'), trigger: 'change' },
           {
             validator: spaceValidator,
             trigger: 'blur'
@@ -35,15 +35,15 @@
       >
         <a-input
           v-model:value="formData.name"
-          placeholder="请输入数据源名称"
+          :placeholder="$t('DataSource.SourceAdd.100005-3')"
         />
       </a-form-item>
       <a-form-item
         :rules="[
-          { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+          { max: 64, message: $t('DataSource.SourceAdd.100005-4'), trigger: 'change' },
           {
             pattern: /^[a-z][a-zA-Z0-9_]*$/,
-            message: '只能以小写字母开头且由数字、字母、下划线组成',
+            message: $t('DataSource.SourceAdd.100005-6'),
             trigger: 'change'
           },
           {
@@ -52,23 +52,23 @@
           }
         ]"
         name="id"
-        label="数据源标识"
+        :label="$t('DataSource.SourceAdd.100005-5')"
       >
         <a-input
           v-model:value="formData.id"
-          placeholder="不填则自动生成"
+          :placeholder="$t('DataSource.SourceAdd.100005-7')"
           :disabled="isEditor"
         />
       </a-form-item>
       <a-form-item
-        label="分类"
+        :label="$t('DataSource.SourceAdd.100005-8')"
         name="group"
-        :rules="[{ required: true, message: '请选择分类' }]"
+        :rules="[{ required: true, message: $t('DataSource.SourceAdd.100005-9') }]"
       >
         <div class="select-with-button">
           <a-select
             v-model:value="formData.group"
-            placeholder="请选择分类"
+            :placeholder="$t('DataSource.SourceAdd.100005-9')"
             allow-clear
           >
             <a-select-option
@@ -91,14 +91,14 @@
         </div>
       </a-form-item>
       <a-form-item
-        :rules="[{ max: 200, message: '最多可输入200个字符' }]"
+        :rules="[{ max: 200, message: $t('DataSource.SourceAdd.100005-10') }]"
         :validateFirst="true"
         name="description"
-        label="说明"
+        :label="$t('DataSource.table.100003-6')"
       >
         <a-textarea
           v-model:value="formData.description"
-          placeholder="请输入说明"
+          :placeholder="$t('DataSource.table.100003-7')"
           :rows="3"
         />
       </a-form-item>
@@ -129,15 +129,15 @@
           v-if="!isEditor"
           @click="handleClick"
         >
-          上一步
+          {{ $t('DataSource.SourceAdd.100005-11') }}
         </a-button>
         <a-space>
-          <a-button @click="cancelModal">取消</a-button>
+          <a-button @click="cancelModal">{{ $t('DataSource.SourceAdd.100005-12') }}</a-button>
           <a-button
             type="primary"
             @click="handleSubmit"
           >
-            确定
+            {{ $t('DataSource.SourceAdd.100005-13') }}
           </a-button>
         </a-space>
       </div>
@@ -145,7 +145,7 @@
   </a-modal>
 
   <a-modal
-    title="新增分类"
+    :title="$t('DataSource.SourceAdd.100005-14')"
     :open="showAddCategory"
     @cancel="handleCancelAddCategory"
     @ok="handleAddCategory"
@@ -158,11 +158,11 @@
       labelAlign="left"
     >
       <a-form-item
-        label="分类名称"
+        :label="$t('DataSource.SourceAdd.100005-15')"
         name="name"
         :rules="[
-          { required: true, message: '请输入分类名称', trigger: 'change' },
-          { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+          { required: true, message: $t('DataSource.SourceAdd.100005-16'), trigger: 'change' },
+          { max: 64, message: $t('DataSource.SourceAdd.100005-4'), trigger: 'change' },
           {
             validator: nameValidator,
             trigger: 'blur'
@@ -171,7 +171,7 @@
       >
         <a-input
           v-model:value="categoryFormState.name"
-          placeholder="请输入分类名称"
+          :placeholder="$t('DataSource.SourceAdd.100005-16')"
         />
       </a-form-item>
     </a-form>
@@ -200,6 +200,9 @@ import { useSourceDetailStore } from '@datasource-manager-ui/stores/sourceDetail
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { addDataSourceGroup, getDataSourceGroup } from '@datasource-manager-ui/api/data'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList'])
 const props = defineProps({
@@ -278,7 +281,7 @@ const handleAddCategory = () => {
       showAddCategory.value = false
       categoryFormRef.value.resetFields()
       emit('refreshCategoryList')
-      onlyMessage('新增成功')
+      onlyMessage($t('DataSource.index.100001-4'))
     }
   })
 }
@@ -287,7 +290,7 @@ const nameValidator = async (_: Rule, value: string) => {
   if (value) {
     const res = categoryList.value.find((item: any) => item.name === value)
     if (res) {
-      return Promise.reject('分类名称重复')
+      return Promise.reject($t('DataSource.SourceAdd.100005-17'))
     }
     return Promise.resolve()
   }
@@ -306,7 +309,7 @@ const labelKeyValidator = async (_: Rule, value: string) => {
     if (!isEditor.value) {
       const resp = await getDataSourceRepeat(value)
       if (resp.status === 200) {
-        if (resp.result) return Promise.reject('标识重复')
+        if (resp.result) return Promise.reject($t('DataSource.SourceAdd.100005-18'))
         else return Promise.resolve()
       }
     }
@@ -334,11 +337,11 @@ const handleTestConnection = async (_relationData: any) => {
     formItemRelationRef.value.setLoading(false)
   })
   if (res?.result.ok === true) {
-    onlyMessage('连接数据源成功!')
+    onlyMessage($t('DataSource.SourceAdd.100005-19'))
     formItemRelationRef.value.setLoading(false)
   } else {
-    const errorMessage = getLastCauseMessage(res?.result?.reason) ?? '请求超时'
-    onlyMessage(`连接数据源失败,${errorMessage}`, 'error')
+    const errorMessage = getLastCauseMessage(res?.result?.reason) ?? $t('DataSource.SourceAdd.100005-21')
+    onlyMessage($t('DataSource.SourceAdd.100005-20', { reason: errorMessage }), 'error')
     formItemRelationRef.value.setLoading(false)
   }
 }
@@ -373,7 +376,7 @@ const handleSubmit = async () => {
           sourceClassify.value === 'common' ? await universalDataAdd() : await relationDataAdd()
         })
         .catch((err: any) => {
-          onlyMessage('请检查输入项', 'error')
+          onlyMessage($t('DataSource.SourceAdd.100005-22'), 'error')
           nextTick(() => {
             requestFlag.value = false
           })
@@ -385,7 +388,7 @@ const handleSubmit = async () => {
         })
     })
     .catch((err: any) => {
-      onlyMessage('请检查输入项', 'error')
+      onlyMessage($t('DataSource.SourceAdd.100005-22'), 'error')
       nextTick(() => {
         requestFlag.value = false
       })
@@ -470,7 +473,7 @@ const universalDataAdd = async () => {
   if (res?.success) {
     emit('close')
     emit('update')
-    onlyMessage(isEditor.value ? '修改成功' : '新增成功')
+    onlyMessage(isEditor.value ? $t('DataSource.SourceAdd.100005-23') : $t('DataSource.index.100001-4'))
   }
 }
 
@@ -514,7 +517,7 @@ const relationDataAdd = async () => {
   if (res?.success) {
     emit('close')
     emit('update')
-    onlyMessage(isEditor.value ? '修改成功' : '新增成功')
+    onlyMessage(isEditor.value ? $t('DataSource.SourceAdd.100005-23') : $t('DataSource.index.100001-4'))
   }
 }
 // 关闭弹窗

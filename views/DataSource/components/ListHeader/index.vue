@@ -15,7 +15,7 @@
           v-if="isSearching"
           ref="searchInputRef"
           v-model:value="searchQuery"
-          :placeholder="searchPlaceholder"
+          :placeholder="computedPlaceholder"
           allow-clear
           @blur="handleSearchBlur"
           @input="handleSearchInput"
@@ -45,15 +45,21 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 interface Props {
   searchPlaceholder?: string
   showActions?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  searchPlaceholder: '请输入关键词',
+  searchPlaceholder: '',
   showActions: true
 })
+
+const computedPlaceholder = computed(() => props.searchPlaceholder || $t('DataSource.ListHeader.100037-0'))
 
 const emit = defineEmits<{
   search: [value: string]

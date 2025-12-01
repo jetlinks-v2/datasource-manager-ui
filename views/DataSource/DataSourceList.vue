@@ -42,7 +42,7 @@
           <j-permission-button
             style="padding: 4px 8px"
             :hasPermission="`${permission}:update`"
-            :tooltip="{ title: '编辑' }"
+            :tooltip="{ title: $t('DataSource.List.100002-2') }"
             type="link"
             @click="handleEdit(slotProps)"
           >
@@ -53,10 +53,10 @@
             style="padding: 4px 8px"
             :hasPermission="`${permission}:delete`"
             :popConfirm="{
-              title: '删除该数据源后，相关数据将被删除，请谨慎操作',
+              title: $t('DataSource.List.100002-3'),
               onConfirm: () => handleDelete(slotProps.id)
             }"
-            :tooltip="{ title: '删除' }"
+            :tooltip="{ title: $t('DataSource.index.100001-10') }"
             danger
             type="link"
           >
@@ -69,8 +69,8 @@
             <j-empty>
               <template #description>
                 <a-space direction="vertical">
-                  <span style="font-size: 18px">暂无数据</span>
-                  <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">点击右上角「新增数据源」</span>
+                  <span style="font-size: 18px">{{ $t('DataSource.List.100002-0') }}</span>
+                  <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">{{ $t('DataSource.List.100002-1') }}</span>
                 </a-space>
               </template>
             </j-empty>
@@ -105,6 +105,9 @@ import { deleteDataSource, disableDataSource, getDataSourceList } from '@datasou
 import { onlyMessage } from '@jetlinks-web/utils'
 import { DATASOURCE_NAME, DATASOURCE_TYPE } from './components/table'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   clickItem: {
@@ -242,7 +245,7 @@ const handleDelete = async (id: string) => {
     if (res.success) {
       updateSourceList()
       onSearch({ terms: [] })
-      onlyMessage('删除成功')
+      onlyMessage($t('DataSource.List.100002-4'))
     }
   }
 }

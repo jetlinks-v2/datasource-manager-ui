@@ -1,17 +1,17 @@
 <template>
   <div class="command-list">
     <ListHeader
-      search-placeholder="请输入名称"
+      :search-placeholder="$t('DataSource.CommandList.100015-0')"
       @search="handleSearch"
     >
       <template #count>
-        共
+        {{ $t('DataSource.CommandList.100015-1') }}
         <a>&nbsp;{{ commands.length }}&nbsp;</a>
-        个功能
+        {{ $t('DataSource.CommandList.100015-2') }}
       </template>
       <template #actions>
         <a-tooltip
-          title="支持导入yaml/json文件"
+          :title="$t('DataSource.CommandList.100015-3')"
           v-if="typeId === 'api'"
         >
           <FileUpload
@@ -67,14 +67,14 @@
                   <a-menu style="width: 100px">
                     <a-menu-item @click="handleEdit(item)">
                       <AIcon type="EditOutlined" />
-                      编辑
+                      {{ $t('DataSource.List.100002-2') }}
                     </a-menu-item>
                     <a-menu-item
                       @click="handleDelete(item)"
                       danger
                     >
                       <AIcon type="DeleteOutlined" />
-                      删除
+                      {{ $t('DataSource.index.100001-10') }}
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -96,6 +96,9 @@
 <script lang="ts" setup>
 import FileUpload from '@datasource-manager-ui/components/Upload/File/index.vue'
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader/index.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface Command {
   description: string

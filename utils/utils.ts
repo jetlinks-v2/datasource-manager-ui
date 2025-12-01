@@ -19,10 +19,12 @@ export const randomString = (length?: number) => {
  * @param value
  * @returns {Promise<void>}
  */
+import i18n from '@/locales'
+
 export const spaceValidator = async (_: any, value: string) => {
   const reg = /(^\s+)|(\s+$)/
   if (reg.test(value)) {
-    return Promise.reject(new Error('前后不能有空格'))
+    return Promise.reject(new Error(i18n.global.t('DataSource.utils.100036-0')))
   }
   return Promise.resolve()
 }

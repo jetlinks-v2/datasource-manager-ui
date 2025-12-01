@@ -1,25 +1,25 @@
 <template>
   <div style="margin-bottom: 20px">
-    <div class="title">基础信息</div>
+    <div class="title">{{ $t('DataSource.Info.100010-0') }}</div>
     <a-descriptions
       :column="3"
       bordered
     >
-      <a-descriptions-item label="类型">
+      <a-descriptions-item :label="$t('DataSource.table.100003-4')">
         <j-ellipsis>{{ sourceType || '--' }}</j-ellipsis>
       </a-descriptions-item>
-      <a-descriptions-item label="数据源名称">
+      <a-descriptions-item :label="$t('DataSource.Info.100010-1')">
         <j-ellipsis>{{ info.name || '--' }}</j-ellipsis>
       </a-descriptions-item>
-      <a-descriptions-item label="数据源标识">
+      <a-descriptions-item :label="$t('DataSource.Info.100010-2')">
         <j-ellipsis>{{ info.id || '--' }}</j-ellipsis>
       </a-descriptions-item>
-      <a-descriptions-item label="创建时间">
+      <a-descriptions-item :label="$t('DataSource.Info.100010-3')">
         <j-ellipsis>
           {{ info.createTime ? dayjs(info.createTime).format('YYYY-MM-DD HH:mm:ss') : '--' }}
         </j-ellipsis>
       </a-descriptions-item>
-      <a-descriptions-item label="说明">
+      <a-descriptions-item :label="$t('DataSource.table.100003-6')">
         <j-ellipsis>{{ info.description || '--' }}</j-ellipsis>
       </a-descriptions-item>
     </a-descriptions>
@@ -35,6 +35,9 @@ import dayjs from 'dayjs'
 import DataConnection from './DataConnection.vue'
 import { DATASOURCE_NAME } from '../../components/table'
 import { SourceDataInfo } from '../type'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{ info: SourceDataInfo; sourceClassify: 'database' | 'common'; sourceData?: any }>()
 const { info } = toRefs(props)
