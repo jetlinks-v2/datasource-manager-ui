@@ -4,7 +4,7 @@
     ref="formRef"
     layout="vertical"
   >
-    <a-form-item label="连接方式">
+    <a-form-item :label="$t('DataSource.FormRelation.100006-0')">
       <a-radio-group
         v-model:value="formData.connectionMode"
         @change="handleConnectionModeChange"
@@ -13,13 +13,13 @@
           class="button-width basic"
           value="basic"
         >
-          通过基本配置连接
+          {{ $t('DataSource.FormRelation.100006-1') }}
         </a-radio-button>
         <a-radio-button
           class="button-width url"
           value="url"
         >
-          连接URL
+          {{ $t('DataSource.FormRelation.100006-2') }}
         </a-radio-button>
       </a-radio-group>
     </a-form-item>
@@ -30,41 +30,41 @@
         :rules="[
           {
             required: true,
-            message: '请输入数据库网络地址',
+            message: $t('DataSource.FormRelation.100006-4'),
             trigger: 'blur'
           },
           {
             pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
-            message: '请输入正确的IP地址',
+            message: $t('DataSource.FormRelation.100006-6'),
             trigger: ['blur', 'change']
           }
         ]"
-        label="数据库地址"
+        :label="$t('DataSource.FormRelation.100006-3')"
       >
         <a-input
           v-model:value="formData.host"
-          placeholder="请输入数据库网络地址，例：192.168.1.100"
+          :placeholder="$t('DataSource.FormRelation.100006-5')"
         />
       </a-form-item>
       <a-form-item
         name="port"
         :rules="[{ required: true, validator: validatePort, trigger: ['blur', 'change'] }]"
-        label="端口"
+        :label="$t('DataSource.FormRelation.100006-7')"
       >
         <a-input
           v-model:value="formData.port"
-          :placeholder="`请输入端口号（0-65536），例：${active.placeholderPort}`"
+          :placeholder="$t('DataSource.FormRelation.100006-8', { port: active.placeholderPort })"
         />
       </a-form-item>
       <a-form-item
         v-if="active.value === DATASOURCE_TYPE.ORACLE"
         name="serviceName"
-        :rules="[{ required: true, message: '请输入服务名' }]"
-        label="服务名"
+        :rules="[{ required: true, message: $t('DataSource.FormRelation.100006-10') }]"
+        :label="$t('DataSource.FormRelation.100006-9')"
       >
         <a-input
           v-model:value="formData.serviceName"
-          placeholder="请输入服务名"
+          :placeholder="$t('DataSource.FormRelation.100006-10')"
           :maxlength="64"
         />
       </a-form-item>
@@ -73,7 +73,7 @@
       <a-form-item
         name="jdbcUrl"
         :rules="[{ required: true, validator: validateJdbcUrl, trigger: 'blur' }]"
-        label="连接地址"
+        :label="$t('DataSource.FormRelation.100006-11')"
       >
         <a-textarea
           v-model:value="formData.jdbcUrl"
@@ -85,7 +85,7 @@
     <a-form-item
       name="dataBase"
       :rules="[
-        { required: true, message: '请输入数据库名称', trigger: 'blur' },
+        { required: true, message: $t('DataSource.FormRelation.100006-13'), trigger: 'blur' },
         {
           validator: spaceValidator,
           trigger: 'blur'
@@ -96,39 +96,39 @@
         active.value !== DATASOURCE_TYPE.ORACLE &&
         active.value !== DATASOURCE_TYPE.DAMENG
       "
-      label="数据库名称"
+      :label="$t('DataSource.FormRelation.100006-12')"
     >
       <a-input
         v-model:value="formData.dataBase"
-        placeholder="请输入数据库名称"
+        :placeholder="$t('DataSource.FormRelation.100006-13')"
       />
     </a-form-item>
     <a-form-item
       name="schema"
-      :rules="[{ required: true, message: '请输入Schema', trigger: 'blur' }]"
+      :rules="[{ required: true, message: $t('DataSource.FormRelation.100006-14'), trigger: 'blur' }]"
       label="Schema"
     >
       <a-input
         v-model:value="formData.schema"
-        placeholder="请输入Schema"
+        :placeholder="$t('DataSource.FormRelation.100006-14')"
         :maxlength="64"
       />
     </a-form-item>
     <a-form-item
       name="username"
-      :rules="[{ required: true, message: '请输入用户名', trigger: 'blur' }]"
-      label="用户名"
+      :rules="[{ required: true, message: $t('DataSource.FormRelation.100006-16'), trigger: 'blur' }]"
+      :label="$t('DataSource.FormRelation.100006-15')"
     >
       <a-input
         v-model:value="formData.username"
-        placeholder="请输入连接数据库的用户名"
+        :placeholder="$t('DataSource.FormRelation.100006-18')"
         :maxlength="64"
       />
     </a-form-item>
-    <a-form-item label="密码">
+    <a-form-item :label="$t('DataSource.FormRelation.100006-17')">
       <a-input-password
         v-model:value="formData.password"
-        placeholder="请输入连接数据库的密码"
+        :placeholder="$t('DataSource.FormRelation.100006-19')"
         :maxlength="64"
       />
     </a-form-item>
@@ -141,6 +141,9 @@ import { DATASOURCE_TYPE, datasourceParseUrl } from '../../table'
 import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -231,13 +234,13 @@ const handleConnectionModeChange = () => {
 
 const validatePort = (rule: any, value: string) => {
   if (!value) {
-    return Promise.reject('请输入端口号')
+    return Promise.reject($t('DataSource.FormRelation.100006-21'))
   }
   if (!/^-?\d+$/.test(value)) {
-    return Promise.reject('端口号仅可输入数字')
+    return Promise.reject($t('DataSource.FormRelation.100006-22'))
   }
   if (Number(value) < 0 || Number(value) > 65536) {
-    return Promise.reject('端口号必须在0到65536之间')
+    return Promise.reject($t('DataSource.FormRelation.100006-23'))
   }
   return Promise.resolve()
 }
@@ -261,7 +264,7 @@ const validateJdbcUrl = (rule: any, value: string) => {
 
   if (!value) {
     formData.value.jdbcUrl = jdbcHeaders
-    return Promise.reject('请输入连接地址')
+    return Promise.reject($t('DataSource.FormRelation.100006-24'))
   }
 
   // 预编译正则表达式中的特殊字符转义
@@ -289,7 +292,9 @@ const validateJdbcUrl = (rule: any, value: string) => {
     regex = new RegExp(`^(${headersPattern})${ipPortPattern}`)
   }
 
-  return regex.test(value) ? Promise.resolve() : Promise.reject(`请输入有效的${dbType}地址`)
+  return regex.test(value)
+    ? Promise.resolve()
+    : Promise.reject($t('DataSource.FormRelation.100006-25', { type: dbType }))
 }
 
 const handleEditor = () => {

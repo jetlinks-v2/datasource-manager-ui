@@ -1,7 +1,7 @@
 <template>
   <a-modal
     open
-    :title="preview ? '命令详情' : '编辑命令'"
+    :title="preview ? $t('DataSource.CommandModal.100018-0') : $t('DataSource.CommandModal.100018-1')"
     centered
     @cancel="handleCancel"
     width="900px"
@@ -18,12 +18,12 @@
 
       <div class="meta">
         <div class="meta-item">
-          <span>标识：</span>
-          {{ data.id }}
+          <span class="label">{{ $t('DataSource.CommandModal.100018-2') }}</span>
+          <span class="value">{{ data.id }}</span>
         </div>
         <div class="meta-item">
-          <span>说明：</span>
-          <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
+          <span class="label">{{ $t('DataSource.CommandModal.100018-3') }}</span>
+          <span class="value">{{ data.description || '--' }}</span>
         </div>
       </div>
     </header>
@@ -39,7 +39,7 @@
     </section>
 
     <template #footer>
-      <a-button @click="handleCancel">关闭</a-button>
+      <a-button @click="handleCancel">{{ $t('DataSource.CommandModal.100018-4') }}</a-button>
     </template>
   </a-modal>
 </template>
@@ -47,6 +47,9 @@
 <script setup lang="ts">
 import CommandParams from './CommandParams/index.vue'
 import { metadataConvertToTableTree } from '../utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {

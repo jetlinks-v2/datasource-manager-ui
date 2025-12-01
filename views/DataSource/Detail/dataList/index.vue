@@ -67,12 +67,15 @@ import TableCard from './AddData/components/TableCard.vue'
 import CommandList from './AddData/components/CommandList.vue'
 import CommandModal from './AddData/components/CommandModal.vue'
 import DebugModal from './AddData/components/DebugModal.vue'
+import { useI18n } from 'vue-i18n'
 import {
   deleteDataSourceCommand,
   importDataSource,
   getDatasource,
   getDataSourceCommands
 } from '@datasource-manager-ui/api/data/datasource'
+
+const { t: $t } = useI18n()
 
 interface DataSourceInfo {
   id: string
@@ -154,13 +157,13 @@ const handleImportChange = async (data: ImportData) => {
     })
 
     if (res.status === 200) {
-      onlyMessage('导入成功')
+      onlyMessage($t('DataSource.DataList.100014-0'))
       await refreshData()
     } else {
-      throw new Error('导入失败')
+      throw new Error($t('DataSource.DataList.100014-1'))
     }
   } catch (error) {
-    onlyMessage('导入失败', 'error')
+    onlyMessage($t('DataSource.DataList.100014-1'), 'error')
     console.error('Import error:', error)
   }
 }
@@ -226,7 +229,7 @@ const handleQueryCommandGroup = async () => {
     }
   } catch (error) {
     console.error('Query command group error:', error)
-    onlyMessage('查询命令组失败', 'error')
+    onlyMessage($t('DataSource.DataList.100014-4'), 'error')
   }
 }
 
@@ -241,7 +244,7 @@ const handleQueryCommand = async () => {
     }
   } catch (error) {
     console.error('Query command error:', error)
-    onlyMessage('查询命令失败', 'error')
+    onlyMessage($t('DataSource.DataList.100014-5'), 'error')
   }
 }
 
@@ -256,20 +259,20 @@ const handleEdit = (item: any) => {
 // 删除处理
 const handleDelete = (item: any) => {
   Modal.confirm({
-    title: '提示',
-    content: '该操作将删除功能，是否确认删除？',
+    title: $t('DataSource.DataList.100014-2'),
+    content: $t('DataSource.DataList.100014-3'),
     onOk: async () => {
       try {
         const res = await deleteDataSourceCommand(item.id)
         if (res.success) {
-          onlyMessage('删除成功')
+          onlyMessage($t('DataSource.List.100002-4'))
           await refreshData()
         } else {
-          throw new Error('删除失败')
+          throw new Error($t('DataSource.List.100002-4'))
         }
       } catch (error) {
         console.error('Delete error:', error)
-        onlyMessage('删除失败', 'error')
+        onlyMessage($t('DataSource.List.100002-4'), 'error')
       }
     }
   })

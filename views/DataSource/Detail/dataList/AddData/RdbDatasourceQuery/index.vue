@@ -84,6 +84,9 @@ import TableList from '@datasource-manager-ui/views/DataSource/Detail/table/comp
 import FieldSelector from './components/FieldSelector.vue'
 import SqlEditor from './components/SqlEditor.vue'
 import QueryResults from './components/QueryResults.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -105,8 +108,8 @@ const resultColumns = ref<any[]>([])
 const selectedRowKeys = ref<Key[]>([])
 
 const tabOptions = [
-  { label: '可视化查询', value: 'visual' },
-  { label: 'SQL查询', value: 'sql' }
+  { label: "$t('DataSource.RdbQuery.100025-0')", value: 'visual' },
+  { label: "$t('DataSource.RdbQuery.100025-1')", value: 'sql' }
 ]
 
 const testQueryLoading = ref(false)
@@ -212,23 +215,23 @@ const validateSql = () => {
   // 检查是否只包含一条SQL语句
   const sqlStatements = sql.split(';').filter((stmt) => stmt.trim() !== '')
   if (sqlStatements.length > 1) {
-    onlyMessage('当前列表只能输入一条SQL语句', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-5'), 'error')
     return false
   }
 
   if (!sqlUpper.startsWith('SELECT')) {
-    onlyMessage('SQL语句必须以SELECT开头', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-6'), 'error')
     return false
   }
 
   if (!sqlUpper.includes('FROM')) {
-    onlyMessage('SQL语句缺少FROM子句', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-7'), 'error')
     return false
   }
 
   const dangerousKeywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'UPDATE', 'INSERT']
   if (dangerousKeywords.some((keyword) => sqlUpper.includes(keyword))) {
-    onlyMessage('SQL语句不允许包含修改数据的操作', 'error')
+    onlyMessage($t('DataSource.RdbQuery.100025-8'), 'error')
     return false
   }
   return true
@@ -314,7 +317,7 @@ const validateAll = async () => {
 
   if (activeTab.value === 'visual') {
     if (selectedRowKeys.value.length === 0) {
-      onlyMessage('至少选择一个字段', 'error')
+      onlyMessage($t('DataSource.RdbQuery.100025-9'), 'error')
       return false
     }
   }

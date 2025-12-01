@@ -1,7 +1,6 @@
 import { request } from '@jetlinks-web/core'
 import { getToken } from '@jetlinks-web/utils'
-import { TOKEN_KEY_URL } from '@jetlinks-web/constants'
-import {getBaseApi} from "@/utils";
+import { BASE_API, TOKEN_KEY_URL } from '@jetlinks-web/constants'
 
 export const FileStatic = '/file/upload'
 
@@ -25,5 +24,5 @@ export const fileBatchUpload = (data: any, publicAccess?: boolean) => {
 export const getFileUrlById = (id: string, thumb?: string) => {
   const thumbParam = thumb ? `&thumb=${thumb}` : ''
   const token = `${TOKEN_KEY_URL}=${getToken()}`
-  return `${getBaseApi()}/file/${id}?${token}${thumbParam}`
+  return `${BASE_API}/file/${id}?${token}${thumbParam}`
 }

@@ -36,7 +36,7 @@
                 class="upload-image-mask"
                 v-if="!onlyShow"
               >
-                <div style="margin-top: 12px">点击修改</div>
+                <div style="margin-top: 12px">{{ $t('DataSource.Upload.100044-0') }}</div>
                 <a-button
                   type="link"
                   style="padding: 0"
@@ -85,13 +85,15 @@
 
 <script setup lang="ts" name="ImageUpload">
 import { getToken, onlyMessage, getBase64ByImg } from '@jetlinks-web/utils'
-import { TOKEN_KEY } from '@jetlinks-web/constants'
+import { BASE_API, TOKEN_KEY } from '@jetlinks-web/constants'
 import type { CSSProperties, PropType } from 'vue'
 import type { UploadChangeParam } from 'ant-design-vue'
 import CropperModal from './Cropper.vue'
 import { getImageUrl } from '@datasource-manager-ui/utils'
 import { FileStatic } from '@datasource-manager-ui/api/comm'
-import {getBaseApi} from "@/utils";
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   value: {
@@ -136,7 +138,7 @@ const props = defineProps({
   },
   cropperTitle: {
     type: String,
-    default: '图片编辑'
+    default: ''
   },
   cropperProps: {
     type: Object,
@@ -166,7 +168,7 @@ const loading = ref(false) // 上传图片状态
 const imageUrl = ref<string | undefined>('')
 
 const _action = computed(() => {
-  return `${getBaseApi()}${FileStatic}${props.publicAccess ? '?options=publicAccess' : ''}`
+  return `${BASE_API}${FileStatic}${props.publicAccess ? '?options=publicAccess' : ''}`
 })
 
 const beforeUpload = (file: any) => {
@@ -176,12 +178,12 @@ const beforeUpload = (file: any) => {
   const isMaxSize = file.size / 1024 / 1024 < maxSize
 
   if (!inType) {
-    onlyMessage('请上传正确格式的图片', 'error')
+    onlyMessage($t('DataSource.Upload.100044-2'), 'error')
     return false
   }
 
   if (!isMaxSize) {
-    onlyMessage(`图片大小必须小于${maxSize}M`, 'error')
+    onlyMessage($t('DataSource.Upload.100044-3', { size: maxSize }), 'error')
     return false
   }
 
@@ -208,7 +210,7 @@ const handleChange = (info: UploadChangeParam) => {
   }
   if (info.file.status === 'error') {
     loading.value = false
-    onlyMessage('上传失败', 'error')
+    onlyMessage($t('DataSource.Upload.100044-4'), 'error')
   }
 }
 
