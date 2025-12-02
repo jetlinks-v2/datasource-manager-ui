@@ -25,6 +25,7 @@
  */
 
 import { randomString } from '@jetlinks-web/utils'
+import i18n from '@/locales'
 
 /**
  * 管道阶段接口
@@ -48,7 +49,7 @@ export interface ValidationResult {
  * 阶段类型配置
  */
 interface StageTypeConfig {
-  label: string
+  labelKey: string
   // 期望的数据类型：'object' | 'array' | 'number' | 'string' | 'expression'
   expectedType: 'object' | 'array' | 'number' | 'string' | 'expression'
   // 是否允许动态变量
@@ -60,36 +61,36 @@ interface StageTypeConfig {
  */
 const STAGE_TYPE_CONFIG: Record<string, StageTypeConfig> = {
   // 对象类型
-  $match: { label: '条件过滤', expectedType: 'object', allowVariables: true },
-  $project: { label: '字段投影/计算', expectedType: 'object', allowVariables: true },
-  $group: { label: '分组聚合', expectedType: 'object', allowVariables: true },
-  $sort: { label: '排序', expectedType: 'object', allowVariables: true },
-  $lookup: { label: '关联集合', expectedType: 'object', allowVariables: true },
-  $addFields: { label: '添加计算字段', expectedType: 'object', allowVariables: true },
-  $facet: { label: '多路子管道', expectedType: 'object', allowVariables: true },
-  $sample: { label: '随机采样', expectedType: 'object', allowVariables: true },
+  $match: { labelKey: 'DataSource.MongoStageType.100051-0', expectedType: 'object', allowVariables: true },
+  $project: { labelKey: 'DataSource.MongoStageType.100051-1', expectedType: 'object', allowVariables: true },
+  $group: { labelKey: 'DataSource.MongoStageType.100051-2', expectedType: 'object', allowVariables: true },
+  $sort: { labelKey: 'DataSource.MongoStageType.100051-3', expectedType: 'object', allowVariables: true },
+  $lookup: { labelKey: 'DataSource.MongoStageType.100051-4', expectedType: 'object', allowVariables: true },
+  $addFields: { labelKey: 'DataSource.MongoStageType.100051-5', expectedType: 'object', allowVariables: true },
+  $facet: { labelKey: 'DataSource.MongoStageType.100051-6', expectedType: 'object', allowVariables: true },
+  $sample: { labelKey: 'DataSource.MongoStageType.100051-7', expectedType: 'object', allowVariables: true },
 
   // 数组类型
-  $unset: { label: '移除字段', expectedType: 'array', allowVariables: true },
-  $documents: { label: '文档数组', expectedType: 'array', allowVariables: true },
+  $unset: { labelKey: 'DataSource.MongoStageType.100051-8', expectedType: 'array', allowVariables: true },
+  $documents: { labelKey: 'DataSource.MongoStageType.100051-9', expectedType: 'array', allowVariables: true },
 
   // 表达式类型（字符串路径 或 对象表达式）
-  $sortByCount: { label: '按计数排序', expectedType: 'expression', allowVariables: true },
-  $replaceWith: { label: '替换文档', expectedType: 'expression', allowVariables: true },
+  $sortByCount: { labelKey: 'DataSource.MongoStageType.100051-10', expectedType: 'expression', allowVariables: true },
+  $replaceWith: { labelKey: 'DataSource.MongoStageType.100051-11', expectedType: 'expression', allowVariables: true },
 
   // 数字类型
-  $limit: { label: '限制条数', expectedType: 'number', allowVariables: true },
-  $skip: { label: '跳过条数', expectedType: 'number', allowVariables: true },
+  $limit: { labelKey: 'DataSource.MongoStageType.100051-12', expectedType: 'number', allowVariables: true },
+  $skip: { labelKey: 'DataSource.MongoStageType.100051-13', expectedType: 'number', allowVariables: true },
 
   // 字符串类型
-  $count: { label: '计数', expectedType: 'string', allowVariables: true },
-  $unwind: { label: '拆分数组', expectedType: 'string', allowVariables: true },
-  $out: { label: '目标集合', expectedType: 'string', allowVariables: true },
-  $unionWith: { label: '合并集合', expectedType: 'string', allowVariables: true },
-  $redact: { label: '系统变量字符串', expectedType: 'string', allowVariables: true },
+  $count: { labelKey: 'DataSource.MongoStageType.100051-14', expectedType: 'string', allowVariables: true },
+  $unwind: { labelKey: 'DataSource.MongoStageType.100051-15', expectedType: 'string', allowVariables: true },
+  $out: { labelKey: 'DataSource.MongoStageType.100051-16', expectedType: 'string', allowVariables: true },
+  $unionWith: { labelKey: 'DataSource.MongoStageType.100051-17', expectedType: 'string', allowVariables: true },
+  $redact: { labelKey: 'DataSource.MongoStageType.100051-18', expectedType: 'string', allowVariables: true },
 
   // 特殊类型（$replaceRoot 也接受对象）
-  $replaceRoot: { label: '替换根文档', expectedType: 'object', allowVariables: true }
+  $replaceRoot: { labelKey: 'DataSource.MongoStageType.100051-19', expectedType: 'object', allowVariables: true }
 }
 
 /**
@@ -98,7 +99,7 @@ const STAGE_TYPE_CONFIG: Record<string, StageTypeConfig> = {
 export function getStageTypeOptions() {
   return Object.entries(STAGE_TYPE_CONFIG).map(([value, config]) => ({
     value,
-    label: `${value} - ${config.label}`
+    labelKey: config.labelKey
   }))
 }
 
@@ -156,12 +157,12 @@ export function checkAdvancedModeRequired(stages: PipelineStage[]): {
       case 'number':
         return {
           required: true,
-          reason: `阶段 ${stage.type} 需要数字类型参数，普通模式只支持字符串输入`
+          reason: i18n.global.t('DataSource.MongoAggregateParser.100052-0', { stage: stage.type })
         }
       case 'array':
         return {
           required: true,
-          reason: `阶段 ${stage.type} 需要数组类型参数，普通模式只支持字符串输入`
+          reason: i18n.global.t('DataSource.MongoAggregateParser.100052-1', { stage: stage.type })
         }
       case 'object':
         // 检查动态参数是否在对象的值位置，且该值不是字符串
@@ -180,7 +181,10 @@ export function checkAdvancedModeRequired(stages: PipelineStage[]): {
               if (!beforeVar.endsWith('"')) {
                 return {
                   required: true,
-                  reason: `阶段 ${stage.type} 中的参数 \${${match[1]}} 可能需要非字符串类型，建议使用高级模式`
+                  reason: i18n.global.t('DataSource.MongoAggregateParser.100052-2', {
+                    stage: stage.type,
+                    param: `\${${match[1]}}`
+                  })
                 }
               }
             }
@@ -195,10 +199,10 @@ export function checkAdvancedModeRequired(stages: PipelineStage[]): {
           const replaced = replaceDynamicVariables(stage.body)
           const parsed = JSON.parse(replaced)
           if (typeof parsed === 'object' && parsed !== null) {
-            return {
-              required: true,
-              reason: `阶段 ${stage.type} 使用对象表达式且包含动态参数，可能需要高级模式`
-            }
+        return {
+          required: true,
+          reason: i18n.global.t('DataSource.MongoAggregateParser.100052-3', { stage: stage.type })
+        }
           }
         } catch {
           // 解析失败，跳过
@@ -271,12 +275,12 @@ function validateStageDataType(
 ): { valid: boolean; message?: string } {
   // 如果内容为空
   if (!body || !body.trim()) {
-    return { valid: false, message: '阶段内容不能为空' }
+    return { valid: false, message: i18n.global.t('DataSource.MongoAggregateParser.100052-4') }
   }
 
   // 先检查是否为有效的 JSON（替换动态参数后）
   if (!isValidJSON(body)) {
-    return { valid: false, message: 'JSON 格式错误' }
+    return { valid: false, message: i18n.global.t('DataSource.MongoAggregateParser.100052-5') }
   }
 
   const parsedValue = parseJSONWithVariables(body)
@@ -291,7 +295,10 @@ function validateStageDataType(
       if (actualType !== 'object' || Array.isArray(parsedValue)) {
         return {
           valid: false,
-          message: `${stageType} 期望对象类型，但实际是 ${actualType}`
+          message: i18n.global.t('DataSource.MongoAggregateParser.100052-6', {
+            stageType,
+            actualType
+          })
         }
       }
       break
@@ -300,7 +307,7 @@ function validateStageDataType(
       if (!Array.isArray(parsedValue)) {
         return {
           valid: false,
-          message: `${stageType} 期望数组类型，但实际是 ${actualType}`
+          message: i18n.global.t('DataSource.MongoAggregateParser.100052-7', { stageType, actualType })
         }
       }
       break
@@ -309,17 +316,17 @@ function validateStageDataType(
       if (actualType !== 'number') {
         return {
           valid: false,
-          message: `${stageType} 期望数字类型，但实际是 ${actualType}`
+          message: i18n.global.t('DataSource.MongoAggregateParser.100052-8', { stageType, actualType })
         }
       }
       // 如果包含动态参数，跳过数值范围验证
       if (!hasDynamicVariables) {
         // 特殊验证：$limit 必须是正整数，$skip 必须是非负整数
         if (stageType === '$limit' && parsedValue <= 0) {
-          return { valid: false, message: '$limit 必须是正整数' }
+          return { valid: false, message: i18n.global.t('DataSource.MongoAggregateParser.100052-9') }
         }
         if (stageType === '$skip' && parsedValue < 0) {
-          return { valid: false, message: '$skip 必须是非负整数' }
+          return { valid: false, message: i18n.global.t('DataSource.MongoAggregateParser.100052-10') }
         }
       }
       break
@@ -328,7 +335,7 @@ function validateStageDataType(
       if (actualType !== 'string') {
         return {
           valid: false,
-          message: `${stageType} 期望字符串类型，但实际是 ${actualType}`
+          message: i18n.global.t('DataSource.MongoAggregateParser.100052-11', { stageType, actualType })
         }
       }
       break
@@ -338,13 +345,13 @@ function validateStageDataType(
       if (actualType !== 'string' && actualType !== 'object') {
         return {
           valid: false,
-          message: `${stageType} 期望字符串路径或对象表达式，但实际是 ${actualType}`
+          message: i18n.global.t('DataSource.MongoAggregateParser.100052-12', { stageType, actualType })
         }
       }
       break
 
     default:
-      return { valid: false, message: `未知的期望类型: ${config.expectedType}` }
+      return { valid: false, message: i18n.global.t('DataSource.MongoAggregateParser.100052-13', { type: config.expectedType }) }
   }
 
   return { valid: true }
@@ -363,7 +370,10 @@ export function validateStagesContent(stages: PipelineStage[]): ValidationResult
       return {
         valid: false,
         errorIndex: i,
-        errorMessage: `阶段 ${i + 1} (${stage.type}) 的内容不能为空`
+        errorMessage: i18n.global.t('DataSource.MongoAggregateParser.100052-14', {
+          index: i + 1,
+          stageType: stage.type
+        })
       }
     }
 
@@ -373,7 +383,10 @@ export function validateStagesContent(stages: PipelineStage[]): ValidationResult
       return {
         valid: false,
         errorIndex: i,
-        errorMessage: `阶段 ${i + 1} 的类型 ${stage.type} 不支持`
+        errorMessage: i18n.global.t('DataSource.MongoAggregateParser.100052-15', {
+          index: i + 1,
+          stageType: stage.type
+        })
       }
     }
 
@@ -383,7 +396,11 @@ export function validateStagesContent(stages: PipelineStage[]): ValidationResult
       return {
         valid: false,
         errorIndex: i,
-        errorMessage: `阶段 ${i + 1} (${stage.type}): ${typeValidation.message}`
+        errorMessage: i18n.global.t('DataSource.MongoAggregateParser.100052-16', {
+          index: i + 1,
+          stageType: stage.type,
+          message: typeValidation.message
+        })
       }
     }
   }

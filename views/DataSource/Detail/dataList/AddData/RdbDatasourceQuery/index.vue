@@ -22,7 +22,7 @@
           >
             <template #header>
               <TitleComponent
-                data="数据库表"
+                :data="$t('DataSource.RdbDatasourceQuery.100090-0')"
                 :style="{ margin: 0 }"
               />
             </template>
@@ -108,8 +108,8 @@ const resultColumns = ref<any[]>([])
 const selectedRowKeys = ref<Key[]>([])
 
 const tabOptions = [
-  { label: "$t('DataSource.RdbQuery.100025-0')", value: 'visual' },
-  { label: "$t('DataSource.RdbQuery.100025-1')", value: 'sql' }
+  { label: $t('DataSource.RdbQuery.100025-0'), value: 'visual' },
+  { label: $t('DataSource.RdbQuery.100025-1'), value: 'sql' }
 ]
 
 const testQueryLoading = ref(false)

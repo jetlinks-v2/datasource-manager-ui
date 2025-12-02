@@ -134,19 +134,22 @@ const tabActiveKey = ref('Info')
 
 const sourceClassify = ref<DATA_TYPE_ITEM>()
 
-const baseTabs = [{ key: 'Info', tab: '基本信息' }]
-const endTabs = [{ key: 'DataList', tab: '功能列表' }]
+const baseTabs = computed(() => [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }])
+const endTabs = computed(() => [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }])
 
-const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
-  [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
-    { key: 'Table', tab: '表结构' },
-    { key: 'Query', tab: '查询' }
-  ],
-  [DATA_TYPE_ITEM.API_SEND]: [],
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }],
-  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: [{ key: 'Collection', tab: '集合管理' }]
+const getDataSourceTabs = (type?: DATA_TYPE_ITEM) => {
+  const map: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
+    [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
+      { key: 'Table', tab: $t('DataSource.Detail.100008-5') },
+      { key: 'Query', tab: $t('DataSource.Detail.100008-6') }
+    ],
+    [DATA_TYPE_ITEM.API_SEND]: [],
+    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: $t('DataSource.DetailTabs.100062-0') }],
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: $t('DataSource.DetailTabs.100062-1') }],
+    [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: [{ key: 'Collection', tab: $t('DataSource.DetailTabs.100062-2') }]
+  }
+  return (type && map[type]) || []
 }
 
 const routeLink = computed(() => ({
@@ -203,8 +206,8 @@ const getDetailInfo = async () => {
     info.value = res.result
     sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
 
-    const dynamicTabs = dataSourceTabs[sourceClassify.value] || []
-    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
+    const dynamicTabs = getDataSourceTabs(sourceClassify.value)
+    list.value = [...baseTabs.value, ...dynamicTabs, ...endTabs.value]
   }
 }
 

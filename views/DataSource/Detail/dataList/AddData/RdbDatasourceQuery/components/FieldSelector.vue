@@ -2,7 +2,7 @@
   <div class="fields-container">
     <div class="title">
       <TitleComponent
-        data="{{ $t('DataSource.FieldSelector.100042-0') }}"
+        :data="$t('DataSource.FieldSelector.100042-0')"
         :style="{ margin: 0 }"
       />
       <div class="selection-actions">

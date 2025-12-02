@@ -1,23 +1,26 @@
 <template>
   <div class="mongo-connection">
     <DescriptionItemList
-      title="数据连接"
+      :title="$t('DataSource.Info.Mongo.100065-0')"
       :column="3"
       :items="items"
     />
 
     <KeyValueTable
       v-if="hasOptions"
-      title="扩展参数"
+      :title="$t('DataSource.Info.Mongo.100065-1')"
       :data-source="optionsData"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
 import KeyValueTable from './components/KeyValueTable.vue'
+
+const { t: $t } = useI18n()
 
 interface KeyValueItem {
   key?: string
@@ -64,58 +67,58 @@ const items = computed<DescriptionItem[]>(() => {
   return [
     {
       key: 'connectionMode',
-      label: '连接方式',
-      value: isUrlMode ? '连接URL' : '基本配置',
+      label: $t('DataSource.Info.Mongo.100065-2'),
+      value: isUrlMode ? $t('DataSource.Info.Mongo.100065-3') : $t('DataSource.Info.Mongo.100065-4'),
       condition: true
     },
     {
       key: 'uri',
-      label: '连接地址',
+      label: $t('DataSource.Info.Mongo.100065-5'),
       component: MaskDisplay,
       componentProps: { value: mongoData.uri, placeholder: '--' },
       condition: isUrlMode
     },
     {
       key: 'host',
-      label: '主机地址',
+      label: $t('DataSource.Info.Mongo.100065-6'),
       value: mongoData.host || '--',
       condition: !isUrlMode
     },
     {
       key: 'port',
-      label: '端口',
+      label: $t('DataSource.Info.Mongo.100065-7'),
       value: mongoData.port !== undefined ? String(mongoData.port) : '--',
       condition: !isUrlMode
     },
     {
       key: 'database',
-      label: '数据库名称',
+      label: $t('DataSource.Info.Mongo.100065-8'),
       value: mongoData.database || '--',
       condition: !isUrlMode
     },
     {
       key: 'username',
-      label: '用户名',
+      label: $t('DataSource.Info.Rdb.100066-10'),
       value: mongoData.username || '--',
       condition: !isUrlMode
     },
     {
       key: 'password',
-      label: '密码',
+      label: $t('DataSource.Info.Mongo.100065-12'),
       component: MaskDisplay,
       componentProps: { value: mongoData.password, placeholder: '--' },
       condition: !isUrlMode
     },
     {
       key: 'authDatabase',
-      label: '认证数据库',
+      label: $t('DataSource.Info.Mongo.100065-9'),
       value: mongoData.authDatabase || '--',
       condition: !isUrlMode
     },
     {
       key: 'sslEnabled',
-      label: 'SSL/TLS',
-      value: mongoData.sslEnabled ? '已启用' : '未启用',
+      label: $t('DataSource.Info.Mongo.100065-10'),
+      value: mongoData.sslEnabled ? $t('DataSource.Info.Mongo.100065-11') : $t('DataSource.Info.Mongo.100065-12'),
       condition: !isUrlMode
     }
   ]

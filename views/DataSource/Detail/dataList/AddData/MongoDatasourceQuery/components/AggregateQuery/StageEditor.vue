@@ -3,7 +3,7 @@
     <div class="field-group">
       <div class="field-header">
         <TitleComponent
-          data="阶段类型"
+          :data="$t('DataSource.MongoStageEditor.100049-0')"
           :style="{ margin: 0 }"
         />
         <a-popover
@@ -13,7 +13,7 @@
           <template #content>
             <HelpDocument />
           </template>
-          <a-tooltip title="帮助文档">
+          <a-tooltip :title="$t('DataSource.MongoStageEditor.100049-1')">
             <a-button
               type="text"
               ghost
@@ -33,7 +33,7 @@
         :value="stage?.type"
         :options="stageTypeOptions"
         show-search
-        placeholder="输入或选择阶段类型"
+        :placeholder="$t('DataSource.MongoStageEditor.100049-2')"
         :filter-option="filterOption"
         style="width: 300px"
         @change="handleTypeChange"
@@ -42,7 +42,7 @@
 
     <div class="field-group">
       <TitleComponent
-        data="阶段内容"
+        :data="$t('DataSource.MongoStageEditor.100049-3')"
         :style="{ margin: 0 }"
       />
       <div class="editor-container">
@@ -65,6 +65,9 @@
 import JsonEditor from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/JsonEditor.vue'
 import HelpDocument from './HelpDocument.vue'
 import { type PipelineStage, getStageTypeOptions } from '../../utils/pipelineParser'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 defineProps<{
   stage: PipelineStage | null
@@ -72,8 +75,12 @@ defineProps<{
 
 const emit = defineEmits(['update:type', 'update:body', 'variables-change'])
 
-// 从工具函数获取阶段类型选项
-const stageTypeOptions = getStageTypeOptions()
+const stageTypeOptions = computed(() =>
+  getStageTypeOptions().map((option) => ({
+    value: option.value,
+    label: `${option.value} - ${$t(option.labelKey)}`
+  }))
+)
 
 // 过滤选项
 const filterOption = (input: string, option: any) => {

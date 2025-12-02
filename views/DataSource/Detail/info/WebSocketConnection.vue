@@ -1,13 +1,16 @@
 <template>
   <DescriptionItemList
-    title="数据连接"
+    :title="$t('DataSource.Info.WebSocket.100068-0')"
     :column="2"
     :items="descriptionFields"
   />
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import DescriptionItemList from './components/DescriptionItemList.vue'
+
+const { t: $t } = useI18n()
 
 interface WebSocketConfig {
   handshakeTimeout?: number
@@ -37,20 +40,20 @@ const webSocketData = reactive<WebSocketConfig>({
 })
 
 const PAYLOAD_TYPE_MAP = {
-  JSON: 'JSON',
-  STRING: 'STRING（文本）',
-  BINARY: 'BINARY（二进制）'
+  JSON: $t('DataSource.Info.WebSocket.100068-9'),
+  STRING: $t('DataSource.Info.WebSocket.100068-10'),
+  BINARY: $t('DataSource.Info.WebSocket.100068-11')
 } as const
 
 const formatTimeout = (timeout?: number): string => {
-  return timeout ? `${timeout}ms` : '永不超时'
+  return timeout ? `${timeout}ms` : $t('DataSource.Info.WebSocket.100068-2')
 }
 
 const formatReconnection = (attempts?: number): string => {
   if (!attempts) {
-    return '不重连'
+    return $t('DataSource.Info.WebSocket.100068-4')
   }
-  return attempts === -1 ? '无限重连' : `${attempts}次`
+  return attempts === -1 ? $t('DataSource.Info.WebSocket.100068-5') : `${attempts}${$t('DataSource.Info.WebSocket.100068-12')}`
 }
 
 const formatMessageSize = (size?: number): string => {
@@ -68,27 +71,27 @@ const formatPayloadType = (type?: string): string => {
 const descriptionFields = computed(() => [
   {
     key: 'handshakeTimeout',
-    label: '请求等待超时',
+    label: $t('DataSource.Info.WebSocket.100068-1'),
     value: formatTimeout(webSocketData.handshakeTimeout)
   },
   {
     key: 'reconnectionAttempts',
-    label: '最大重连次数',
+    label: $t('DataSource.Info.WebSocket.100068-3'),
     value: formatReconnection(webSocketData.reconnectionAttempts)
   },
   {
     key: 'maxMessageSize',
-    label: '允许接收的最大消息大小',
+    label: $t('DataSource.Info.WebSocket.100068-6'),
     value: formatMessageSize(webSocketData.maxMessageSize)
   },
   {
     key: 'reconnectionIntervals',
-    label: '重连间隔时间',
+    label: $t('DataSource.Info.WebSocket.100068-7'),
     value: formatInterval(webSocketData.reconnectionIntervals)
   },
   {
     key: 'payloadType',
-    label: '数据类型',
+    label: $t('DataSource.Info.WebSocket.100068-8'),
     value: formatPayloadType(webSocketData.payloadType)
   }
 ])

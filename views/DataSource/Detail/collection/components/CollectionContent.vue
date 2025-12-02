@@ -8,7 +8,7 @@
       >
         <a-tab-pane
           key="stats"
-          tab="状态"
+          :tab="$t('DataSource.Collection.100094-0')"
         >
           <CollectionStats
             ref="statsRef"
@@ -18,7 +18,7 @@
 
         <a-tab-pane
           key="data"
-          tab="数据"
+          :tab="$t('DataSource.Collection.100094-1')"
         >
           <CollectionDataTable :current-collection="props.currentCollection" />
         </a-tab-pane>
@@ -28,7 +28,7 @@
       v-else
       class="empty-content"
     >
-      <j-empty description="请选择集合" />
+      <j-empty :description="$t('DataSource.Collection.100094-2')" />
     </div>
   </div>
 </template>
@@ -36,6 +36,9 @@
 <script setup lang="ts" name="CollectionContent">
 import CollectionDataTable from './CollectionDataTable.vue'
 import CollectionStats from './CollectionStats.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   currentCollection: string

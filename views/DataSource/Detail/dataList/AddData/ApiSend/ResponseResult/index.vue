@@ -1,6 +1,6 @@
 <template>
   <div class="response-container">
-    <TitleComponent data="{{ $t('DataSource.Response.100023-0') }}" />
+    <TitleComponent :data=" $t('DataSource.Response.100023-0') " />
 
     <a-tabs
       v-model="activeTab"

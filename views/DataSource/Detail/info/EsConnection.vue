@@ -1,14 +1,17 @@
 <template>
   <DescriptionItemList
-    title="数据连接"
+    :title="$t('DataSource.Info.Es.100064-0')"
     :column="3"
     :items="visibleItems"
   />
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
+
+const { t: $t } = useI18n()
 
 interface EsConfig {
   uri: string
@@ -45,25 +48,25 @@ const esData = reactive<EsConfig>({
 const esItems = computed<DescriptionItem[]>(() => [
   {
     key: 'uri',
-    label: 'URI地址',
+    label: $t('DataSource.Info.Es.100064-1'),
     value: esData.uri || '--',
     condition: true
   },
   {
     key: 'pathPrefix',
-    label: '路径前缀',
+    label: $t('DataSource.Info.Es.100064-2'),
     value: esData.pathPrefix || '--',
     condition: true
   },
   {
     key: 'username',
-    label: '用户名',
+    label: $t('DataSource.Info.Es.100064-3'),
     value: esData.username || '--',
     condition: true
   },
   {
     key: 'password',
-    label: '密码',
+    label: $t('DataSource.Info.Es.100064-4'),
     component: MaskDisplay,
     componentProps: {
       value: esData.password,

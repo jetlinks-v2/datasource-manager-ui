@@ -88,8 +88,7 @@
 import useClipboard from 'vue-clipboard3'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from './setting'
-import {isArray} from 'lodash-es'
-import { useDataTypeManagement } from '../setting'
+import { isArray } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
@@ -204,7 +203,7 @@ const validateJsonData = (jsonString: string) => {
 
     return parsedData
   } catch (error) {
-    onlyMessage('JSON验证失败', 'error')
+    onlyMessage($t('DataSource.DataTypeEditor.100038-13'), 'error')
     return null
   }
 }
@@ -230,9 +229,9 @@ const switchTab = async (key: string) => {
 const handleJsonCopy = async () => {
   try {
     await toClipboard(jsonData.value)
-    onlyMessage('复制成功')
+    onlyMessage($t('DataSource.DataTypeEditor.100038-14'))
   } catch (error) {
-    onlyMessage('复制失败', 'error')
+    onlyMessage($t('DataSource.DataTypeEditor.100038-15'), 'error')
   }
 }
 
@@ -279,6 +278,7 @@ watch(
 
 .popover-header {
   margin-bottom: 16px;
+  width: 100%;
   display: flex;
   justify-content: center;
 }
@@ -290,7 +290,7 @@ watch(
   padding: 3px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
   margin-bottom: 4px;
-  width: 220px;
+  width: 100%;
 }
 
 .tab-item {

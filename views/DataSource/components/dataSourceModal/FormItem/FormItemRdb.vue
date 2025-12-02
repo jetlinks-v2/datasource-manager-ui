@@ -357,7 +357,7 @@ defineExpose({
 
 <style scoped lang="less">
 .button-width {
-  width: 150px;
+  min-width: 150px;
   text-align: center;
 }
 

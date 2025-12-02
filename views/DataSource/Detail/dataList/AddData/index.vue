@@ -187,7 +187,7 @@ const modalWidth = computed(() => {
 
   return narrowWidthTypes.includes(sourceClassify.value) ||
     formData.configuration.provider === PROVIDER_TYPE.GENERAL_QUERY
-    ? '600px'
+    ? '800px'
     : '1200px'
 })
 
@@ -268,7 +268,7 @@ const handleNextStep = async () => {
     currentStep.value++
     scrollToTop()
   } catch (error) {
-    handleError(error, $t('DataSource.AddData.100016-10')
+    handleError(error, $t('DataSource.AddData.100016-10'))
   } finally {
     loading.value = false
   }

@@ -20,6 +20,9 @@
 import * as monaco from 'monaco-editor'
 import { parse, parseTree, format, applyEdits, ParseError } from 'jsonc-parser'
 import { isArray } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface ErrorMessagesMap {
   [key: number]: string
@@ -85,24 +88,24 @@ const editorContainer = ref<HTMLElement | null>(null)
 const monacoInstance = shallowRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
 const ERROR_MESSAGES: ErrorMessagesMap = {
-  1: '包含无效的符号',
-  2: '数字格式不正确',
-  3: '缺少属性名称',
-  4: '缺少属性值',
-  5: '缺少冒号 (:) 分隔符',
-  6: '缺少逗号 (,) 分隔符',
-  7: '缺少右花括号 (})',
-  8: '缺少右方括号 (])',
-  9: '意外的文件结尾',
-  10: '无效的注释格式',
-  11: '注释未正确结束',
-  12: '字符串未正确结束',
-  13: '数字未正确结束',
-  14: '无效的 Unicode 字符',
-  15: '无效的转义字符',
-  16: '包含非法字符',
-  17: '未知的解析错误',
-  18: '存在重复的键名'
+  1: $t('DataSource.JsonEditor.100083-0'),
+  2: $t('DataSource.JsonEditor.100083-1'),
+  3: $t('DataSource.JsonEditor.100083-2'),
+  4: $t('DataSource.JsonEditor.100083-3'),
+  5: $t('DataSource.JsonEditor.100083-4'),
+  6: $t('DataSource.JsonEditor.100083-5'),
+  7: $t('DataSource.JsonEditor.100083-6', { value: '(})' }),
+  8: $t('DataSource.JsonEditor.100083-7'),
+  9: $t('DataSource.JsonEditor.100083-8'),
+  10: $t('DataSource.JsonEditor.100083-9'),
+  11: $t('DataSource.JsonEditor.100083-10'),
+  12: $t('DataSource.JsonEditor.100083-11'),
+  13: $t('DataSource.JsonEditor.100083-12'),
+  14: $t('DataSource.JsonEditor.100083-13'),
+  15: $t('DataSource.JsonEditor.100083-14'),
+  16: $t('DataSource.JsonEditor.100083-15'),
+  17: $t('DataSource.JsonEditor.100083-16'),
+  18: $t('DataSource.JsonEditor.100083-17')
 }
 
 // 变量正则表达式（根据 props 动态生成）
@@ -221,9 +224,11 @@ const validateAndMark = (value: string): boolean => {
     const startPos = model.getPositionAt(startOffset)
     const endPos = model.getPositionAt(endOffset)
 
+    console.log('startPos', startPos)
+    console.log('endPos', endPos)
     markers.push({
       severity: monaco.MarkerSeverity.Error,
-      message: '变量不能使用双引号包裹，请检查变量格式是否正确',
+      message: $t('DataSource.JsonEditor.100083-18'),
       startLineNumber: startPos.lineNumber,
       startColumn: startPos.column,
       endLineNumber: endPos.lineNumber,
@@ -454,6 +459,7 @@ const initEditor = (): void => {
 
   // 首次验证
   validateAndMark(props.modelValue)
+  console.log('props.modelValue', props.modelValue)
 
   // 初始化时提取变量
   const initialVariables = extractVariables(props.modelValue)

@@ -4,7 +4,7 @@
     ref="formRef"
     layout="vertical"
   >
-    <a-form-item label="连接方式">
+    <a-form-item :label="$t('DataSource.FormItemMongo.100074-0')">
       <a-radio-group
         v-model:value="formData.connectionMode"
         @change="handleConnectionModeChange"
@@ -13,13 +13,13 @@
           class="button-width basic"
           value="basic"
         >
-          通过基本配置连接
+          {{ $t('DataSource.FormItemMongo.100074-1') }}
         </a-radio-button>
         <a-radio-button
           class="button-width url"
           value="url"
         >
-          连接URL
+          {{ $t('DataSource.FormItemMongo.100074-2') }}
         </a-radio-button>
       </a-radio-group>
     </a-form-item>
@@ -29,26 +29,26 @@
       <a-form-item
         name="uri"
         :rules="[{ required: true, validator: validateUri, trigger: 'blur' }]"
-        label="连接地址"
+        :label="$t('DataSource.FormItemMongo.100074-3')"
       >
         <a-textarea
           v-model:value="formData.uri"
           :autoSize="{ minRows: 6, maxRows: 6 }"
-          placeholder="mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true"
+          :placeholder="$t('DataSource.FormItemMongo.100074-4')"
         />
       </a-form-item>
 
       <a-form-item
         name="database"
         :rules="[
-          { required: true, message: '请输入数据库名称', trigger: 'blur' },
+          { required: true, message: $t('DataSource.FormItemMongo.100074-5'), trigger: 'blur' },
           { validator: spaceValidator, trigger: 'blur' }
         ]"
-        label="数据库名称"
+        :label="$t('DataSource.FormItemMongo.100074-6')"
       >
         <a-input
           v-model:value="formData.database"
-          placeholder="请输入数据库名称"
+          :placeholder="$t('DataSource.FormItemMongo.100074-7')"
           :maxlength="64"
         />
       </a-form-item>
@@ -58,26 +58,26 @@
     <div v-else>
       <a-form-item
         name="host"
-        :rules="[{ required: true, message: '请输入主机地址', trigger: 'blur' }]"
-        label="主机地址"
+        :rules="[{ required: true, message: $t('DataSource.FormItemMongo.100074-8'), trigger: 'blur' }]"
+        :label="$t('DataSource.FormItemMongo.100074-9')"
       >
         <a-input
           v-model:value="formData.host"
-          placeholder="例如：localhost 或 192.168.1.100"
+          :placeholder="$t('DataSource.FormItemMongo.100074-10')"
         />
       </a-form-item>
 
       <a-form-item
         name="port"
         :rules="[{ required: true, validator: validatePort, trigger: ['blur', 'change'] }]"
-        label="端口"
+        :label="$t('DataSource.FormItemMongo.100074-11')"
       >
         <a-input-number
           v-model:value="formData.port"
           :min="0"
           :max="65536"
           :precision="0"
-          placeholder="例如：27017"
+          :placeholder="$t('DataSource.FormItemMongo.100074-12')"
           style="width: 100%"
         />
       </a-form-item>
@@ -85,44 +85,44 @@
       <a-form-item
         name="database"
         :rules="[
-          { required: true, message: '请输入数据库名称', trigger: 'blur' },
+          { required: true, message: $t('DataSource.FormItemMongo.100074-13'), trigger: 'blur' },
           { validator: spaceValidator, trigger: 'blur' }
         ]"
-        label="数据库名称"
+        :label="$t('DataSource.FormItemMongo.100074-14')"
       >
         <a-input
           v-model:value="formData.database"
-          placeholder="请输入数据库名称"
+          :placeholder="$t('DataSource.FormItemMongo.100074-15')"
           :maxlength="64"
         />
       </a-form-item>
 
       <a-form-item
         name="username"
-        label="用户名"
+        :label="$t('DataSource.FormItemMongo.100074-16')"
       >
         <a-input
           v-model:value="formData.username"
-          placeholder="请输入用户名"
+          :placeholder="$t('DataSource.FormItemMongo.100074-17')"
           :maxlength="64"
         />
       </a-form-item>
 
-      <a-form-item label="密码">
+      <a-form-item :label="$t('DataSource.FormItemMongo.100074-18')">
         <a-input-password
           v-model:value="formData.password"
-          placeholder="请输入密码"
+          :placeholder="$t('DataSource.FormItemMongo.100074-19')"
           :maxlength="64"
         />
       </a-form-item>
 
       <a-form-item
         name="authDatabase"
-        label="认证数据库"
+        :label="$t('DataSource.FormItemMongo.100074-20')"
       >
         <a-input
           v-model:value="formData.authDatabase"
-          placeholder="默认：admin"
+          :placeholder="$t('DataSource.FormItemMongo.100074-21')"
           :maxlength="64"
         />
       </a-form-item>
@@ -130,8 +130,8 @@
       <a-form-item name="sslEnabled">
         <template #label>
           <a-space>
-            <span>启用SSL/TLS</span>
-            <a-tooltip title="对接 MongoDB Atlas 或云服务时通常需要启用">
+            <span>{{ $t('DataSource.FormItemMongo.100074-22') }}</span>
+            <a-tooltip :title="$t('DataSource.FormItemMongo.100074-23')">
               <a-icon
                 type="QuestionCircleFilled"
                 style="color: #777"
@@ -145,8 +145,8 @@
       <a-form-item>
         <template #label>
           <a-space>
-            <span>扩展参数</span>
-            <a-tooltip title="额外的连接参数，例如：readPreference、replicaSet、connectTimeoutMS等">
+            <span>{{ $t('DataSource.FormItemMongo.100074-24') }}</span>
+            <a-tooltip :title="$t('DataSource.FormItemMongo.100074-25')">
               <a-icon
                 type="QuestionCircleFilled"
                 style="color: #777"
@@ -164,9 +164,12 @@
 </template>
 
 <script setup lang="ts" name="FormItemMongo">
+import { useI18n } from 'vue-i18n'
 import { MongoData } from '../../type'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import HeaderParamsTable from './FormItemApi/HeaderParamsTable.vue'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -194,23 +197,23 @@ const optionsArray = ref<any[]>([
 
 const validatePort = (_rule: any, value: number) => {
   if (!value && value !== 0) {
-    return Promise.reject('请输入端口号')
+    return Promise.reject($t('DataSource.FormItemMongo.100074-26'))
   }
   if (value < 0 || value > 65536) {
-    return Promise.reject('端口号必须在0到65536之间')
+    return Promise.reject($t('DataSource.FormItemMongo.100074-27'))
   }
   return Promise.resolve()
 }
 
 const validateUri = (_rule: any, value: string) => {
   if (!value || !value.trim()) {
-    return Promise.reject('请输入连接地址')
+    return Promise.reject($t('DataSource.FormItemMongo.100074-28'))
   }
 
   // 验证MongoDB URI格式
   const mongoUriPattern = /^mongodb(\+srv)?:\/\/.+/
   if (!mongoUriPattern.test(value)) {
-    return Promise.reject('请输入有效的MongoDB连接地址，格式：mongodb://...')
+    return Promise.reject($t('DataSource.FormItemMongo.100074-29'))
   }
 
   return Promise.resolve()
@@ -224,7 +227,7 @@ const validate = () => {
         // 验证扩展参数表格
         const isOptionsValid = optionsTableRef.value?.validate() ?? true
         if (!isOptionsValid) {
-          reject(new Error('扩展参数验证失败'))
+          reject(new Error($t('DataSource.FormItemMongo.100074-30')))
           return
         }
 
@@ -360,7 +363,7 @@ const parseUriToBasic = (uri: string) => {
       options: Object.keys(options).length > 0 ? options : undefined
     }
   } catch (error) {
-    console.error('解析URI失败:', error)
+    console.error($t('DataSource.FormItemMongo.100074-31'), error)
     return {
       host: '',
       port: undefined,
@@ -440,7 +443,7 @@ defineExpose({ validate, canTestConnection })
 
 <style scoped lang="less">
 .button-width {
-  width: 150px;
+  min-width: 150px;
   text-align: center;
 }
 

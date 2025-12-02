@@ -16,7 +16,7 @@
         <template v-if="column.key === 'key'">
           <FormItem
             v-model:value="record.key"
-            placeholder="Key"
+            :placeholder="$t('DataSource.HeaderParams.100069-0')"
             :error="formItemErrors[record.id]?.key"
             @change="(val: string) => handleFieldChange(val, 'key', record)"
           />
@@ -24,7 +24,7 @@
         <template v-else-if="column.key === 'value'">
           <FormItem
             v-model:value="record.value"
-            placeholder="Value"
+            :placeholder="$t('DataSource.HeaderParams.100069-1')"
             :error="formItemErrors[record.id]?.value"
             @change="(val: string) => handleFieldChange(val, 'value', record)"
           />
@@ -50,14 +50,17 @@
         type="dashed"
         @click="addItem"
       >
-        新增一条
+        {{ $t('DataSource.HeaderParams.100069-3') }}
       </a-button>
     </a-form-item>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import FormItem from '../../../FormItem.vue'
+
+const { t: $t } = useI18n()
 
 interface Header {
   key: string
@@ -82,17 +85,17 @@ const formItemErrors = ref<Record<string | number, Record<string, string>>>({})
 //表头
 const columns: any[] = [
   {
-    title: 'Key',
+    title: $t('DataSource.HeaderParams.100069-0'),
     dataIndex: 'key',
     key: 'key'
   },
   {
-    title: 'Value',
+    title: $t('DataSource.HeaderParams.100069-1'),
     dataIndex: 'value',
     key: 'value'
   },
   {
-    title: '操作',
+    title: $t('DataSource.HeaderParams.100069-2'),
     key: 'action',
     align: 'center'
   }
@@ -100,7 +103,7 @@ const columns: any[] = [
 
 const validateField = (value: string): string => {
   if (value && value.length > 256) {
-    return '最多可输入256个字符'
+    return $t('DataSource.HeaderParams.100069-4')
   }
   return ''
 }
@@ -133,11 +136,11 @@ const handleFieldChange = (val: string, field: 'key' | 'value', record: any) => 
   const isValueField = field === 'value'
 
   if (isValueField && val && !record.key) {
-    updateFormError(record.id, 'key', 'Key为必填项')
+    updateFormError(record.id, 'key', $t('DataSource.HeaderParams.100069-5'))
   }
 
   if (isKeyField && !val && record.value) {
-    updateFormError(record.id, 'key', 'Key为必填项')
+    updateFormError(record.id, 'key', $t('DataSource.HeaderParams.100069-5'))
   }
 
   emit('update:modelValue', [...props.modelValue])
@@ -181,7 +184,7 @@ const validate = (): boolean => {
     // 只有当value有值时，key才必填
     if (record.value && !record.key) {
       hasError = true
-      updateFormError(record.id, 'key', 'Key为必填项')
+      updateFormError(record.id, 'key', $t('DataSource.HeaderParams.100069-5'))
     }
 
     // 字段长度校验

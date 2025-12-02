@@ -2,13 +2,13 @@
   <div class="field-selector">
     <div class="title">
       <TitleComponent
-        data="字段选择"
+        :data="$t('DataSource.EsFieldSelector.100072-4')"
         :style="{ margin: 0 }"
       />
       <div class="selection-actions">
         <a-input
           v-model:value="searchText"
-          placeholder="请输入名称"
+          :placeholder="$t('DataSource.EsFieldSelector.100072-5')"
         >
           <template #prefix>
             <AIcon type="SearchOutlined" />
@@ -32,7 +32,7 @@
           v-else
           class="empty-state"
         >
-          <j-empty description="请选择索引" />
+          <j-empty :description="$t('DataSource.EsFieldSelector.100072-6')" />
         </div>
       </a-spin>
     </div>
@@ -40,6 +40,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 const props = defineProps<{
   fields: any[]
   loading: boolean
@@ -49,28 +53,28 @@ const searchText = ref('')
 
 const columns = [
   {
-    title: '名称',
+    title: $t('DataSource.EsFieldSelector.100072-0'),
     dataIndex: 'id',
     key: 'id',
     ellipsis: true,
     width: 120
   },
   {
-    title: '注释',
+    title: $t('DataSource.EsFieldSelector.100072-1'),
     dataIndex: 'name',
     key: 'name',
     ellipsis: true,
     width: 120
   },
   {
-    title: '字段类型',
+    title: $t('DataSource.EsFieldSelector.100072-2'),
     dataIndex: ['valueType', 'type'],
     key: 'type',
     ellipsis: true,
     width: 100
   },
   {
-    title: '字段名称',
+    title: $t('DataSource.EsFieldSelector.100072-3'),
     dataIndex: ['valueType', 'name'],
     key: 'typeName',
     ellipsis: true,

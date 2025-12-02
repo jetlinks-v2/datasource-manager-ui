@@ -8,7 +8,7 @@
     >
       <a-tab-pane
         key="fields"
-        tab="字段"
+        :tab="$t('DataSource.TableContent.100087-0')"
       >
         <j-pro-table
           v-if="fieldData.length > 0"
@@ -55,7 +55,7 @@
       </a-tab-pane>
       <a-tab-pane
         key="data"
-        tab="数据"
+        :tab="$t('DataSource.TableContent.100087-1')"
       >
         <template v-if="showDataTable">
           <j-pro-table
@@ -84,6 +84,9 @@
 
 <script setup lang="ts" name="TableContent">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   fieldData: any[]
@@ -111,61 +114,61 @@ const fieldColumns = [
     align: 'center'
   },
   {
-    title: '序号',
+    title: $t('DataSource.TableContent.100087-2'),
     dataIndex: 'index',
     key: 'index',
     width: 80,
     scopedSlots: true
   },
   {
-    title: '名称',
+    title: $t('DataSource.TableContent.100087-3'),
     dataIndex: 'name',
     key: 'name',
     width: 150,
     ellipsis: true
   },
   {
-    title: '原始名称',
+    title: $t('DataSource.TableContent.100087-4'),
     dataIndex: 'previousName',
     key: 'previousName',
     width: 150,
     ellipsis: true
   },
   {
-    title: '注释',
+    title: $t('DataSource.TableContent.100087-5'),
     dataIndex: 'comment',
     key: 'comment',
     width: 200,
     ellipsis: true
   },
   {
-    title: '字段类型',
+    title: $t('DataSource.TableContent.100087-6'),
     dataIndex: 'type',
     key: 'type',
     width: 150
   },
   {
-    title: '长度',
+    title: $t('DataSource.TableContent.100087-7'),
     dataIndex: 'length',
     key: 'length',
     width: 100
   },
   {
-    title: '精度',
+    title: $t('DataSource.TableContent.100087-8'),
     dataIndex: 'precision',
     key: 'precision',
     width: 100,
     scopedSlots: true
   },
   {
-    title: '刻度',
+    title: $t('DataSource.TableContent.100087-9'),
     dataIndex: 'scale',
     key: 'scale',
     width: 100,
     scopedSlots: true
   },
   {
-    title: '是否为空',
+    title: $t('DataSource.TableContent.100087-10'),
     dataIndex: 'notnull',
     key: 'notnull',
     width: 100,

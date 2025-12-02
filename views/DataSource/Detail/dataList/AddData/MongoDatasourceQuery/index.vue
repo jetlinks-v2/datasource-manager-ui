@@ -30,6 +30,7 @@
 <script setup lang="ts" name="MongoDatasourceQuery">
 import CommonQuery from './components/CommonQuery.vue'
 import AggregateQuery from './components/AggregateQuery/index.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   data: {
@@ -46,6 +47,8 @@ const props = defineProps({
   }
 })
 
+const { t: $t } = useI18n()
+
 const emit = defineEmits(['update:expression'])
 
 const commonQueryRef = ref<any>()
@@ -54,10 +57,10 @@ const aggregateQueryRef = ref<any>()
 const activeTab = ref('generalQuery')
 const sharedSelectedCollection = ref('')
 
-const tabOptions = [
-  { label: '通用查询', value: 'generalQuery' },
-  { label: '聚合查询', value: 'pipeline' }
-]
+const tabOptions = computed(() => [
+  { label: $t('DataSource.MongoDatasourceQuery.100055-0'), value: 'generalQuery' },
+  { label: $t('DataSource.MongoDatasourceQuery.100055-1'), value: 'pipeline' }
+])
 
 const aggregateData = computed(() => props.data || {})
 

@@ -1,14 +1,12 @@
 <template>
   <div class="collection-sidebar">
     <ListHeader
-      search-placeholder="请输入集合名"
+      :search-placeholder="$t('DataSource.Collection.100094-3')"
       @search="handleSearch"
     >
       <template #count>
         <slot name="header">
-          共
-          <a>&nbsp;{{ listData.length }}&nbsp;</a>
-          个集合
+          {{ $t('DataSource.Collection.100094-4', [listData.length]) }}
         </slot>
       </template>
     </ListHeader>
@@ -36,7 +34,7 @@
                   v-if="item.fields?.length > 0"
                   class="collection-count"
                 >
-                  {{ item.fields.length }}个字段
+                  {{ item.fields.length }}{{ $t('DataSource.Collection.100094-5') }}
                 </span>
               </div>
             </a-list-item>
@@ -56,6 +54,9 @@
 <script setup lang="ts" name="CollectionList">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface CollectionSchema {
   name: string

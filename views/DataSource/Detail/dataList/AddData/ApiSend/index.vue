@@ -126,7 +126,7 @@ const validateRequestParams = async (): Promise<boolean> => {
 
   if (!(await checkTestRef.value?.validateAll())) {
     requestParamsRef.value?.handleCheckTest()
-    onlyMessage('请检查动态参数输入项', 'error')
+    onlyMessage($t('DataSource.ApiSend.100020-7'), 'error')
     return false
   }
 
@@ -204,7 +204,7 @@ const validateAll = async () => {
     if (!(await validateRequestParams())) return false
 
     if (!responseResultRef.value?.isValid) {
-      onlyMessage('请检查响应体', 'error')
+      onlyMessage($t('DataSource.ApiSend.100020-5'), 'error')
       return false
     }
 
@@ -216,7 +216,7 @@ const validateAll = async () => {
     )
     return true
   } catch {
-    onlyMessage('请检查请求路径', 'error')
+    onlyMessage($t('DataSource.ApiSend.100020-6'), 'error')
     return false
   }
 }

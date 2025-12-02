@@ -95,7 +95,6 @@ import DataTypeCell from './DataTypeCell.vue'
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from './setting'
-import { useDataTypeManagement } from '../setting'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()

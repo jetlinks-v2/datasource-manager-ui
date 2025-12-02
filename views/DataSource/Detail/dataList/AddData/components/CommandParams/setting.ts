@@ -5,42 +5,44 @@ import IDate from './DataType/Date.vue'
 import IText from './DataType/Text.vue'
 import IArray from './DataType/Array.vue'
 import IObject from './DataType/Object.vue'
+import i18n from '@/locales'
+
 // API数据源类型选项
 export const defaultApiDataTypeOptions = [
-  { label: 'int(整数型)', value: 'int' },
-  { label: 'long(长整数型)', value: 'long' },
-  { label: 'float(单精度浮点型)', value: 'float' },
-  { label: 'double(双精度浮点型)', value: 'double' },
-  { label: 'text(字符串)', value: 'string' },
-  { label: 'boolean(布尔型)', value: 'boolean' },
-  { label: 'date(时间型)', value: 'date' },
-  { label: 'enum(枚举型)', value: 'enum' },
-  { label: 'array(数组)', value: 'array' },
-  { label: 'object(结构体)', value: 'object' }
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-0'), value: 'int' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-1'), value: 'long' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-2'), value: 'float' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-3'), value: 'double' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-4'), value: 'string' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-5'), value: 'boolean' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-6'), value: 'date' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-7'), value: 'enum' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-8'), value: 'array' },
+  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-9'), value: 'object' }
 ]
 
 // 参数配置表默认列
 export const defaultParamsColumns = [
   {
-    title: '参数标识',
+    title: i18n.global.t('DataSource.CommandParams.Setting.100091-10'),
     dataIndex: 'id',
     key: 'id',
     width: '30%'
   },
   {
-    title: '数据类型',
+    title: i18n.global.t('DataSource.CommandParams.Setting.100091-11'),
     dataIndex: 'dataType',
     key: 'dataType',
     width: '30%'
   },
   {
-    title: '参数名',
+    title: i18n.global.t('DataSource.CommandParams.Setting.100091-12'),
     dataIndex: 'name',
     key: 'name',
     width: '30%'
   },
   {
-    title: '操作',
+    title: i18n.global.t('DataSource.CommandParams.Setting.100091-13'),
     dataIndex: 'operate',
     key: 'operate',
     align: 'center',
@@ -65,7 +67,7 @@ export function useDataTypeManagement() {
   const typeDefaults = {
     float: { scale: 0 },
     double: { scale: 0 },
-    boolean: { trueValue: 'true', trueText: '是', falseValue: 'false', falseText: '否' },
+    boolean: { trueValue: 'true', trueText: i18n.global.t('DataSource.CommandParams.Setting.100091-14'), falseValue: 'false', falseText: i18n.global.t('DataSource.CommandParams.Setting.100091-15') },
     date: { format: 'yyyy-MM-dd HH:mm:ss' },
     string: { expands: { maxLength: 1 } },
     enum: { elements: [], type: 'enum' },
@@ -93,20 +95,20 @@ export function useDataTypeManagement() {
   // 验证数据类型
   const validateDataType = (record: any, mode: 'treeTable' | 'defaultTable' = 'defaultTable'): string => {
     if (!record.dataType?.type) {
-      return '请选择数据类型'
+      return i18n.global.t('DataSource.CommandParams.Setting.100091-16')
     }
     const isTree = mode === 'treeTable'
     const special = ['object', 'array'].includes(record.dataType.type)
     if (!isTree || (isTree && !special)) {
       if (record.dataType.type === 'enum' && !record.dataType.elements?.length) {
-        return '请配置枚举项'
+        return i18n.global.t('DataSource.CommandParams.Setting.100091-17')
       }
       if (record.dataType.type === 'object' && !record.dataType.properties?.length) {
-        return '请配置对象'
+        return i18n.global.t('DataSource.CommandParams.Setting.100091-18')
       }
       if (record.dataType.type === 'array') {
         if (record.dataType.elementType.type === 'object' && !record.dataType.elementType.properties?.length) {
-          return '请配置数组元素'
+          return i18n.global.t('DataSource.CommandParams.Setting.100091-19')
         }
       }
     }
