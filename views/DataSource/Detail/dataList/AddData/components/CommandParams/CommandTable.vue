@@ -156,6 +156,14 @@ const filteredColumns = computed(() => {
   return props.columns
 })
 
+// 根据预览模式过滤列
+const filteredColumns = computed(() => {
+  if (props.preview) {
+    return props.columns.filter((col: any) => col.dataIndex !== 'operate')
+  }
+  return props.columns
+})
+
 const selectedKeys = ref<(string | number)[]>([])
 const rowSelection = computed(() => ({
   checkStrictly: false,
