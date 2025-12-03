@@ -85,12 +85,12 @@
 
 <script setup lang="ts" name="ImageUpload">
 import { getToken, onlyMessage, getBase64ByImg } from '@jetlinks-web/utils'
-import { BASE_API, TOKEN_KEY } from '@jetlinks-web/constants'
+import { TOKEN_KEY } from '@jetlinks-web/constants'
 import type { CSSProperties, PropType } from 'vue'
 import type { UploadChangeParam } from 'ant-design-vue'
 import CropperModal from './Cropper.vue'
 import { getImageUrl } from '@datasource-manager-ui/utils'
-import { FileStatic } from '@datasource-manager-ui/api/comm'
+import { FileStaticPath } from '@jetlinks-web-core/api/comm'
 
 const props = defineProps({
   value: {
@@ -165,7 +165,7 @@ const loading = ref(false) // 上传图片状态
 const imageUrl = ref<string | undefined>('')
 
 const _action = computed(() => {
-  return `${BASE_API}${FileStatic}${props.publicAccess ? '?options=publicAccess' : ''}`
+  return `${FileStaticPath()}${props.publicAccess ? '?options=publicAccess' : ''}`
 })
 
 const beforeUpload = (file: any) => {
