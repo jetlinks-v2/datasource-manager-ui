@@ -191,13 +191,48 @@ export const useDataSource = (opts: {
     await submitDataSource(params)
   }
 
+  const mongoDataAdd = async () => {
+    const { name, id, group = DEFAULT_CATEGORY_ID, description } = baseFormData.value
+    const { mongoData } = formData.value
+    const { value: activeValue } = activeType.value
+
+    // 过滤掉空字符串、undefined、null 和空对象
+    const cleanConfig = Object.entries(mongoData).reduce((acc, [key, value]) => {
+      if (value !== '' && value !== undefined && value !== null) {
+        // 如果是 options 对象，检查是否为空对象
+        if (key === 'options' && typeof value === 'object') {
+          if (Object.keys(value).length > 0) {
+            acc[key] = value
+          }
+        } else {
+          acc[key] = value
+        }
+      }
+      return acc
+    }, {} as any)
+
+    const params = {
+      id: id || `data_source_${randomString(4)}`,
+      name,
+      typeId: DATA_TYPE_ITEM.MONGODB_DATASOURCE,
+      group,
+      shareConfig: cleanConfig,
+      shareCluster: true,
+      description,
+      searchCode: activeValue
+    }
+
+    await submitDataSource(params)
+  }
+
   const getDataHandlerByType = (type: string) => {
     const handlerMap: Record<string, Function> = {
       [DATA_TYPE_ITEM.API_SEND]: universalDataAdd,
       [DATA_TYPE_ITEM.RDB_DATASOURCE]: relationDataAdd,
       [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: websocketDataAdd,
       [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: elasticsearchDataAdd,
-      [DATA_TYPE_ITEM.REDIS_DATASOURCE]: redisDataAdd
+      [DATA_TYPE_ITEM.REDIS_DATASOURCE]: redisDataAdd,
+      [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: mongoDataAdd
     }
     return handlerMap[type]
   }
@@ -295,6 +330,23 @@ export const useDataSource = (opts: {
             password: config.password || '',
             databaseIndex: config.databaseIndex ?? undefined,
             delimiter: config.delimiter ?? ':'
+          }
+        }
+      },
+      [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: () => {
+        const config = shareConfig || {}
+        return {
+          mongoData: {
+            connectionMode: config.connectionMode || 'basic',
+            uri: config.uri || '',
+            host: config.host || '',
+            port: config.port,
+            database: config.database || '',
+            authDatabase: config.authDatabase || '',
+            username: config.username || '',
+            password: config.password || '',
+            sslEnabled: config.sslEnabled || false,
+            options: config.options || {}
           }
         }
       }

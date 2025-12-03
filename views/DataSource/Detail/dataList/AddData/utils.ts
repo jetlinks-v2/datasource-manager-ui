@@ -1,5 +1,5 @@
-import {isArray, isObject} from 'lodash-es'
-import {randomString} from '@jetlinks-web/utils'
+import { isArray, isObject } from 'lodash-es'
+import { randomString } from '@jetlinks-web/utils'
 
 /**
  * 获取值的类型
@@ -114,48 +114,48 @@ export function metadataConvertToTableTree(data: any, typeKey = 'valueType') {
   }
 
   return data.map((node: any) => {
-      let {id, name, description, valueType} = node
+    let { id, name, description, valueType } = node
 
-      // 如果没有valueType，使用默认的object类型
-      if (!valueType) {
-          valueType = defaultValueType
+    // 如果没有valueType，使用默认的object类型
+    if (!valueType) {
+      valueType = defaultValueType
+    }
+
+    let children = []
+
+    // 处理对象类型的子节点
+    if (valueType?.type === 'object' && valueType.properties) {
+      children = metadataConvertToTableTree(valueType.properties, typeKey)
+      valueType = {
+        ...valueType,
+        properties: children
       }
+    }
 
-      let children = []
-
-      // 处理对象类型的子节点
-      if (valueType?.type === 'object' && valueType.properties) {
-          children = metadataConvertToTableTree(valueType.properties, typeKey)
-          valueType = {
-              ...valueType,
-              properties: children
-          }
+    // 处理数组类型的子节点
+    if (valueType?.type === 'array' && valueType?.elementType?.type === 'object' && valueType.elementType?.properties) {
+      children = metadataConvertToTableTree(valueType.elementType.properties, typeKey)
+      valueType = {
+        ...valueType,
+        elementType: {
+          ...valueType.elementType,
+          properties: children
+        }
       }
+    }
 
-      // 处理数组类型的子节点
-      if (valueType?.type === 'array' && valueType?.elementType?.type === 'object' && valueType.elementType?.properties) {
-          children = metadataConvertToTableTree(valueType.elementType.properties, typeKey)
-          valueType = {
-              ...valueType,
-              elementType: {
-                  ...valueType.elementType,
-                  properties: children
-              }
-          }
-      }
+    const obj = {
+      key: randomString(5),
+      name,
+      id,
+      description,
+      [typeKey]: { ...valueType }
+    }
+    if (children.length > 0) {
+      obj['children'] = children
+    }
 
-      const obj = {
-          key: randomString(5),
-          name,
-          id,
-          description,
-          [typeKey]: {...valueType}
-      }
-      if (children.length > 0) {
-          obj['children'] = children
-      }
-
-      return obj
+    return obj
   })
 }
 

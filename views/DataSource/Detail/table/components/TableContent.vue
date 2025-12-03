@@ -26,8 +26,14 @@
               v-if="slotProps.primaryKey"
             />
           </template>
-          <template #index="slotProps">
-            {{ slotProps.index }}
+          <template #index="{ index }">
+            {{ index + 1 }}
+          </template>
+          <template #precision="{ precision }">
+            {{ precision ?? '--' }}
+          </template>
+          <template #scale="{ scale }">
+            {{ scale ?? '--' }}
           </template>
           <template #notnull="slotProps">
             <AIcon
@@ -99,7 +105,7 @@ const fieldColumns = [
   {
     dataIndex: 'primaryKey',
     key: 'primaryKey',
-    width: 40,
+    width: 50,
     scopedSlots: true,
     fixed: 'center',
     align: 'center'
@@ -108,38 +114,55 @@ const fieldColumns = [
     title: '序号',
     dataIndex: 'index',
     key: 'index',
-    width: 100,
+    width: 80,
     scopedSlots: true
   },
   {
     title: '名称',
     dataIndex: 'name',
     key: 'name',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: '原始名称',
+    dataIndex: 'previousName',
+    key: 'previousName',
+    width: 150,
     ellipsis: true
   },
   {
     title: '注释',
     dataIndex: 'comment',
     key: 'comment',
+    width: 200,
     ellipsis: true
   },
   {
     title: '字段类型',
     dataIndex: 'type',
     key: 'type',
-    width: 180
+    width: 150
   },
   {
     title: '长度',
     dataIndex: 'length',
     key: 'length',
-    width: 120
+    width: 100
   },
   {
     title: '精度',
+    dataIndex: 'precision',
+    key: 'precision',
+    width: 100,
+    scopedSlots: true
+  },
+  {
+    title: '刻度',
     dataIndex: 'scale',
     key: 'scale',
-    width: 120
+    width: 100,
+    scopedSlots: true
   },
   {
     title: '是否为空',

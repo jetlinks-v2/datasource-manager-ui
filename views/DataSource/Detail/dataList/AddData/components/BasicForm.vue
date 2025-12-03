@@ -68,9 +68,7 @@
     </a-form-item>
 
     <CommandParams
-      v-if="
-        sourceClassify !== DATA_TYPE_ITEM.RDB_DATASOURCE && sourceClassify !== DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
-      "
+      v-if="!isMetadataSource"
       ref="commandParamsRef"
       :modelValue="commandModelValue"
     />
@@ -80,7 +78,6 @@
 <script setup lang="ts" name="BasicForm">
 import { checkCommandExists } from '@datasource-manager-ui/api/data/datasource'
 import type { Rule } from 'ant-design-vue/es/form'
-import { convertToTableTreeData } from '../utils'
 import CommandParams from './CommandParams/index.vue'
 import { set } from 'lodash-es'
 import { DATA_TYPE_ITEM } from '../../../../components/table'
@@ -118,15 +115,11 @@ const commandModelValue = ref<any>({
 const isMetadataSource = computed(
   () =>
     props.sourceClassify === DATA_TYPE_ITEM.RDB_DATASOURCE ||
-    props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
+    props.sourceClassify === DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE ||
+    props.modelValue.configuration.provider === 'generalQuery'
 )
 
-const outputData = computed(() => (isMetadataSource.value ? props.testData : convertToTableTreeData(props.testData)))
-const inputData = computed(() =>
-  isMetadataSource.value ? props.dynamicParams : convertToTableTreeData(props.dynamicParams)
-)
-
-const validateID = async (rule: Rule, value: string) => {
+const validateID = async (_: Rule, value: string) => {
   if (value && !props.isEdit) {
     try {
       const resp = await checkCommandExists({
@@ -187,7 +180,7 @@ const handleFieldChange = (fieldPath: string, value: any) => {
 }
 
 const getFormData = async () => {
-  //RDB 和 ES 不需要验证命令参数
+  //RDB 和 ES 和 mangodb的一般查询不需要验证命令参数
   if (isMetadataSource.value) {
     return props.modelValue
   }
@@ -205,30 +198,10 @@ const getFormData = async () => {
 }
 
 watch(
-  outputData,
-  (newVal) => {
-    commandModelValue.value.output = newVal
-  },
-  { deep: true }
-)
-
-watch(
-  inputData,
-  (newVal) => {
-    commandModelValue.value.input = newVal
-  },
-  { deep: true }
-)
-
-watch(
-  [() => props.modelValue?.configuration?.input, () => props.modelValue?.configuration?.output],
-  ([newInput, newOutput]) => {
-    if (newInput) {
-      commandModelValue.value.input = newInput
-    }
-    if (newOutput) {
-      commandModelValue.value.output = newOutput
-    }
+  [() => props.dynamicParams, props.testData],
+  ([computedInput, computedOutput]) => {
+    commandModelValue.value.input = computedInput || []
+    commandModelValue.value.output = computedOutput || []
   },
   { deep: true, immediate: true }
 )

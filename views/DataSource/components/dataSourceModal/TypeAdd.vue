@@ -15,7 +15,7 @@
           :key="index"
           class="type-section"
         >
-          <span class="type-title">{{ dataTypeItem.title }}</span>
+          <TitleComponent :data="dataTypeItem.title" />
           <div class="type-grid">
             <div
               v-for="item in dataTypeItem.types"
@@ -85,7 +85,7 @@ const props = defineProps({
     default: {}
   }
 })
-const dataType = ref(cloneDeep(typesData))
+const dataType = ref<any>(cloneDeep(typesData))
 const activeType = ref(props.active)
 const sourceDetailStore = useSourceDetailStore()
 
@@ -109,14 +109,6 @@ const handleClickNext = () => {
 .data-source-modal {
   .type-section {
     margin-bottom: 16px;
-
-    .type-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--ant-text-color);
-      margin-bottom: 16px;
-      display: block;
-    }
   }
 
   .type-grid {

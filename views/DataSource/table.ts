@@ -9,7 +9,7 @@ export const iconMaps = {
   oracle: 'icon-Oracle',
   sqlserver: 'icon-a-SQLServer',
   mongodb: 'icon-MongoDB',
-  excel: 'icon-Excel',
+  file: 'icon-Source-File',
   json: 'icon-Json',
   dm: 'icon-damengshujuku',
   redis: 'icon-REdis',
