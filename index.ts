@@ -1,4 +1,4 @@
-import { moduleRegistry } from '@/utils/module-registry'
+import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 import registerSetting from './register'
 import { name } from './package.json'
 

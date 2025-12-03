@@ -71,7 +71,7 @@ import {
 } from '@datasource-manager-ui/api/data'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { Rule } from 'ant-design-vue/es/form'
-import { moduleRegistry } from '@/utils/module-registry'
+import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 
 const { CategorySelect } = moduleRegistry.getResource('visualization-manager-ui', 'components')
 

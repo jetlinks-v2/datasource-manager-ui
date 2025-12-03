@@ -274,7 +274,7 @@ const validateJdbcUrl = (rule: any, value: string) => {
 
   if (dbType === DATASOURCE_TYPE.ORACLE) {
     // Oracle 特殊处理
-    const oraclePattern = '^jdbc:oracle:thin:[^/]+/[^@]+@//'
+    const oraclePattern = '^jdbc:oracle:thin:[^/]+/[^@]+@jetlinks-web-core//'
     const { protocol } = datasourceParseUrl(value, active.value)
 
     if (new RegExp(oraclePattern).test(protocol)) {

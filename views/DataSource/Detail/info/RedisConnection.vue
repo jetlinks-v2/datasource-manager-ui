@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 import InfoCard from './components/InfoCard.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'

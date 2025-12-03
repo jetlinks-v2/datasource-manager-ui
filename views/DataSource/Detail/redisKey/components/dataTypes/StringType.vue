@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
 
 const props = withDefaults(
   defineProps<{

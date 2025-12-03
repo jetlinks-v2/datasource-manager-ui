@@ -109,11 +109,11 @@
 <script setup lang="ts" name="RedisScriptQuery">
 import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
-import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 import { convertParamsToObject } from '../../components/utils'
 import { convertToTableTreeData, parseTableTreeToMetadata } from '../../utils'
-import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 
 interface Props {
   data?: {
