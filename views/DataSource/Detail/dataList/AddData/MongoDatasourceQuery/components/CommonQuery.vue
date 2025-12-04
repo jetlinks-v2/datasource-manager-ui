@@ -62,11 +62,11 @@
 import { Empty } from 'ant-design-vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
-import { moduleRegistry } from '@/utils/module-registry'
+import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 import { convertObjectId } from '@datasource-manager-ui/views/DataSource/Detail/utils'
 import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/collection/components/CollectionList.vue'
 import QueryResults from './QueryResults.vue'
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 
 const { DataInputsItem } = moduleRegistry.getResource('visualization-designer-ui', 'components')
 

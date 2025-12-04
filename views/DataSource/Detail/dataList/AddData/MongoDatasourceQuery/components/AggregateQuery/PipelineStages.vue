@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 
 interface PipelineStage {
   id: string

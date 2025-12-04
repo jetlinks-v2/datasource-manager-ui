@@ -98,14 +98,14 @@
 
 <script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
-import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
 import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CheckTest/index.vue'
 import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/collection/components/CollectionList.vue'
 import PipelineStages from './PipelineStages.vue'
 import StageEditor from './StageEditor.vue'
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 import { convertParamsToObject } from '../../../components/utils'
-import { queryDataSource } from '@/modules/datasource-manager-ui/api/data/datasource'
+import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import {
   type PipelineStage,
   collectAllVariables,

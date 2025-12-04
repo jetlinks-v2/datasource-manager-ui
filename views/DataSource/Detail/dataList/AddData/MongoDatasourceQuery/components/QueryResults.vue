@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 
 defineProps({
   columns: {

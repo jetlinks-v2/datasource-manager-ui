@@ -69,7 +69,7 @@
 <script setup lang="ts" name="CollectionStats">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import IndexKeysPreview from './IndexKeysPreview.vue'
-import TitleComponent from '@/components/TitleComponent/index.vue'
+import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 
 interface CollectionStats {
   ns: string

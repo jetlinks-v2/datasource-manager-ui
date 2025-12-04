@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
-import MonacoEditor from '@/components/MonacoEditor/monacoEditor.vue'
+import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
 
 interface ParamItem {
   name: string
