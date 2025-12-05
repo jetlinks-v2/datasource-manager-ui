@@ -1,17 +1,17 @@
 <template>
   <DescriptionItemList
-    :title="$t('DataSource.Info.Api.100063-0')"
+    :title="$t('Info.Api.100063-0')"
     :column="3"
     :items="descriptionItems"
   />
 
   <div v-if="isOAuth2">
     <KeyValueTable
-      :title="$t('DataSource.Info.Api.100063-21')"
+      :title="$t('Info.Api.100063-21')"
       :data-source="requestHeaderData"
     />
     <KeyValueTable
-      :title="$t('DataSource.Info.Api.100063-22')"
+      :title="$t('Info.Api.100063-22')"
       :data-source="argumentData"
     />
   </div>
@@ -65,19 +65,19 @@ interface ApiShareConfig {
 }
 
 const AUTH_TYPE_TEXT: Record<string, string> = {
-  basic: $t('DataSource.Info.Api.100063-3'),
-  bearer: $t('DataSource.Info.Api.100063-4'),
-  OAuth2: $t('DataSource.Info.Api.100063-5'),
-  none: $t('DataSource.Info.Api.100063-6')
+  basic: $t('Info.Api.100063-3'),
+  bearer: $t('Info.Api.100063-4'),
+  OAuth2: $t('Info.Api.100063-5'),
+  none: $t('Info.Api.100063-6')
 }
 
 const TOKEN_REQUEST_TYPE_TEXT: Record<string, string> = {
-  POST_URI: $t('DataSource.Info.Api.100063-14'),
-  POST_BODY: $t('DataSource.Info.Api.100063-15')
+  POST_URI: $t('Info.Api.100063-14'),
+  POST_BODY: $t('Info.Api.100063-15')
 }
 
 const OAUTH_GRANT_TYPE_TEXT: Record<string, string> = {
-  client_credentials: $t('DataSource.Info.Api.100063-11')
+  client_credentials: $t('Info.Api.100063-11')
 }
 
 const props = defineProps<{ info: any }>()
@@ -96,12 +96,12 @@ const authTypeText = computed(() => AUTH_TYPE_TEXT[authType.value] ?? '--')
 const baseItems = computed<DescriptionItem[]>(() => [
   {
     key: 'baseUrl',
-    label: $t('DataSource.Info.Api.100063-1'),
+    label: $t('Info.Api.100063-1'),
     value: shareConfig.value.baseUrl || '--'
   },
   {
     key: 'authType',
-    label: $t('DataSource.Info.Api.100063-2'),
+    label: $t('Info.Api.100063-2'),
     value: authTypeText.value
   }
 ])
@@ -109,12 +109,12 @@ const baseItems = computed<DescriptionItem[]>(() => [
 const createBasicItems = (basic: BasicAuthConfig = {}): DescriptionItem[] => [
   {
     key: 'username',
-    label: $t('DataSource.Info.Api.100063-7'),
+    label: $t('Info.Api.100063-7'),
     value: basic.username || '--'
   },
   {
     key: 'password',
-    label: $t('DataSource.Info.Api.100063-8'),
+    label: $t('Info.Api.100063-8'),
     component: MaskDisplay,
     componentProps: {
       value: basic.password,
@@ -126,7 +126,7 @@ const createBasicItems = (basic: BasicAuthConfig = {}): DescriptionItem[] => [
 const createBearerItems = (bearer: BearerAuthConfig = {}): DescriptionItem[] => [
   {
     key: 'token',
-    label: $t('DataSource.Info.Api.100063-9'),
+    label: $t('Info.Api.100063-9'),
     value: bearer.token || '--'
   }
 ]
@@ -142,22 +142,22 @@ const createOAuthItems = (oauth2: OAuth2AuthConfig = {}): DescriptionItem[] => {
   return [
     {
       key: 'grantType',
-      label: $t('DataSource.Info.Api.100063-10'),
+      label: $t('Info.Api.100063-10'),
       value: (oauth2.grantType && OAUTH_GRANT_TYPE_TEXT[oauth2.grantType]) || '--'
     },
     {
       key: 'tokenUrl',
-      label: $t('DataSource.Info.Api.100063-12'),
+      label: $t('Info.Api.100063-12'),
       value: oauth2.tokenUrl || '--'
     },
     {
       key: 'tokenRequestType',
-      label: $t('DataSource.Info.Api.100063-13'),
-      value: (oauth2.tokenRequestType && TOKEN_REQUEST_TYPE_TEXT[oauth2.tokenRequestType]) || $t('DataSource.Info.Api.100063-15')
+      label: $t('Info.Api.100063-13'),
+      value: (oauth2.tokenRequestType && TOKEN_REQUEST_TYPE_TEXT[oauth2.tokenRequestType]) || $t('Info.Api.100063-15')
     },
     {
       key: 'scope',
-      label: $t('DataSource.Info.Api.100063-16'),
+      label: $t('Info.Api.100063-16'),
       component: MaskDisplay,
       componentProps: {
         value: scopeValue,
@@ -166,12 +166,12 @@ const createOAuthItems = (oauth2: OAuth2AuthConfig = {}): DescriptionItem[] => {
     },
     {
       key: 'clientId',
-      label: createOAuthLabel($t('DataSource.Info.Api.100063-17'), $t('DataSource.Info.Api.100063-19')),
+      label: createOAuthLabel($t('Info.Api.100063-17'), $t('Info.Api.100063-19')),
       value: oauth2.clientId || '--'
     },
     {
       key: 'clientSecret',
-      label: createOAuthLabel($t('DataSource.Info.Api.100063-18'), $t('DataSource.Info.Api.100063-20')),
+      label: createOAuthLabel($t('Info.Api.100063-18'), $t('Info.Api.100063-20')),
       component: MaskDisplay,
       componentProps: {
         value: oauth2.clientSecret,

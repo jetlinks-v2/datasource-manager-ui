@@ -1,6 +1,6 @@
 <template>
   <DescriptionItemList
-    :title="$t('DataSource.Info.WebSocket.100068-0')"
+    :title="$t('Info.WebSocket.100068-0')"
     :column="2"
     :items="descriptionFields"
   />
@@ -40,20 +40,20 @@ const webSocketData = reactive<WebSocketConfig>({
 })
 
 const PAYLOAD_TYPE_MAP = {
-  JSON: $t('DataSource.Info.WebSocket.100068-9'),
-  STRING: $t('DataSource.Info.WebSocket.100068-10'),
-  BINARY: $t('DataSource.Info.WebSocket.100068-11')
+  JSON: $t('Info.WebSocket.100068-9'),
+  STRING: $t('Info.WebSocket.100068-10'),
+  BINARY: $t('Info.WebSocket.100068-11')
 } as const
 
 const formatTimeout = (timeout?: number): string => {
-  return timeout ? `${timeout}ms` : $t('DataSource.Info.WebSocket.100068-2')
+  return timeout ? `${timeout}ms` : $t('Info.WebSocket.100068-2')
 }
 
 const formatReconnection = (attempts?: number): string => {
   if (!attempts) {
-    return $t('DataSource.Info.WebSocket.100068-4')
+    return $t('Info.WebSocket.100068-4')
   }
-  return attempts === -1 ? $t('DataSource.Info.WebSocket.100068-5') : `${attempts}${$t('DataSource.Info.WebSocket.100068-12')}`
+  return attempts === -1 ? $t('Info.WebSocket.100068-5') : `${attempts}${$t('Info.WebSocket.100068-12')}`
 }
 
 const formatMessageSize = (size?: number): string => {
@@ -71,27 +71,27 @@ const formatPayloadType = (type?: string): string => {
 const descriptionFields = computed(() => [
   {
     key: 'handshakeTimeout',
-    label: $t('DataSource.Info.WebSocket.100068-1'),
+    label: $t('Info.WebSocket.100068-1'),
     value: formatTimeout(webSocketData.handshakeTimeout)
   },
   {
     key: 'reconnectionAttempts',
-    label: $t('DataSource.Info.WebSocket.100068-3'),
+    label: $t('Info.WebSocket.100068-3'),
     value: formatReconnection(webSocketData.reconnectionAttempts)
   },
   {
     key: 'maxMessageSize',
-    label: $t('DataSource.Info.WebSocket.100068-6'),
+    label: $t('Info.WebSocket.100068-6'),
     value: formatMessageSize(webSocketData.maxMessageSize)
   },
   {
     key: 'reconnectionIntervals',
-    label: $t('DataSource.Info.WebSocket.100068-7'),
+    label: $t('Info.WebSocket.100068-7'),
     value: formatInterval(webSocketData.reconnectionIntervals)
   },
   {
     key: 'payloadType',
-    label: $t('DataSource.Info.WebSocket.100068-8'),
+    label: $t('Info.WebSocket.100068-8'),
     value: formatPayloadType(webSocketData.payloadType)
   }
 ])
