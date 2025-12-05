@@ -7,7 +7,7 @@ import {
 } from '@datasource-manager-ui/api/data/datasource'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { DATASOURCE_TYPE, DATA_TYPE_ITEM, datasourceParseUrl } from '../components/table'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 export type EmitFn = (event: string, ...args: any[]) => void
 

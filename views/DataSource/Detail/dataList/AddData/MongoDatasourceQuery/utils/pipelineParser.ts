@@ -25,7 +25,7 @@
  */
 
 import { randomString } from '@jetlinks-web/utils'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 /**
  * 管道阶段接口

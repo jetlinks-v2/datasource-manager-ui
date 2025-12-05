@@ -1,5 +1,5 @@
 import { isString, isObject } from 'lodash-es'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 // 格式化过期时间
 export const formatExpiration = (exp: number | string) => {

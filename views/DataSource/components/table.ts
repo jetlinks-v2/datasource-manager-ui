@@ -10,7 +10,7 @@ import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
 import { isArray } from 'lodash-es'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 export enum DATA_TYPE_ITEM {
   RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)

@@ -5,7 +5,7 @@ import IDate from './DataType/Date.vue'
 import IText from './DataType/Text.vue'
 import IArray from './DataType/Array.vue'
 import IObject from './DataType/Object.vue'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 // API数据源类型选项
 export const defaultApiDataTypeOptions = [

@@ -1,5 +1,5 @@
 import type { TableColumnType } from 'ant-design-vue'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 export interface ParamItem {
   key: string

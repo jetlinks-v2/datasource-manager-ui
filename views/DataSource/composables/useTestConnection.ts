@@ -1,6 +1,6 @@
 import { testDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 /**
  * 测试连接 Composable

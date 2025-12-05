@@ -1,5 +1,5 @@
 import { typesData } from './components/table'
-import i18n from '@/locales'
+import i18n from '@jetlinks-web-core/locales'
 
 export const iconMaps = {
   api: 'icon-APIlianjiemingchengA',
