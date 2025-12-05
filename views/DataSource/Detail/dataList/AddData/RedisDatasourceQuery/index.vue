@@ -28,8 +28,11 @@
 </template>
 
 <script setup lang="ts" name="RedisDatasourceQuery">
+import { useI18n } from 'vue-i18n'
 import CommonQuery from './components/CommonQuery.vue'
 import ScriptQuery from './components/ScriptQuery.vue'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -53,8 +56,8 @@ const scriptQueryRef = ref<any>()
 const commonQueryRef = ref<any>()
 
 const tabOptions = [
-  { label: '通用查询', value: 'pattern' },
-  { label: '脚本查询', value: 'script' }
+  { label: $t('DataSource.RedisDatasourceQuery.100076-0'), value: 'pattern' },
+  { label: $t('DataSource.RedisDatasourceQuery.100076-1'), value: 'script' }
 ]
 
 // 脚本查询数据

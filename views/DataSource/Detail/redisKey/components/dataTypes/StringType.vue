@@ -26,6 +26,9 @@
 
 <script setup lang="ts">
 import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = withDefaults(
   defineProps<{
@@ -103,7 +106,7 @@ watch(
   () => {
     processContent()
     if (props.showTotal) {
-      emit('countUpdated', `共 ${displayContent.value.length} 个字符`)
+      emit('countUpdated', $t('DataSource.Detail.Redis.String.TotalCharacters', { count: displayContent.value.length }))
     }
   },
   { immediate: true, deep: true }

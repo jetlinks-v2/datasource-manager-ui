@@ -5,13 +5,13 @@
   >
     <a-tab-pane
       key="message"
-      tab="消息"
+      :tab="$t('DataSource.WebSocketRequestParams.100085-0')"
       force-render
     >
       <div class="message-container">
         <div class="message-header">
           <div class="payload-type-selector">
-            <span class="selector-label">消息类型:</span>
+            <span class="selector-label">{{ $t('DataSource.WebSocketRequestParams.100085-1') }}:</span>
             <a-select
               v-model:value="payloadType"
               style="width: 120px"
@@ -30,7 +30,7 @@
           <template v-if="payloadType === 'STRING'">
             <a-textarea
               v-model:value="stringContent"
-              placeholder="请输入字符串消息内容，支持{{}}动态参数"
+              :placeholder="$t('DataSource.WebSocketRequestParams.100085-2')"
               :rows="10"
               :maxlength="65535"
               @change="handleStringContentChange"
@@ -54,7 +54,7 @@
           <template v-if="payloadType === 'BINARY'">
             <a-textarea
               v-model:value="binaryContent"
-              placeholder="请输入十六进制字符串"
+              :placeholder="$t('DataSource.WebSocketRequestParams.100085-3')"
               :rows="10"
               :maxlength="65535"
               @change="handleBinaryContentChange"
@@ -66,7 +66,7 @@
 
     <a-tab-pane
       key="params"
-      tab="参数"
+      :tab="$t('DataSource.WebSocketRequestParams.100085-4')"
       force-render
     >
       <ParamConfigTable
@@ -80,7 +80,7 @@
 
     <a-tab-pane
       key="headers"
-      tab="请求头"
+      :tab="$t('DataSource.WebSocketRequestParams.100085-5')"
       force-render
     >
       <ParamConfigTable
@@ -94,7 +94,7 @@
 
     <a-tab-pane
       key="check"
-      tab="测试"
+      :tab="$t('DataSource.WebSocketRequestParams.100085-6')"
       force-render
     >
       <slot
@@ -113,6 +113,9 @@ import JsonEditor from '../../components/JsonEditor.vue'
 import { paramColumns, type ParamItem } from '../../components/setting'
 import { useAllParams } from '../../utils'
 import { findBodyJsonParams, findQueryParams, findUriParams } from '../../components/utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 const props = defineProps({
   data: {
     type: Object,
@@ -280,17 +283,17 @@ const validateAll = async (): Promise<boolean> => {
     const validations = [
       {
         ref: requestParamTableRef.value,
-        message: '请检查路径参数输入项',
+        message: $t('DataSource.WebSocketRequestParams.100085-7'),
         _activeKey: 'params'
       },
       {
         ref: requestHeaderTableRef.value,
-        message: '请检查请求头输入项',
+        message: $t('DataSource.WebSocketRequestParams.100085-8'),
         _activeKey: 'headers'
       },
       {
         ref: messageEditorRef.value,
-        message: '请检查消息内容输入项',
+        message: $t('DataSource.WebSocketRequestParams.100085-9'),
         _activeKey: 'message'
       }
     ] as { ref: any; message: string; _activeKey: string }[]
@@ -306,7 +309,7 @@ const validateAll = async (): Promise<boolean> => {
     return true
   } catch (error) {
     console.error('验证失败:', error)
-    onlyMessage('请检查表单输入项', 'error')
+    onlyMessage($t('DataSource.WebSocketRequestParams.100085-10'), 'error')
     return false
   }
 }

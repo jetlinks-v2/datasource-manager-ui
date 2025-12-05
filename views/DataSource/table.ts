@@ -1,4 +1,5 @@
 import { typesData } from './components/table'
+import i18n from '@/locales'
 
 export const iconMaps = {
   api: 'icon-APIlianjiemingchengA',
@@ -32,37 +33,37 @@ const getDataTypeOptions = () => {
 
 export const dataSourceColumns: Array<any> = [
   {
-    title: '名称',
+    title: i18n.global.t('DataSource.table.100003-0'),
     dataIndex: 'name',
     key: 'name',
     search: {
       type: 'string',
       componentProps: {
-        placeholder: '请输入名称'
+        placeholder: i18n.global.t('DataSource.table.100003-1')
       }
     },
     scopedSlots: true
   },
   {
-    title: '标识',
+    title: i18n.global.t('DataSource.table.100003-2'),
     dataIndex: 'id',
     key: 'id',
     search: {
       type: 'string',
       componentProps: {
-        placeholder: '请输入标识'
+        placeholder: i18n.global.t('DataSource.table.100003-3')
       }
     },
     scopedSlots: true
   },
   {
-    title: '类型',
+    title: i18n.global.t('DataSource.table.100003-4'),
     dataIndex: 'searchCode',
     key: 'searchCode',
     search: {
       type: 'select',
       componentProps: {
-        placeholder: '请选择数据源类型'
+        placeholder: i18n.global.t('DataSource.table.100003-5')
       },
       options: getDataTypeOptions()
     },
@@ -70,19 +71,19 @@ export const dataSourceColumns: Array<any> = [
     ellipsis: true
   },
   {
-    title: '说明',
+    title: i18n.global.t('DataSource.table.100003-6'),
     dataIndex: 'description',
     key: 'description',
     search: {
       type: 'string',
       componentProps: {
-        placeholder: '请输入说明'
+        placeholder: i18n.global.t('DataSource.table.100003-7')
       }
     },
     scopedSlots: true
   },
   {
-    title: '操作',
+    title: i18n.global.t('DataSource.table.100003-8'),
     dataIndex: 'action',
     key: 'action',
     ellipsis: true,

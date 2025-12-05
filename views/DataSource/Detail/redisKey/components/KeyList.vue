@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar">
     <ListHeader
-      search-placeholder="请输入键名"
+      :search-placeholder="$t('DataSource.KeyList.100075-0')"
       @search="handleSearch"
     >
       <template #count>
@@ -9,9 +9,9 @@
           v-if="currentLevel === 0"
           class="count-text"
         >
-          共
+          {{ $t('DataSource.KeyList.100075-1') }}
           <span class="total">{{ total }}</span>
-          个键
+          {{ $t('DataSource.KeyList.100075-2') }}
         </div>
         <a-button
           v-else
@@ -72,7 +72,7 @@
         v-else-if="!loading"
         class="empty-index"
       >
-        <j-empty description="暂无数据" />
+        <j-empty :description="$t('DataSource.KeyList.100075-3')" />
       </div>
 
       <div
@@ -80,17 +80,20 @@
         class="loading-more"
       >
         <a-spin size="small" />
-        <span style="margin-left: 8px">加载中...</span>
+        <span style="margin-left: 8px">{{ $t('DataSource.KeyList.100075-4') }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts" name="KeyList">
+import { useI18n } from 'vue-i18n'
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { getToken, onlyMessage } from '@jetlinks-web/utils'
 import { throttle } from 'lodash-es'
+
+const { t: $t } = useI18n()
 
 interface KeyItem {
   type: 'dir' | 'key'
@@ -178,11 +181,11 @@ const fetchKeyTotal = throttle(async (auto: boolean = true) => {
     })
     if (res.status === 200 && res.result?.dbSize?.keys !== undefined) {
       total.value = res.result.dbSize.keys
-      if (!auto) onlyMessage('操作成功')
+      if (!auto) onlyMessage($t('DataSource.KeyList.100075-5'))
     }
   } catch (error) {
-    console.error('获取键总数失败:', error)
-    onlyMessage('获取键总数失败', 'error')
+    console.error($t('DataSource.KeyList.100075-6'), error)
+    onlyMessage($t('DataSource.KeyList.100075-6'), 'error')
   } finally {
     refreshLoading.value = false
   }
@@ -236,8 +239,8 @@ const loadKeyData = async (append = false) => {
       }
     }
   } catch (error) {
-    console.error('加载键数据失败:', error)
-    onlyMessage('加载键数据失败', 'error')
+    console.error($t('DataSource.KeyList.100075-7'), error)
+    onlyMessage($t('DataSource.KeyList.100075-7'), 'error')
   } finally {
     loading.value = false
   }

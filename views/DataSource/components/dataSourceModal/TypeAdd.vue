@@ -1,7 +1,7 @@
 <template>
   <a-modal
     open
-    title="新增数据源连接"
+    :title="$t('DataSource.TypeAdd.100004-0')"
     @cancel="emit('close')"
     centered
     :width="616"
@@ -41,7 +41,7 @@
                   class="type-image-mask"
                   v-if="item.disable"
                 >
-                  <span>敬请期待</span>
+                  <span>{{ $t('DataSource.TypeAdd.100092-0') }}</span>
                 </div>
                 <!-- 选中标记 -->
                 <div
@@ -66,7 +66,7 @@
           type="primary"
           @click="handleClickNext"
         >
-          下一步
+          {{ $t('DataSource.TypeAdd.100004-2') }}
         </a-button>
       </a-space>
     </template>
@@ -77,6 +77,9 @@
 import { typesData } from '../table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '../../sourceDetail'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['close'])
 const props = defineProps({

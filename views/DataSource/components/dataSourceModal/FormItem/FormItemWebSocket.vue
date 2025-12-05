@@ -7,27 +7,27 @@
   >
     <a-form-item
       name="handshakeTimeout"
-      :rules="[{ type: 'number', min: 0, message: '请输入有效的超时时间', trigger: 'change' }]"
-      label="请求等待超时"
+      :rules="[{ type: 'number', min: 0, message: $t('DataSource.FormItemWebSocket.100080-0'), trigger: 'change' }]"
+      :label="$t('DataSource.FormItemWebSocket.100080-1')"
     >
       <a-input-number
         v-model:value="formData.handshakeTimeout"
         :min="0"
-        placeholder="如果设置为0，表示永不超时，不填默认为0"
+        :placeholder="$t('DataSource.FormItemWebSocket.100080-2')"
         style="width: 100%"
-        addon-after="ms"
+        :addon-after="$t('DataSource.FormItemWebSocket.100080-3')"
       />
     </a-form-item>
 
     <a-form-item
       name="reconnectionAttempts"
-      :rules="[{ type: 'number', min: 0, message: '请输入有效的重连次数', trigger: 'change' }]"
-      label="最大重连次数"
+      :rules="[{ type: 'number', min: 0, message: $t('DataSource.FormItemWebSocket.100080-4'), trigger: 'change' }]"
+      :label="$t('DataSource.FormItemWebSocket.100080-5')"
     >
       <a-input-number
         v-model:value="formData.reconnectionAttempts"
         :min="0"
-        placeholder="0表示不重连，-1表示无限重连，不填默认为0"
+        :placeholder="$t('DataSource.FormItemWebSocket.100080-6')"
         style="width: 100%"
       />
     </a-form-item>
@@ -51,49 +51,53 @@
 
     <a-form-item
       name="maxMessageSize"
-      :rules="[{ type: 'number', min: 0, message: '请输入有效的消息大小', trigger: 'change' }]"
-      label="允许接收的最大消息大小"
+      :rules="[{ type: 'number', min: 0, message: $t('DataSource.FormItemWebSocket.100080-7'), trigger: 'change' }]"
+      :label="$t('DataSource.FormItemWebSocket.100080-8')"
     >
       <a-input-number
         v-model:value="formData.maxMessageSize"
         :min="0"
-        placeholder="不填默认为2MB"
+        :placeholder="$t('DataSource.FormItemWebSocket.100080-9')"
         style="width: 100%"
-        addon-after="MB"
+        :addon-after="$t('DataSource.FormItemWebSocket.100080-10')"
       />
     </a-form-item>
 
     <a-form-item
       name="reconnectionIntervals"
-      :rules="[{ type: 'number', min: 0, message: '请输入有效的重连间隔', trigger: 'change' }]"
-      label="重连间隔时间"
+      :rules="[{ type: 'number', min: 0, message: $t('DataSource.FormItemWebSocket.100080-11'), trigger: 'change' }]"
+      :label="$t('DataSource.FormItemWebSocket.100080-12')"
     >
       <a-input-number
         v-model:value="formData.reconnectionIntervals"
         :min="0"
-        placeholder="不填默认为5000毫秒"
+        :placeholder="$t('DataSource.FormItemWebSocket.100080-13')"
         style="width: 100%"
-        addon-after="ms"
+        :addon-after="$t('DataSource.FormItemWebSocket.100080-3')"
       />
     </a-form-item>
 
     <a-form-item
-      label="数据类型"
+      :label="$t('DataSource.FormItemWebSocket.100080-14')"
       name="payloadType"
     >
       <a-select
         v-model:value="formData.payloadType"
-        placeholder="请选择数据类型"
+        :placeholder="$t('DataSource.FormItemWebSocket.100080-15')"
       >
-        <a-select-option value="JSON">JSON</a-select-option>
-        <a-select-option value="STRING">STRING（文本）</a-select-option>
-        <a-select-option value="BINARY">BINARY（二进制）</a-select-option>
+        <a-select-option value="JSON">{{ $t('DataSource.FormItemWebSocket.100080-16') }}</a-select-option>
+        <a-select-option value="STRING">{{ $t('DataSource.FormItemWebSocket.100080-17') }}</a-select-option>
+        <a-select-option value="BINARY">{{ $t('DataSource.FormItemWebSocket.100080-18') }}</a-select-option>
       </a-select>
     </a-form-item>
   </a-form>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 const props = defineProps({
   modelValue: {
     type: Object,

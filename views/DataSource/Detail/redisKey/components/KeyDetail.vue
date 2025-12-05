@@ -13,7 +13,7 @@
           </j-ellipsis>
         </div>
         <div class="header-actions">
-          <a-tooltip title="删除键">
+          <a-tooltip :title="$t('DataSource.RedisKeyDetail.100058-0')">
             <a-button
               danger
               type="text"
@@ -33,7 +33,7 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-space>
-              数据类型：
+              {{ $t('DataSource.RedisKeyDetail.100058-1') }}：
               <a-tag
                 v-if="keyType"
                 :color="getTypeColor(keyType)"
@@ -48,7 +48,7 @@
           </a-col>
           <a-col :span="12">
             <a-space>
-              过期时间：
+              {{ $t('DataSource.RedisKeyDetail.100058-2') }}：
               <span>{{ formatExpiration(expiration) }}</span>
             </a-space>
           </a-col>
@@ -59,7 +59,7 @@
       <div class="content-section">
         <div class="section-header">
           <TitleComponent
-            data="数据内容"
+            :data="$t('DataSource.RedisKeyDetail.100058-3')"
             class="section-title"
           />
           <div
@@ -77,7 +77,7 @@
         >
           <a-spin
             size="large"
-            tip="加载中..."
+            :tip="$t('DataSource.RedisKeyDetail.100058-4')"
           />
         </div>
 
@@ -98,7 +98,7 @@
           v-else
           class="empty-content"
         >
-          <j-empty description="暂无数据" />
+          <j-empty :description="$t('DataSource.List.100002-0')" />
         </div>
       </div>
     </template>
@@ -108,7 +108,7 @@
       v-else
       class="empty-state"
     >
-      <j-empty description="暂无数据" />
+      <j-empty :description="$t('DataSource.List.100002-0')" />
     </div>
   </div>
 </template>
@@ -123,12 +123,15 @@ import HashType from './dataTypes/HashType.vue'
 import ListType from './dataTypes/ListType.vue'
 import SetType from './dataTypes/SetType.vue'
 import ZsetType from './dataTypes/ZsetType.vue'
+import { useI18n } from 'vue-i18n'
 
 interface KeyItem {
   type: 'dir' | 'key'
   name: string
   prefix?: string
 }
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   selectedKey: KeyItem | null
@@ -255,10 +258,10 @@ const loadKeyDetail = async () => {
 // 删除键
 const handleDelete = () => {
   Modal.confirm({
-    title: '确认删除',
-    content: `确定要删除键 "${props.selectedKey?.name}" 吗？删除后将无法恢复。`,
-    okText: '确定',
-    cancelText: '取消',
+    title: $t('DataSource.RedisKeyDetail.100058-5'),
+    content: $t('DataSource.RedisKeyDetail.100058-6', { name: props.selectedKey?.name || '' }),
+    okText: $t('DataSource.SourceAdd.100005-13'),
+    cancelText: $t('DataSource.SourceAdd.100005-12'),
     okType: 'danger',
     onOk: async () => {
       deleteLoading.value = true
@@ -267,15 +270,15 @@ const handleDelete = () => {
           key: props.selectedKey?.name
         })
         if (res.status === 200) {
-          onlyMessage('删除成功', 'success')
+          onlyMessage($t('DataSource.List.100002-4'), 'success')
           emit('deleted')
           emit('refresh')
         } else {
-          onlyMessage('删除失败', 'error')
+          onlyMessage($t('DataSource.List.100002-5'), 'error')
         }
       } catch (error) {
         console.error('删除键失败:', error)
-        onlyMessage('删除失败', 'error')
+        onlyMessage($t('DataSource.List.100002-5'), 'error')
       } finally {
         deleteLoading.value = false
       }

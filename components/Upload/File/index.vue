@@ -64,6 +64,7 @@ import { TOKEN_KEY } from '@jetlinks-web/constants'
 import { getToken, onlyMessage } from '@jetlinks-web/utils'
 import { fileBatchUpload } from '@datasource-manager-ui/api/comm' // 导入封装好的上传接口
 import { FileStaticPath } from '@jetlinks-web-core/api/comm'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   value: {
@@ -122,6 +123,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:value', 'change', 'remove'])
+const { t: $t } = useI18n()
 const fileList = ref([] as any[])
 const loading = ref(false)
 const action = computed(() => `${FileStaticPath()}${props.publicAccess ? '' : '?options=publicAccess'}`)
@@ -207,7 +209,7 @@ const handleChange = (info: UploadChangeParam) => {
   }
   if (info.file.status === 'error') {
     loading.value = false
-    onlyMessage('上传失败', 'error')
+    onlyMessage($t('DataSource.Upload.100097-0'), 'error')
   }
   if (!info.file.status) {
     fileList.value = fileList.value.filter((item: any) => item.uid !== info.file.uid)
@@ -234,12 +236,12 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   const isMaxSize = file.size / 1024 / 1024 < maxSize
 
   if (!inType) {
-    onlyMessage('请上传正确格式的文件', 'error')
+    onlyMessage($t('DataSource.Upload.100097-1'), 'error')
     return Upload.LIST_IGNORE // 关键：阻止加入 fileList
   }
 
   if (!isMaxSize) {
-    onlyMessage(`文件大小必须小于${maxSize}M`, 'error')
+    onlyMessage($t('DataSource.Upload.100097-2', [maxSize]), 'error')
     return Upload.LIST_IGNORE
   }
 

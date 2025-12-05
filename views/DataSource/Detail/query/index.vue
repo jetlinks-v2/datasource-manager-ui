@@ -7,7 +7,7 @@
         type="primary"
       >
         <AIcon type="PlayCircleOutlined" />
-        运行
+        {{ $t('DataSource.Query.100012-0') }}
       </a-button>
     </div>
 
@@ -15,7 +15,7 @@
       <div class="expression">
         <div class="edit-code">
           <AIcon type="ConsoleSqlOutlined" />
-          SQL表达式
+          {{ $t('DataSource.Query.100012-1') }}
         </div>
         <MonacoEditor
           v-model="queryData"
@@ -36,15 +36,15 @@
               v-if="initialize"
             >
               <AIcon type="TableOutlined" />
-              运行结果
+              {{ $t('DataSource.Query.100012-2') }}
             </div>
             <div
               class="tip"
               v-if="initialize"
             >
-              请点击&nbsp;&nbsp;
-              <span>【运行】</span>
-              &nbsp;&nbsp;按钮，运行结果将在此处展示
+              {{ $t('DataSource.Query.100012-3') }}&nbsp;&nbsp;
+              <span>{{ $t('DataSource.Query.100012-4') }}</span>
+              &nbsp;&nbsp;{{ $t('DataSource.Query.100012-5') }}
             </div>
             <a-tabs
               v-model:activeKey="activeKey"
@@ -57,11 +57,11 @@
                 #leftExtra
                 class="edit-code"
               >
-                <div style="margin-right: 40px">运行结果</div>
+                <div style="margin-right: 40px">{{ $t('DataSource.Query.100012-2') }}</div>
               </template>
               <a-tab-pane
                 :key="index + 1"
-                :tab="`结果${index + 1}`"
+                :tab="$t('DataSource.Query.100012-6', { index: index + 1 })"
                 v-for="(item, index) in executionResult"
               >
                 <a-table
@@ -73,7 +73,7 @@
                   size="small"
                   :scroll="{ y: 180 }"
                 ></a-table>
-                <div v-else-if="typeof item === 'number'">影响行数：{{ item }}行</div>
+                <div v-else-if="typeof item === 'number'">{{ $t('DataSource.Query.100012-7', { count: item }) }}</div>
                 <j-empty v-else />
               </a-tab-pane>
             </a-tabs>
@@ -92,6 +92,9 @@
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   sourceData: Object
@@ -115,7 +118,7 @@ const tabClick = (a) => {
 
 const validateSql = (sqlValue) => {
   if (!sqlValue) {
-    onlyMessage('请先输入SQL语句', 'error')
+    onlyMessage($t('DataSource.Query.100012-8'), 'error')
     return false
   }
 
@@ -125,7 +128,7 @@ const validateSql = (sqlValue) => {
   sqlArr = sqlArr.filter((sql) => sql.trim() !== '')
 
   if (sqlArr.length === 0) {
-    onlyMessage('请输入有效的SQL语句', 'error')
+    onlyMessage($t('DataSource.Query.100012-9'), 'error')
     return false
   }
 
@@ -134,18 +137,18 @@ const validateSql = (sqlValue) => {
     const sql = sqlArr[i].trim().toUpperCase()
 
     if (!sql.startsWith('SELECT')) {
-      onlyMessage(`第${i + 1}条SQL语句必须以SELECT开头`, 'error')
+      onlyMessage($t('DataSource.Query.100012-10', { index: i + 1 }), 'error')
       return false
     }
 
     if (!sql.includes('FROM')) {
-      onlyMessage(`第${i + 1}条SQL语句缺少FROM子句`, 'error')
+      onlyMessage($t('DataSource.Query.100012-11', { index: i + 1 }), 'error')
       return false
     }
 
     const dangerousKeywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'UPDATE', 'INSERT']
     if (dangerousKeywords.some((keyword) => sql.includes(keyword))) {
-      onlyMessage(`第${i + 1}条SQL语句不允许包含修改数据的操作`, 'error')
+      onlyMessage($t('DataSource.Query.100012-12', { index: i + 1 }), 'error')
       return false
     }
   }

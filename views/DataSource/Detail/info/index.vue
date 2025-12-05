@@ -1,6 +1,6 @@
 <template>
   <DescriptionItemList
-    title="基础信息"
+    :title="$t('DataSource.Info.100010-0')"
     :column="3"
     :items="baseInfoItems"
   />
@@ -23,9 +23,11 @@ import { DATASOURCE_NAME, DATA_TYPE_ITEM } from '../../components/table'
 import { SourceDataInfo } from '../type'
 import RedisConnection from './RedisConnection.vue'
 import MongoConnection from './MongoConnection.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{ info: SourceDataInfo; sourceClassify: any; sourceData?: any }>()
 const { info, sourceClassify } = toRefs(props)
+const { t: $t } = useI18n()
 
 // 动态选择连接组件
 const componentMap = {
@@ -56,27 +58,27 @@ const isShowConnection = computed(() => {
 const baseInfoItems = computed<DescriptionItem[]>(() => [
   {
     key: 'type',
-    label: '类型',
+    label: $t('DataSource.table.100003-4'),
     value: sourceType.value
   },
   {
     key: 'name',
-    label: '数据源名称',
+    label: $t('DataSource.Info.100010-1'),
     value: info.value?.name || '--'
   },
   {
     key: 'id',
-    label: '数据源标识',
+    label: $t('DataSource.Info.100010-2'),
     value: info.value?.id || '--'
   },
   {
     key: 'createTime',
-    label: '创建时间',
+    label: $t('DataSource.Info.100010-3'),
     value: formatCreateTime(info.value?.createTime)
   },
   {
     key: 'description',
-    label: '说明',
+    label: $t('DataSource.table.100003-6'),
     value: info.value?.description || '--'
   }
 ])

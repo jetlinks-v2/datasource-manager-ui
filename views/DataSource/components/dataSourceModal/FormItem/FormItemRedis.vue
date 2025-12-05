@@ -7,26 +7,26 @@
     <a-form-item
       name="host"
       :rules="[
-        { required: true, message: '请输入连接地址', trigger: 'blur' },
+        { required: true, message: $t('DataSource.FormItemRedis.100079-0'), trigger: 'blur' },
         {
           pattern:
             /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$|^([a-zA-Z0-9_-]+)(\.[a-zA-Z0-9_-]+)*(\.[a-zA-Z]{2,})/,
-          message: '请输入正确的连接地址',
+          message: $t('DataSource.FormItemRedis.100079-1'),
           trigger: ['blur', 'change']
         }
       ]"
-      label="连接地址"
+      :label="$t('DataSource.FormItemRedis.100079-2')"
     >
       <a-input
         v-model:value="formData.host"
-        placeholder="请输入主机地址"
+        :placeholder="$t('DataSource.FormItemRedis.100079-3')"
       />
     </a-form-item>
 
     <a-form-item
       name="port"
-      label="端口"
-      :rules="[{ required: true, message: '请输入端口号', trigger: 'blur' }]"
+      :label="$t('DataSource.FormItemRedis.100079-4')"
+      :rules="[{ required: true, message: $t('DataSource.FormItemRedis.100079-5'), trigger: 'blur' }]"
     >
       <a-input-number
         v-model:value="formData.port"
@@ -40,34 +40,34 @@
 
     <a-form-item
       name="databaseIndex"
-      label="数据库索引"
-      :rules="[{ required: true, message: '请输入数据库索引', trigger: 'blur' }]"
+      :label="$t('DataSource.FormItemRedis.100079-6')"
+      :rules="[{ required: true, message: $t('DataSource.FormItemRedis.100079-7'), trigger: 'blur' }]"
     >
       <a-input-number
         v-model:value="formData.databaseIndex"
         :min="0"
         :max="15"
         :precision="0"
-        placeholder="请输入数据库索引（0-15）"
+        :placeholder="$t('DataSource.FormItemRedis.100079-8')"
         style="width: 100%"
       />
     </a-form-item>
 
     <a-form-item
       name="userName"
-      label="用户名"
+      :label="$t('DataSource.FormItemRedis.100079-9')"
     >
       <a-input
         v-model:value="formData.userName"
-        placeholder="ACL in Redis >= 6.0"
+        :placeholder="$t('DataSource.FormItemRedis.100079-10')"
         :maxlength="64"
       />
     </a-form-item>
 
-    <a-form-item label="密码">
+    <a-form-item :label="$t('DataSource.FormItemRedis.100079-11')">
       <a-input-password
         v-model:value="formData.password"
-        placeholder="Auth"
+        :placeholder="$t('DataSource.FormItemRedis.100079-12')"
         :maxlength="64"
       />
     </a-form-item>
@@ -75,8 +75,8 @@
     <a-form-item name="delimiter">
       <template #label>
         <a-space>
-          <span>分隔符</span>
-          <a-tooltip title="树状显示的分隔符，设置为空可以禁用详情页中键管理的树状图，直接以列表展示">
+          <span>{{ $t('DataSource.FormItemRedis.100079-13') }}</span>
+          <a-tooltip :title="$t('DataSource.FormItemRedis.100079-14')">
             <a-icon
               type="QuestionCircleFilled"
               style="color: #777"
@@ -87,7 +87,7 @@
       <a-input
         v-model:value="formData.delimiter"
         allow-clear
-        placeholder="请输入树状显示的分隔符"
+        :placeholder="$t('DataSource.FormItemRedis.100079-15')"
         :maxlength="10"
         @blur="handleSeparatorBlur"
       />
@@ -96,7 +96,10 @@
 </template>
 
 <script setup lang="ts" name="FormItemRedis">
+import { useI18n } from 'vue-i18n'
 import { RedisData } from '../../type'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({

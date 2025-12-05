@@ -21,6 +21,9 @@
 
 <script setup lang="ts">
 import CommonTable from './CommonTable.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   data: any
@@ -36,13 +39,13 @@ const tableSortOrder = ref<'ascend' | 'descend' | null>(null)
 
 const columns = computed<any>(() => [
   {
-    title: '序号',
+    title: $t('DataSource.Detail.Redis.Table.Column.Index'),
     key: 'index',
     width: 80,
     align: 'center' as const
   },
   {
-    title: 'Score',
+    title: $t('DataSource.Detail.Redis.Table.Column.Score'),
     key: 'score',
     dataIndex: 'score',
     width: 80,
@@ -51,13 +54,13 @@ const columns = computed<any>(() => [
     sortOrder: tableSortOrder.value
   },
   {
-    title: 'Value',
+    title: $t('DataSource.Detail.Redis.Table.Column.Value'),
     key: 'value',
     dataIndex: 'value',
     ellipsis: true
   },
   {
-    title: '查看',
+    title: $t('DataSource.Detail.Redis.Table.Column.View'),
     key: 'action',
     width: 80,
     align: 'center' as const
@@ -89,6 +92,6 @@ const handleTableChange: any = (_: any, __: any, sorter: any) => {
 }
 
 const handleCountUpdated = (count: number) => {
-  emit('countUpdated', `共 ${count} 个元素`)
+  emit('countUpdated', $t('DataSource.Detail.Redis.Zset.TotalElements', { count }))
 }
 </script>

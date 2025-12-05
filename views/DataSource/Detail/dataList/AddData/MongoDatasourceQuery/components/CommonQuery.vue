@@ -12,7 +12,7 @@
           >
             <template #header>
               <TitleComponent
-                data="集合列表"
+                :data="$t('DataSource.MongoAggregate.100047-0')"
                 :style="{ margin: 0 }"
               />
             </template>
@@ -21,7 +21,7 @@
           <div class="filter-container">
             <div class="filter-container-header">
               <TitleComponent
-                data="条件过滤"
+                :data="$t('DataSource.MongoCommonQuery.100054-0')"
                 :style="{ margin: '0' }"
               />
             </div>
@@ -39,7 +39,7 @@
             </a-form>
             <a-empty
               v-else
-              description="请选择集合"
+              :description="$t('DataSource.MongoCommonQuery.100054-1')"
               :image="Empty.PRESENTED_IMAGE_SIMPLE"
             />
           </div>
@@ -67,6 +67,7 @@ import { convertObjectId } from '@datasource-manager-ui/views/DataSource/Detail/
 import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/collection/components/CollectionList.vue'
 import QueryResults from './QueryResults.vue'
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
+import { useI18n } from 'vue-i18n'
 
 const { DataInputsItem } = moduleRegistry.getResource('visualization-designer-ui', 'components')
 
@@ -97,6 +98,8 @@ const route = useRoute()
 const typeId = route.query.typeId as string
 const datasourceId = route.params.id as string
 
+const { t: $t } = useI18n()
+
 const selectedCollection = ref('')
 const allCollectionsData = ref<CollectionSchema[]>([])
 const filterFields = ref<any[]>([])
@@ -106,12 +109,12 @@ const resultQueryParams = ref<any>({ pageIndex: 0, pageSize: 12 })
 const queryKey = ref(0)
 const initLoading = ref(false)
 
-const termsItem = {
+const termsItem = computed(() => ({
   id: 'terms',
-  name: '过滤条件',
+  name: $t('DataSource.MongoCommonQuery.100054-0'),
   valueType: { type: 'object' },
   expands: {}
-}
+}))
 
 const handleCollectionsLoaded = (collections: CollectionSchema[]) => {
   allCollectionsData.value = collections
@@ -273,7 +276,7 @@ const handleRequest = (request: any) =>
 
 const validateAll = async () => {
   if (!selectedCollection.value) {
-    onlyMessage('请选择集合', 'error')
+    onlyMessage($t('DataSource.MongoCommonQuery.100054-1'), 'error')
     return false
   }
 

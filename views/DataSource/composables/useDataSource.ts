@@ -7,6 +7,7 @@ import {
 } from '@datasource-manager-ui/api/data/datasource'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { DATASOURCE_TYPE, DATA_TYPE_ITEM, datasourceParseUrl } from '../components/table'
+import i18n from '@/locales'
 
 export type EmitFn = (event: string, ...args: any[]) => void
 
@@ -30,7 +31,7 @@ export const useDataSource = (opts: {
       if (res?.success) {
         emit('close')
         emit('update')
-        onlyMessage(isEditor.value ? '修改成功' : '新增成功')
+        onlyMessage(isEditor.value ? i18n.global.t('DataSource.Message.100096-0') : i18n.global.t('DataSource.Message.100096-1'))
       }
     } finally {
       Promise.resolve().then(() => {

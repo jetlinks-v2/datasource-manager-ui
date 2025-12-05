@@ -2,12 +2,12 @@
   <div class="common-query">
     <div class="search-section">
       <TitleComponent
-        data="键列表"
+        :data="$t('DataSource.RedisCommonQuery.100077-0')"
         class="section-title"
       />
       <a-input-search
         v-model:value="searchPattern"
-        placeholder="请输入通配符模式（例如：user:*）"
+        :placeholder="$t('DataSource.RedisCommonQuery.100077-1')"
         :style="{ width: '400px' }"
         @search="handleSearch"
       />
@@ -67,6 +67,7 @@
 </template>
 
 <script setup lang="ts" name="CommonQuery">
+import { useI18n } from 'vue-i18n'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnType } from 'ant-design-vue/es/table'
 import {
@@ -78,6 +79,8 @@ import {
 } from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes'
 import { convertParamsToObject } from '../../components/utils'
 import { cloneDeep } from 'lodash-es'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -107,28 +110,28 @@ const dataTypeComponentMap: Record<string, any> = {
 // 表格列定义
 const tableColumns = [
   {
-    title: 'Key',
+    title: $t('DataSource.RedisCommonQuery.100077-2'),
     dataIndex: 'key',
     key: 'key',
     width: '20%',
     ellipsis: true
   },
   {
-    title: 'Type',
+    title: $t('DataSource.RedisCommonQuery.100077-3'),
     dataIndex: 'type',
     key: 'type',
     width: '10%',
     align: 'center'
   },
   {
-    title: 'Value',
+    title: $t('DataSource.RedisCommonQuery.100077-4'),
     dataIndex: 'value',
     key: 'value',
     width: '55%',
     ellipsis: true
   },
   {
-    title: '查看',
+    title: $t('DataSource.RedisCommonQuery.100077-5'),
     key: 'actions',
     width: '5%',
     align: 'center'
@@ -174,7 +177,7 @@ const loadQueryResults = async (pattern: string) => {
       queryResultList.value = res.result || []
     }
   } catch (error) {
-    console.error('查询键数据失败:', error)
+    console.error($t('DataSource.RedisCommonQuery.100077-6'), error)
     queryResultList.value = []
   } finally {
     queryResultLoading.value = false

@@ -2,7 +2,7 @@
   <div class="query-result">
     <div class="result-header">
       <TitleComponent
-        data="查询结果预览"
+        :data="$t('DataSource.QueryResults.100041-0')"
         :style="{ margin: 0 }"
       />
       <a-button
@@ -12,7 +12,7 @@
         <template #icon>
           <AIcon type="SearchOutlined" />
         </template>
-        查询
+        {{ $t('DataSource.Detail.100008-6') }}
       </a-button>
     </div>
     <j-pro-table
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps({
   columns: {
@@ -48,6 +49,8 @@ defineProps({
     default: 0
   }
 })
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['query'])
 

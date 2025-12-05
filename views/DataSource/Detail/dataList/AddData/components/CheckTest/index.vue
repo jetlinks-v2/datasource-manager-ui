@@ -3,13 +3,14 @@
     <div class="header">
       <div class="title-row">
         <TitleComponent
-          data="动态参数"
+          :data="$t('DataSource.CheckTest.100022-0')"
           class="section-title"
         />
         <a-switch
+          style="width: 100%"
           v-model:checked="isAdvancedMode"
-          checked-children="高级"
-          un-checked-children="普通"
+          :checked-children="$t('DataSource.CheckTest.100022-5')"
+          :un-checked-children="$t('DataSource.CheckTest.100022-6')"
         />
       </div>
       <slot name="sendOutButton" />
@@ -30,7 +31,7 @@
           <FormItem
             :error="formErrors[index]?.value"
             :value="record.value"
-            placeholder="请输入参数值"
+            :placeholder="$t('DataSource.CheckTest.100022-3')"
             @change="(val) => handleFieldChange(val, 'value', record)"
           />
         </template>
@@ -44,7 +45,7 @@
     >
       <div class="advanced-tip">
         <a-alert
-          message="高级模式支持输入任意 JSON 类型的值（数字、布尔、数组、对象等），但不能修改参数名"
+          :message="$t('DataSource.CheckTest.100022-7')"
           type="info"
           show-icon
           :style="{ marginBottom: '8px' }"
@@ -77,6 +78,7 @@
 <script setup lang="ts">
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
+import { useI18n } from 'vue-i18n'
 
 interface ParamItem {
   name: string
@@ -106,20 +108,22 @@ const props = defineProps({
 type ValidatorKey = 'value'
 type ValidatorFn = (value: string, record: ParamItem, index: number) => string
 
-const responseTreeTableColumns = [
+const responseTreeTableColumns = computed(() => [
   {
-    title: '参数名',
+    title: $t('DataSource.CheckTest.100022-1'),
     dataIndex: 'name',
     key: 'name',
     width: '20%',
     ellipsis: true
   },
   {
-    title: '参数值',
+    title: $t('DataSource.CheckTest.100022-2'),
     dataIndex: 'value',
     key: 'value'
   }
-]
+])
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:data', 'update:advancedMode'])
 const dynamicParams = ref<ParamItem[]>([])
@@ -133,8 +137,7 @@ const jsonErrorMsg = ref<string>('')
 
 const validators: Record<ValidatorKey, ValidatorFn> = {
   value: (value: string) => {
-    // if (!value?.trim()) return '请输入值'
-    if (value.length > 64) return '值长度不能超过64个字符'
+    if (value.length > 64) return $t('DataSource.CheckTest.100022-4')
     return ''
   }
 }
@@ -222,8 +225,8 @@ const allowedParamKeys = computed(() => {
 
 // 验证 key 格式
 const validateKey = (key: string): string => {
-  if (!/^[a-zA-Z0-9_-]+$/.test(key)) return `参数名 "${key}" 只能输入英文、数字、-或_`
-  if (key.length > 64) return `参数名 "${key}" 长度不能超过64个字符`
+  if (!/^[a-zA-Z0-9_-]+$/.test(key)) return $t('DataSource.CheckTest.100022-8', { key })
+  if (key.length > 64) return $t('DataSource.CheckTest.100022-9', { key })
   return ''
 }
 
@@ -254,7 +257,7 @@ const validateJson = (value: string): boolean => {
     const parsed = JSON.parse(value)
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
       jsonError.value = true
-      jsonErrorMsg.value = 'JSON 格式错误，必须是对象类型'
+      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-10')
       return false
     }
 
@@ -279,7 +282,7 @@ const validateJson = (value: string): boolean => {
     }
     if (addedKeys.length > 0) {
       jsonError.value = true
-      jsonErrorMsg.value = `不允许新增参数：${addedKeys.join(', ')}`
+      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-11', { keys: addedKeys.join(', ') })
       return false
     }
 
@@ -292,7 +295,7 @@ const validateJson = (value: string): boolean => {
     }
     if (missingKeys.length > 0) {
       jsonError.value = true
-      jsonErrorMsg.value = `缺少必要参数：${missingKeys.join(', ')}`
+      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-12', { keys: missingKeys.join(', ') })
       return false
     }
 
@@ -301,7 +304,7 @@ const validateJson = (value: string): boolean => {
     return true
   } catch {
     jsonError.value = true
-    jsonErrorMsg.value = 'JSON 格式错误'
+    jsonErrorMsg.value = $t('DataSource.CheckTest.100022-13')
     return false
   }
 }
@@ -400,13 +403,15 @@ defineExpose({
 }
 
 .section-title {
-  width: 80px;
+  width: 100%;
+  white-space: nowrap;
   margin: 0;
 }
 
 .title-row {
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
 .advanced-mode {

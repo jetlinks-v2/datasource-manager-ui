@@ -8,7 +8,7 @@
       <template #title>
         <div class="page-header">
           <router-link :to="routeLink">
-            <a-button class="back-btn">返回</a-button>
+            <a-button class="back-btn">{{ $t('DataSource.Detail.100008-0') }}</a-button>
           </router-link>
           <j-ellipsis>
             <div class="page-title">{{ info?.name || '--' }}</div>
@@ -21,7 +21,7 @@
           <a-row>
             <a-col :span="8">
               <div class="info-item">
-                <span class="info-label">标识：</span>
+                <span class="info-label">{{ $t('DataSource.Detail.100008-1') }}</span>
                 <div class="info-value">
                   <j-ellipsis>{{ info?.id || '--' }}</j-ellipsis>
                 </div>
@@ -29,7 +29,7 @@
             </a-col>
             <a-col :span="16">
               <div class="info-item">
-                <span class="info-label">说明：</span>
+                <span class="info-label">{{ $t('DataSource.Detail.100008-2') }}</span>
                 <div class="info-value">
                   <j-ellipsis>{{ info?.description || '--' }}</j-ellipsis>
                 </div>
@@ -47,14 +47,14 @@
             @click="handleDeleteOk"
           >
             <DeleteOutlined />
-            删除
+            {{ $t('DataSource.index.100001-10') }}
           </j-permission-button>
           <j-permission-button
             :hasPermission="`${permission}:update`"
             @click="showSourceEdit"
           >
             <EditOutlined />
-            编辑
+            {{ $t('DataSource.List.100002-2') }}
           </j-permission-button>
           <j-permission-button
             v-if="showTestConnection"
@@ -64,7 +64,7 @@
             type="primary"
           >
             <CheckCircleOutlined />
-            连接测试
+            {{ $t('DataSource.Detail.100008-3') }}
           </j-permission-button>
         </div>
       </template>
@@ -105,6 +105,9 @@ import { DATA_TYPE_ITEM, getTypesDataDetail } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 import { useTestConnection } from '../composables/useTestConnection'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const permission = 'system/DataSource'
 
@@ -131,19 +134,22 @@ const tabActiveKey = ref('Info')
 
 const sourceClassify = ref<DATA_TYPE_ITEM>()
 
-const baseTabs = [{ key: 'Info', tab: '基本信息' }]
-const endTabs = [{ key: 'DataList', tab: '功能列表' }]
+const baseTabs = computed(() => [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }])
+const endTabs = computed(() => [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }])
 
-const dataSourceTabs: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
-  [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
-    { key: 'Table', tab: '表结构' },
-    { key: 'Query', tab: '查询' }
-  ],
-  [DATA_TYPE_ITEM.API_SEND]: [],
-  [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
-  [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: '索引管理' }],
-  [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: '键管理' }],
-  [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: [{ key: 'Collection', tab: '集合管理' }]
+const getDataSourceTabs = (type?: DATA_TYPE_ITEM) => {
+  const map: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
+    [DATA_TYPE_ITEM.RDB_DATASOURCE]: [
+      { key: 'Table', tab: $t('DataSource.Detail.100008-5') },
+      { key: 'Query', tab: $t('DataSource.Detail.100008-6') }
+    ],
+    [DATA_TYPE_ITEM.API_SEND]: [],
+    [DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE]: [],
+    [DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE]: [{ key: 'EsIndex', tab: $t('DataSource.DetailTabs.100062-0') }],
+    [DATA_TYPE_ITEM.REDIS_DATASOURCE]: [{ key: 'RedisKey', tab: $t('DataSource.DetailTabs.100062-1') }],
+    [DATA_TYPE_ITEM.MONGODB_DATASOURCE]: [{ key: 'Collection', tab: $t('DataSource.DetailTabs.100062-2') }]
+  }
+  return (type && map[type]) || []
 }
 
 const routeLink = computed(() => ({
@@ -178,15 +184,15 @@ const handleTestDataSource = async () => {
 
 const handleDeleteOk = async () => {
   Modal.confirm({
-    title: '删除',
-    content: '删除该数据源后，相关数据将被删除，请谨慎操作',
+    title: $t('DataSource.index.100001-10'),
+    content: $t('DataSource.List.100002-3'),
     onOk: async () => {
       const res = await disableDataSource(sourceId)
       if (res.success) {
         const res = await deleteDataSource(sourceId)
         if (res.success) {
           router.push(routeLink.value)
-          onlyMessage('删除成功')
+          onlyMessage($t('DataSource.List.100002-4'))
         }
       }
     }
@@ -200,8 +206,8 @@ const getDetailInfo = async () => {
     info.value = res.result
     sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
 
-    const dynamicTabs = dataSourceTabs[sourceClassify.value] || []
-    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
+    const dynamicTabs = getDataSourceTabs(sourceClassify.value)
+    list.value = [...baseTabs.value, ...dynamicTabs, ...endTabs.value]
   }
 }
 

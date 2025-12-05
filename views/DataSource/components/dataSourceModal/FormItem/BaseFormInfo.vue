@@ -5,17 +5,17 @@
     layout="vertical"
     labelAlign="left"
   >
-    <a-form-item label="类型">
+    <a-form-item :label="$t('DataSource.BaseForm.100071-0')">
       <a-input
         :value="datasourceName"
         disabled
       />
     </a-form-item>
     <a-form-item
-      label="数据源名称"
+      :label="$t('DataSource.BaseForm.100071-1')"
       :rules="[
-        { required: true, message: '请输入数据源名称', trigger: 'blur' },
-        { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+        { required: true, message: $t('DataSource.BaseForm.100071-3'), trigger: 'blur' },
+        { max: 64, message: $t('DataSource.BaseForm.100071-4'), trigger: 'change' },
         {
           validator: spaceValidator,
           trigger: 'blur'
@@ -26,15 +26,15 @@
     >
       <a-input
         v-model:value="formData.name"
-        placeholder="请输入数据源名称"
+        :placeholder="$t('DataSource.BaseForm.100071-2')"
       />
     </a-form-item>
     <a-form-item
       :rules="[
-        { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+        { max: 64, message: $t('DataSource.BaseForm.100071-4'), trigger: 'change' },
         {
           pattern: /^[a-z][a-zA-Z0-9_]*$/,
-          message: '只能以小写字母开头且由数字、字母、下划线组成',
+          message: $t('DataSource.BaseForm.100071-6'),
           trigger: 'change'
         },
         {
@@ -43,23 +43,23 @@
         }
       ]"
       name="id"
-      label="数据源标识"
+      :label="$t('DataSource.BaseForm.100071-5')"
     >
       <a-input
         v-model:value="formData.id"
-        placeholder="不填则自动生成"
+        :placeholder="$t('DataSource.BaseForm.100071-7')"
         :disabled="isEditor"
       />
     </a-form-item>
     <a-form-item
-      label="分类"
+      :label="$t('DataSource.BaseForm.100071-8')"
       name="group"
-      :rules="[{ required: true, message: '请选择分类' }]"
+      :rules="[{ required: true, message: $t('DataSource.BaseForm.100071-9') }]"
     >
       <div class="select-with-button">
         <a-select
           v-model:value="formData.group"
-          placeholder="请选择分类"
+          :placeholder="$t('DataSource.BaseForm.100071-9')"
           allow-clear
         >
           <a-select-option
@@ -82,14 +82,14 @@
       </div>
     </a-form-item>
     <a-form-item
-      :rules="[{ max: 200, message: '最多可输入200个字符' }]"
+      :rules="[{ max: 200, message: $t('DataSource.BaseForm.100071-17') }]"
       :validateFirst="true"
       name="description"
-      label="说明"
+      :label="$t('DataSource.BaseForm.100071-15')"
     >
       <a-textarea
         v-model:value="formData.description"
-        placeholder="请输入说明"
+        :placeholder="$t('DataSource.BaseForm.100071-16')"
         :rows="3"
       />
     </a-form-item>
@@ -97,7 +97,7 @@
 
   <!-- 新增分类弹窗 -->
   <a-modal
-    title="新增分类"
+    :title="$t('DataSource.BaseForm.100071-10')"
     :open="showAddCategory"
     @cancel="handleCancelAddCategory"
     @ok="handleConfirmAddCategory"
@@ -110,11 +110,11 @@
       labelAlign="left"
     >
       <a-form-item
-        label="分类名称"
+        :label="$t('DataSource.BaseForm.100071-11')"
         name="name"
         :rules="[
-          { required: true, message: '请输入分类名称' },
-          { max: 64, message: '最多可输入64个字符', trigger: 'change' },
+          { required: true, message: $t('DataSource.BaseForm.100071-12') },
+          { max: 64, message: $t('DataSource.BaseForm.100071-4'), trigger: 'change' },
           {
             validator: nameValidator,
             trigger: 'blur'
@@ -123,7 +123,7 @@
       >
         <a-input
           v-model:value="categoryFormState.name"
-          placeholder="请输入分类名称"
+          :placeholder="$t('DataSource.BaseForm.100071-12')"
         />
       </a-form-item>
     </a-form>
@@ -131,12 +131,15 @@
 </template>
 
 <script lang="ts" name="BaseFormInfo" setup>
+import { useI18n } from 'vue-i18n'
 import { Rule } from 'ant-design-vue/es/form'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { getDataSourceRepeat } from '@datasource-manager-ui/api/data/datasource'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { addDataSourceGroup } from '@datasource-manager-ui/api/data'
 import { BaseFormData } from '../../type'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -181,7 +184,7 @@ const labelKeyValidator = async (_: Rule, value: string) => {
   if (value && !props.isEditor) {
     const resp = await getDataSourceRepeat(value)
     if (resp.status === 200) {
-      if (resp.result) return Promise.reject('标识重复')
+      if (resp.result) return Promise.reject($t('DataSource.BaseForm.100071-14'))
       else return Promise.resolve()
     }
   }
@@ -191,7 +194,7 @@ const nameValidator = async (_: Rule, value: string) => {
   if (value) {
     const res = props.categoryList.find((item: any) => item.name === value)
     if (res) {
-      return Promise.reject('分类名称重复')
+      return Promise.reject($t('DataSource.BaseForm.100071-13'))
     }
     return Promise.resolve()
   }
@@ -214,7 +217,7 @@ const handleConfirmAddCategory = () => {
       categoryFormRef.value.resetFields()
       formData.value.group = res.result.id
       emit('refreshCategoryList')
-      onlyMessage('新增成功')
+      onlyMessage($t('DataSource.BaseForm.100071-18'))
     }
   })
 }

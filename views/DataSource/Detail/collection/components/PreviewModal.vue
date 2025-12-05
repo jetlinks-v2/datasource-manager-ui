@@ -66,6 +66,9 @@
 import { convertToTableTreeData } from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/utils'
 import CommandTable from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/CommandParams/CommandTable.vue'
 import JsonEditor from '@datasource-manager-ui/views/DataSource/Detail/dataList/AddData/components/JsonEditor.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface Props {
   open: boolean
@@ -78,14 +81,14 @@ const emit = defineEmits(['update:open'])
 const activeTab = ref('table')
 
 const tabOptions = [
-  { label: '文档结构', value: 'table' },
-  { label: 'JSON Schema', value: 'json' }
+  { label: $t('DataSource.Detail.Collection.Preview.TableStructure'), value: 'table' },
+  { label: $t('DataSource.Detail.Collection.Preview.JsonSchema'), value: 'json' }
 ]
 
 const columns = [
-  { title: '标识', dataIndex: 'id', key: 'id', width: '30%' },
-  { title: '名称', dataIndex: 'name', key: 'name', width: '30%' },
-  { title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: '40%' }
+  { title: $t('DataSource.Detail.Collection.Preview.Column.Identifier'), dataIndex: 'id', key: 'id', width: '30%' },
+  { title: $t('DataSource.Detail.Collection.Preview.Column.Name'), dataIndex: 'name', key: 'name', width: '30%' },
+  { title: $t('DataSource.Detail.Collection.Preview.Column.DataType'), dataIndex: 'dataType', key: 'dataType', width: '40%' }
 ]
 
 const tableData = computed(() => (props.rawData ? convertToTableTreeData(props.rawData) : []))

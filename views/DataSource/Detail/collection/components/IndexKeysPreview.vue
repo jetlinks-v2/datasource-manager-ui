@@ -32,28 +32,40 @@
 
 <script setup lang="ts">
 import { EyeOutlined, KeyOutlined } from '@ant-design/icons-vue'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   keys: Record<string, any>
 }
 
 defineProps<Props>()
+const { t: $t } = useI18n()
 
 // MongoDB 索引类型配置
 const INDEX_TYPE_CONFIG = {
-  '1': { name: '升序', color: 'blue' },
-  '-1': { name: '降序', color: 'cyan' },
-  '2d': { name: '二维平面索引', color: 'purple' },
-  '2dsphere': { name: '球面几何索引', color: 'geekblue' },
-  text: { name: '文本索引', color: 'orange' },
-  hashed: { name: '哈希索引', color: 'green' },
-  geoHaystack: { name: '地理位置索引', color: 'magenta' }
+  '1': { color: 'blue' },
+  '-1': { color: 'cyan' },
+  '2d': { color: 'purple' },
+  '2dsphere': { color: 'geekblue' },
+  text: { color: 'orange' },
+  hashed: { color: 'green' },
+  geoHaystack: { color: 'magenta' }
 } as any
 
 // 获取索引类型名称
 const getIndexTypeName = (value: string): string => {
-  return INDEX_TYPE_CONFIG[value]?.name || value
+  const typeMap = {
+    '1': 'DataSource.IndexType.100095-0',
+    '-1': 'DataSource.IndexType.100095-1',
+    '2d': 'DataSource.IndexType.100095-2',
+    '2dsphere': 'DataSource.IndexType.100095-3',
+    'text': 'DataSource.IndexType.100095-4',
+    'hashed': 'DataSource.IndexType.100095-5',
+    'geoHaystack': 'DataSource.IndexType.100095-6'
+  }
+  return $t(typeMap[value as keyof typeof typeMap]) || value
 }
+
 // 获取索引类型对应的颜色
 const getIndexTypeColor = (value: string): string => {
   return INDEX_TYPE_CONFIG[value]?.color || 'default'

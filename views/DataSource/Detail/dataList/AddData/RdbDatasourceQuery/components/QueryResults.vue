@@ -1,7 +1,7 @@
 <template>
   <div class="query-result">
     <TitleComponent
-      data="查询结果预览"
+      :data="$t('DataSource.QueryResults.100041-0')"
       :style="{ marginBottom: '0' }"
     />
     <j-pro-table
@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 defineProps({
   columns: {
     type: Array,
@@ -30,6 +32,8 @@ defineProps({
     required: true
   }
 })
+
+const { t: $t } = useI18n()
 </script>
 
 <style scoped lang="less">

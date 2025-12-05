@@ -3,7 +3,7 @@
     <!-- 脚本编辑区域 -->
     <div class="section-header">
       <TitleComponent
-        data="Lua 脚本"
+        :data="$t('DataSource.RedisScriptQuery.100078-0')"
         class="section-title"
       />
       <a-space>
@@ -20,7 +20,7 @@
               />
             </div>
           </template>
-          <a-tooltip title="帮助文档">
+          <a-tooltip :title="$t('DataSource.RedisScriptQuery.100078-1')">
             <a-button
               type="text"
               ghost
@@ -71,7 +71,7 @@
               <template #icon>
                 <AIcon type="PlayCircleOutlined" />
               </template>
-              执行
+              {{ $t('DataSource.RedisScriptQuery.100078-3') }}
             </a-button>
           </a-space>
         </template>
@@ -85,12 +85,12 @@
     >
       <div class="section-header">
         <TitleComponent
-          data="执行结果"
+          :data="$t('DataSource.RedisScriptQuery.100078-4')"
           class="section-title"
         />
         <div class="result-info">
           <a-tag :color="executionSuccess ? 'success' : 'error'">
-            {{ executionSuccess ? '执行成功' : '执行失败' }}
+            {{ executionSuccess ? $t('DataSource.RedisScriptQuery.100078-5') : $t('DataSource.RedisScriptQuery.100078-6') }}
           </a-tag>
         </div>
       </div>
@@ -107,6 +107,7 @@
 </template>
 
 <script setup lang="ts" name="RedisScriptQuery">
+import { useI18n } from 'vue-i18n'
 import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
 import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
@@ -114,6 +115,8 @@ import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/A
 import { convertParamsToObject } from '../../components/utils'
 import { convertToTableTreeData, parseTableTreeToMetadata } from '../../utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+
+const { t: $t } = useI18n()
 
 interface Props {
   data?: {
@@ -142,12 +145,12 @@ const luaEditorRef = ref<any>()
 const checkTestRef = ref<any>()
 
 const outputTypeEnum = ref([
-  { value: 'BOOLEAN', label: '布尔值 (BOOLEAN)' },
-  { value: 'INTEGER', label: '整数 (INTEGER)' },
-  { value: 'MULTI', label: '多项 (MULTI)' },
-  { value: 'STATUS', label: '状态 (STATUS)' },
-  { value: 'VALUE', label: '值 (VALUE)' },
-  { value: 'OBJECT', label: '对象 (OBJECT)' }
+  { value: 'BOOLEAN', label: $t('DataSource.RedisScriptQuery.100078-7') },
+  { value: 'INTEGER', label: $t('DataSource.RedisScriptQuery.100078-8') },
+  { value: 'MULTI', label: $t('DataSource.RedisScriptQuery.100078-9') },
+  { value: 'STATUS', label: $t('DataSource.RedisScriptQuery.100078-10') },
+  { value: 'VALUE', label: $t('DataSource.RedisScriptQuery.100078-11') },
+  { value: 'OBJECT', label: $t('DataSource.RedisScriptQuery.100078-12') }
 ])
 
 const helpContent = ref(`-- Redis Lua 脚本示例
@@ -237,13 +240,13 @@ const handleExecute = async () => {
       hasResult.value = true
     }
 
-    onlyMessage('脚本执行成功')
+    onlyMessage($t('DataSource.RedisScriptQuery.100078-13'))
   } catch (error: any) {
     executionSuccess.value = false
     resultJson.value = JSON.stringify(
       {
         success: false,
-        error: error.message || '脚本执行失败',
+        error: error.message || $t('DataSource.RedisScriptQuery.100078-14'),
         timestamp: Date.now()
       },
       null,
@@ -251,7 +254,7 @@ const handleExecute = async () => {
     )
     hasResult.value = true
 
-    onlyMessage('脚本执行失败', 'error')
+    onlyMessage($t('DataSource.RedisScriptQuery.100078-14'), 'error')
   } finally {
     executing.value = false
 
@@ -267,12 +270,12 @@ const handleExecute = async () => {
 // 验证
 const validateAll = async () => {
   if (!scriptContent.value.trim()) {
-    onlyMessage('请输入 Lua 脚本', 'error')
+    onlyMessage($t('DataSource.RedisScriptQuery.100078-15'), 'error')
     return false
   }
 
   if (!checkTestRef.value?.validateAll()) {
-    onlyMessage('请检查动态参数', 'error')
+    onlyMessage($t('DataSource.RedisScriptQuery.100078-16'), 'error')
     return false
   }
 
@@ -332,7 +335,7 @@ watch(
         const variables = luaEditorRef.value?.extractVariables?.() || []
         handleVariablesChange(variables)
       } catch (error) {
-        console.error('解析脚本变量失败', error)
+        console.error($t('DataSource.RedisScriptQuery.100078-17'), error)
       }
     })
   },

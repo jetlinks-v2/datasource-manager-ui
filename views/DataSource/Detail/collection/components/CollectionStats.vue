@@ -4,7 +4,7 @@
       <template v-if="stats">
         <!-- 基本信息 -->
         <div class="stats-section">
-          <TitleComponent data="基本信息" />
+          <TitleComponent :data="$t('DataSource.CollectionStats.100060-0')" />
           <div class="info-grid">
             <div
               v-for="item in infoItems"
@@ -27,7 +27,7 @@
 
         <!-- 索引列表 -->
         <div class="stats-section">
-          <TitleComponent data="索引列表" />
+          <TitleComponent :data="$t('DataSource.CollectionStats.100060-1')" />
           <a-table
             :columns="indexColumns"
             :data-source="stats.indexList"
@@ -38,12 +38,12 @@
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'unique'">
                 <a-tag :color="record.unique ? 'green' : 'default'">
-                  {{ record.unique ? '是' : '否' }}
+                  {{ record.unique ? $t('DataSource.CollectionStats.100060-13') : $t('DataSource.CollectionStats.100060-14') }}
                 </a-tag>
               </template>
               <template v-else-if="column.key === 'sparse'">
                 <a-tag :color="record.sparse ? 'orange' : 'default'">
-                  {{ record.sparse ? '是' : '否' }}
+                  {{ record.sparse ? $t('DataSource.CollectionStats.100060-13') : $t('DataSource.CollectionStats.100060-14') }}
                 </a-tag>
               </template>
               <template v-else-if="column.key === 'expire'">
@@ -57,10 +57,10 @@
         </div>
       </template>
       <div
-        v-else
-        class="empty-stats"
-      >
-        <j-empty description="暂无统计信息" />
+      v-else
+      class="empty-stats"
+    >
+      <j-empty :description="$t('DataSource.CollectionStats.100060-12')" />
       </div>
     </a-spin>
   </div>
@@ -70,6 +70,7 @@
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import IndexKeysPreview from './IndexKeysPreview.vue'
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
+import { useI18n } from 'vue-i18n'
 
 interface CollectionStats {
   ns: string
@@ -98,6 +99,7 @@ const dataSourceId = route.params.id as string
 
 const stats = ref<CollectionStats | null>(null)
 const loading = ref(false)
+const { t: $t } = useI18n()
 
 // 基本信息项配置
 const infoItems = computed(() => {
@@ -105,71 +107,71 @@ const infoItems = computed(() => {
   return [
     {
       key: 'ns',
-      label: '命名空间',
+      label: $t('DataSource.CollectionStats.100060-2'),
       value: stats.value.ns
     },
     {
       key: 'count',
-      label: '文档数',
+      label: $t('DataSource.CollectionStats.100060-3'),
       value: formatNumber(stats.value.count),
       tag: true,
       tagColor: 'blue'
     },
     {
       key: 'size',
-      label: '数据总大小',
+      label: $t('DataSource.CollectionStats.100060-4'),
       value: formatBytes(stats.value.size)
     },
     {
       key: 'avgObjSize',
-      label: '平均文档大小',
+      label: $t('DataSource.CollectionStats.100060-5'),
       value: formatBytes(stats.value.avgObjSize)
     },
     {
       key: 'storageSize',
-      label: '存储大小',
+      label: $t('DataSource.CollectionStats.100060-6'),
       value: formatBytes(stats.value.storageSize)
     }
   ]
 })
 
 // 索引表格列定义
-const indexColumns = [
+const indexColumns = computed(() => [
   {
-    title: '索引名',
+    title: $t('DataSource.CollectionStats.100060-7'),
     dataIndex: 'name',
     key: 'name',
     width: 100
   },
   {
-    title: '唯一索引',
+    title: $t('DataSource.CollectionStats.100060-8'),
     dataIndex: 'unique',
     key: 'unique',
     width: 100,
     align: 'center' as const
   },
   {
-    title: '稀疏索引',
+    title: $t('DataSource.CollectionStats.100060-9'),
     dataIndex: 'sparse',
     key: 'sparse',
     width: 100,
     align: 'center' as const
   },
   {
-    title: '过期时间',
+    title: $t('DataSource.CollectionStats.100060-10'),
     dataIndex: 'expire',
     key: 'expire',
     width: 100,
     align: 'center' as const
   },
   {
-    title: '索引字段',
+    title: $t('DataSource.CollectionStats.100060-11'),
     dataIndex: 'keys',
     key: 'keys',
     width: 80,
     align: 'center' as const
   }
-]
+])
 
 // 格式化数字
 const formatNumber = (num: number): string => {

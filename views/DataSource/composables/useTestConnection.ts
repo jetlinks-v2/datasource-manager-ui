@@ -1,5 +1,6 @@
 import { testDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
+import i18n from '@/locales'
 
 /**
  * 测试连接 Composable
@@ -24,15 +25,17 @@ export function useTestConnection() {
       })
 
       if (res?.result.ok === true) {
-        onlyMessage('连接数据源成功')
+        onlyMessage(i18n.global.t('DataSource.SourceAdd.100005-19'))
         return true
       } else {
-        const errorMsg = res?.result?.reason?.cause?.message || '请求超时'
-        onlyMessage(`连接数据源失败，${errorMsg}`, 'error')
+        const errorMsg =
+          res?.result?.reason?.cause?.message || i18n.global.t('DataSource.SourceAdd.100005-21')
+        onlyMessage(i18n.global.t('DataSource.SourceAdd.100005-20', { reason: errorMsg }), 'error')
         return false
       }
     } catch (err) {
-      onlyMessage('连接数据源失败', 'error')
+      const reason = (err as Error)?.message || i18n.global.t('DataSource.SourceAdd.100005-21')
+      onlyMessage(i18n.global.t('DataSource.SourceAdd.100005-20', { reason }), 'error')
       return false
     } finally {
       loading.value = false

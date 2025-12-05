@@ -2,7 +2,7 @@
   <div class="pipeline-stages">
     <div class="stages-header">
       <TitleComponent
-        data="管道阶段"
+        :data="$t('DataSource.MongoAggregateStages.100048-0')"
         :style="{ margin: 0 }"
       />
       <a-button
@@ -62,12 +62,15 @@
 <script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
+import { useI18n } from 'vue-i18n'
 
 interface PipelineStage {
   id: string
   type: string
   body: string
 }
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   stages: PipelineStage[]
@@ -93,7 +96,7 @@ const setStageRef = (el: any, index: number) => {
 const handleAddStage = () => {
   // 检查是否超过 20 个阶段
   if (props.stages.length >= 20) {
-    onlyMessage('管道阶段数量已达到上限（20个），无法继续添加', 'warning')
+    onlyMessage($t('DataSource.MongoAggregateStages.100048-1'), 'warning')
     return
   }
   emit('add')
