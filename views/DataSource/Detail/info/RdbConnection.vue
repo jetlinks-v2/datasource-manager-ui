@@ -1,6 +1,6 @@
 <template>
   <DescriptionItemList
-    :title="$t('DataSource.Info.Rdb.100066-0')"
+    :title="$t('Info.Rdb.100066-0')"
     :column="3"
     :items="visibleItems"
   />
@@ -73,49 +73,49 @@ const getDatabaseName = computed(() => {
 const databaseItems = computed<DescriptionItem[]>(() => [
   {
     key: 'connectionMode',
-    label: $t('DataSource.Info.Rdb.100066-1'),
-    value: isBasicMode.value ? $t('DataSource.Info.Rdb.100066-2') : $t('DataSource.Info.Rdb.100066-3'),
+    label: $t('Info.Rdb.100066-1'),
+    value: isBasicMode.value ? $t('Info.Rdb.100066-2') : $t('Info.Rdb.100066-3'),
     condition: true
   },
   {
     key: 'address',
-    label: isBasicMode.value ? $t('DataSource.Info.Rdb.100066-4') : $t('DataSource.Info.Rdb.100066-5'),
+    label: isBasicMode.value ? $t('Info.Rdb.100066-4') : $t('Info.Rdb.100066-5'),
     value: isBasicMode.value ? databaseData.host : databaseData.url,
     condition: true
   },
   {
     key: 'port',
-    label: $t('DataSource.Info.Rdb.100066-6'),
+    label: $t('Info.Rdb.100066-6'),
     value: databaseData.port || '--',
     condition: isBasicMode.value
   },
   {
     key: 'serviceName',
-    label: $t('DataSource.Info.Rdb.100066-7'),
+    label: $t('Info.Rdb.100066-7'),
     value: databaseData.databaseName,
     condition: isOracle.value && isBasicMode.value
   },
   {
     key: 'databaseName',
-    label: $t('DataSource.Info.Rdb.100066-8'),
+    label: $t('Info.Rdb.100066-8'),
     value: getDatabaseName.value,
     condition: !isOracle.value && !isDameng.value && isBasicMode.value
   },
   {
     key: 'schema',
-    label: $t('DataSource.Info.Rdb.100066-9'),
+    label: $t('Info.Rdb.100066-9'),
     value: databaseData.schema || '--',
     condition: true
   },
   {
     key: 'username',
-    label: $t('DataSource.Info.Rdb.100066-10'),
+    label: $t('Info.Rdb.100066-10'),
     value: databaseData.username || '--',
     condition: true
   },
   {
     key: 'password',
-    label: $t('DataSource.Info.Rdb.100066-11'),
+    label: $t('Info.Rdb.100066-11'),
     component: MaskDisplay,
     componentProps: {
       value: databaseData.password,

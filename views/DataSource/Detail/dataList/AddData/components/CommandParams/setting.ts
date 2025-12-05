@@ -9,40 +9,40 @@ import i18n from '@/locales'
 
 // API数据源类型选项
 export const defaultApiDataTypeOptions = [
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-0'), value: 'int' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-1'), value: 'long' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-2'), value: 'float' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-3'), value: 'double' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-4'), value: 'string' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-5'), value: 'boolean' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-6'), value: 'date' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-7'), value: 'enum' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-8'), value: 'array' },
-  { label: i18n.global.t('DataSource.CommandParams.Setting.100091-9'), value: 'object' }
+  { label: i18n.global.t('CommandParams.Setting.100091-0'), value: 'int' },
+  { label: i18n.global.t('CommandParams.Setting.100091-1'), value: 'long' },
+  { label: i18n.global.t('CommandParams.Setting.100091-2'), value: 'float' },
+  { label: i18n.global.t('CommandParams.Setting.100091-3'), value: 'double' },
+  { label: i18n.global.t('CommandParams.Setting.100091-4'), value: 'string' },
+  { label: i18n.global.t('CommandParams.Setting.100091-5'), value: 'boolean' },
+  { label: i18n.global.t('CommandParams.Setting.100091-6'), value: 'date' },
+  { label: i18n.global.t('CommandParams.Setting.100091-7'), value: 'enum' },
+  { label: i18n.global.t('CommandParams.Setting.100091-8'), value: 'array' },
+  { label: i18n.global.t('CommandParams.Setting.100091-9'), value: 'object' }
 ]
 
 // 参数配置表默认列
 export const defaultParamsColumns = [
   {
-    title: i18n.global.t('DataSource.CommandParams.Setting.100091-10'),
+    title: i18n.global.t('CommandParams.Setting.100091-10'),
     dataIndex: 'id',
     key: 'id',
     width: '30%'
   },
   {
-    title: i18n.global.t('DataSource.CommandParams.Setting.100091-11'),
+    title: i18n.global.t('CommandParams.Setting.100091-11'),
     dataIndex: 'dataType',
     key: 'dataType',
     width: '30%'
   },
   {
-    title: i18n.global.t('DataSource.CommandParams.Setting.100091-12'),
+    title: i18n.global.t('CommandParams.Setting.100091-12'),
     dataIndex: 'name',
     key: 'name',
     width: '30%'
   },
   {
-    title: i18n.global.t('DataSource.CommandParams.Setting.100091-13'),
+    title: i18n.global.t('CommandParams.Setting.100091-13'),
     dataIndex: 'operate',
     key: 'operate',
     align: 'center',
@@ -67,7 +67,7 @@ export function useDataTypeManagement() {
   const typeDefaults = {
     float: { scale: 0 },
     double: { scale: 0 },
-    boolean: { trueValue: 'true', trueText: i18n.global.t('DataSource.CommandParams.Setting.100091-14'), falseValue: 'false', falseText: i18n.global.t('DataSource.CommandParams.Setting.100091-15') },
+    boolean: { trueValue: 'true', trueText: i18n.global.t('CommandParams.Setting.100091-14'), falseValue: 'false', falseText: i18n.global.t('CommandParams.Setting.100091-15') },
     date: { format: 'yyyy-MM-dd HH:mm:ss' },
     string: { expands: { maxLength: 1 } },
     enum: { elements: [], type: 'enum' },
@@ -95,20 +95,20 @@ export function useDataTypeManagement() {
   // 验证数据类型
   const validateDataType = (record: any, mode: 'treeTable' | 'defaultTable' = 'defaultTable'): string => {
     if (!record.dataType?.type) {
-      return i18n.global.t('DataSource.CommandParams.Setting.100091-16')
+      return i18n.global.t('CommandParams.Setting.100091-16')
     }
     const isTree = mode === 'treeTable'
     const special = ['object', 'array'].includes(record.dataType.type)
     if (!isTree || (isTree && !special)) {
       if (record.dataType.type === 'enum' && !record.dataType.elements?.length) {
-        return i18n.global.t('DataSource.CommandParams.Setting.100091-17')
+        return i18n.global.t('CommandParams.Setting.100091-17')
       }
       if (record.dataType.type === 'object' && !record.dataType.properties?.length) {
-        return i18n.global.t('DataSource.CommandParams.Setting.100091-18')
+        return i18n.global.t('CommandParams.Setting.100091-18')
       }
       if (record.dataType.type === 'array') {
         if (record.dataType.elementType.type === 'object' && !record.dataType.elementType.properties?.length) {
-          return i18n.global.t('DataSource.CommandParams.Setting.100091-19')
+          return i18n.global.t('CommandParams.Setting.100091-19')
         }
       }
     }

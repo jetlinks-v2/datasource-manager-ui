@@ -1,6 +1,6 @@
 <template>
   <DescriptionItemList
-    :title="$t('DataSource.Info.Es.100064-0')"
+    :title="$t('Info.Es.100064-0')"
     :column="3"
     :items="visibleItems"
   />
@@ -48,25 +48,25 @@ const esData = reactive<EsConfig>({
 const esItems = computed<DescriptionItem[]>(() => [
   {
     key: 'uri',
-    label: $t('DataSource.Info.Es.100064-1'),
+    label: $t('Info.Es.100064-1'),
     value: esData.uri || '--',
     condition: true
   },
   {
     key: 'pathPrefix',
-    label: $t('DataSource.Info.Es.100064-2'),
+    label: $t('Info.Es.100064-2'),
     value: esData.pathPrefix || '--',
     condition: true
   },
   {
     key: 'username',
-    label: $t('DataSource.Info.Es.100064-3'),
+    label: $t('Info.Es.100064-3'),
     value: esData.username || '--',
     condition: true
   },
   {
     key: 'password',
-    label: $t('DataSource.Info.Es.100064-4'),
+    label: $t('Info.Es.100064-4'),
     component: MaskDisplay,
     componentProps: {
       value: esData.password,

@@ -167,7 +167,7 @@ const basicInfoItems = computed<DescriptionItem[]>(() => [
 // 索引字段表格列配置
 const fieldColumns = computed(() => [
   {
-    title: $t('DataSource.Detail.table.100009-0'),
+    title: $t('Detail.table.100009-0'),
     key: 'index',
     dataIndex: 'index',
     width: 80,
@@ -180,13 +180,13 @@ const fieldColumns = computed(() => [
     ellipsis: true
   },
   {
-    title: $t('DataSource.Detail.table.100009-1'),
+    title: $t('Detail.table.100009-1'),
     dataIndex: 'name',
     key: 'name',
     ellipsis: true
   },
   {
-    title: $t('DataSource.Detail.table.100009-2'),
+    title: $t('Detail.table.100009-2'),
     dataIndex: ['valueType', 'type'],
     key: 'type',
     ellipsis: true

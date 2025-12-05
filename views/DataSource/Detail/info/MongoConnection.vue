@@ -1,14 +1,14 @@
 <template>
   <div class="mongo-connection">
     <DescriptionItemList
-      :title="$t('DataSource.Info.Mongo.100065-0')"
+      :title="$t('Info.Mongo.100065-0')"
       :column="3"
       :items="items"
     />
 
     <KeyValueTable
       v-if="hasOptions"
-      :title="$t('DataSource.Info.Mongo.100065-1')"
+      :title="$t('Info.Mongo.100065-1')"
       :data-source="optionsData"
     />
   </div>
@@ -67,58 +67,58 @@ const items = computed<DescriptionItem[]>(() => {
   return [
     {
       key: 'connectionMode',
-      label: $t('DataSource.Info.Mongo.100065-2'),
-      value: isUrlMode ? $t('DataSource.Info.Mongo.100065-3') : $t('DataSource.Info.Mongo.100065-4'),
+      label: $t('Info.Mongo.100065-2'),
+      value: isUrlMode ? $t('Info.Mongo.100065-3') : $t('Info.Mongo.100065-4'),
       condition: true
     },
     {
       key: 'uri',
-      label: $t('DataSource.Info.Mongo.100065-5'),
+      label: $t('Info.Mongo.100065-5'),
       component: MaskDisplay,
       componentProps: { value: mongoData.uri, placeholder: '--' },
       condition: isUrlMode
     },
     {
       key: 'host',
-      label: $t('DataSource.Info.Mongo.100065-6'),
+      label: $t('Info.Mongo.100065-6'),
       value: mongoData.host || '--',
       condition: !isUrlMode
     },
     {
       key: 'port',
-      label: $t('DataSource.Info.Mongo.100065-7'),
+      label: $t('Info.Mongo.100065-7'),
       value: mongoData.port !== undefined ? String(mongoData.port) : '--',
       condition: !isUrlMode
     },
     {
       key: 'database',
-      label: $t('DataSource.Info.Mongo.100065-8'),
+      label: $t('Info.Mongo.100065-8'),
       value: mongoData.database || '--',
       condition: !isUrlMode
     },
     {
       key: 'username',
-      label: $t('DataSource.Info.Rdb.100066-10'),
+      label: $t('Info.Rdb.100066-10'),
       value: mongoData.username || '--',
       condition: !isUrlMode
     },
     {
       key: 'password',
-      label: $t('DataSource.Info.Mongo.100065-12'),
+      label: $t('Info.Mongo.100065-12'),
       component: MaskDisplay,
       componentProps: { value: mongoData.password, placeholder: '--' },
       condition: !isUrlMode
     },
     {
       key: 'authDatabase',
-      label: $t('DataSource.Info.Mongo.100065-9'),
+      label: $t('Info.Mongo.100065-9'),
       value: mongoData.authDatabase || '--',
       condition: !isUrlMode
     },
     {
       key: 'sslEnabled',
-      label: $t('DataSource.Info.Mongo.100065-10'),
-      value: mongoData.sslEnabled ? $t('DataSource.Info.Mongo.100065-11') : $t('DataSource.Info.Mongo.100065-12'),
+      label: $t('Info.Mongo.100065-10'),
+      value: mongoData.sslEnabled ? $t('Info.Mongo.100065-11') : $t('Info.Mongo.100065-12'),
       condition: !isUrlMode
     }
   ]

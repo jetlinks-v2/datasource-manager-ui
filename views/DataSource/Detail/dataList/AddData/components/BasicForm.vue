@@ -201,9 +201,16 @@ const getFormData = async () => {
 }
 
 watch(
-  [() => props.dynamicParams, props.testData],
-  ([computedInput, computedOutput]) => {
+  () => props.dynamicParams,
+  (computedInput) => {
     commandModelValue.value.input = computedInput || []
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  () => props.testData,
+  (computedOutput) => {
     commandModelValue.value.output = computedOutput || []
   },
   { deep: true, immediate: true }
