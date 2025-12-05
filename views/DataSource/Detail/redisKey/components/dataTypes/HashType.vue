@@ -20,6 +20,9 @@
 
 <script setup lang="ts">
 import CommonTable from './CommonTable.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   data: any
@@ -33,27 +36,27 @@ const emit = defineEmits<{
 
 const columns = [
   {
-    title: '序号',
+    title: $t('DataSource.Detail.Redis.Table.Column.Index'),
     key: 'index',
     width: 80,
     align: 'center' as const
   },
   {
-    title: 'Key',
+    title: $t('DataSource.Detail.Redis.Table.Column.Key'),
     key: 'key',
     dataIndex: 'key',
     width: '40%',
     ellipsis: true
   },
   {
-    title: 'Value',
+    title: $t('DataSource.Detail.Redis.Table.Column.Value'),
     key: 'value',
     dataIndex: 'value',
     width: '60%',
     ellipsis: true
   },
   {
-    title: '查看',
+    title: $t('DataSource.Detail.Redis.Table.Column.View'),
     key: 'action',
     width: 80,
     align: 'center' as const
@@ -75,6 +78,6 @@ const tableData = computed(() => {
 })
 
 const handleCountUpdated = (count: number) => {
-  emit('countUpdated', `共 ${count} 个值`)
+  emit('countUpdated', $t('DataSource.Detail.Redis.Hash.TotalValues', { count }))
 }
 </script>

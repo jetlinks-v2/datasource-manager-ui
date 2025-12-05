@@ -1,15 +1,18 @@
 <template>
   <DescriptionItemList
-    title="数据连接"
+    :title="$t('Info.Rdb.100066-0')"
     :column="3"
     :items="visibleItems"
   />
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { datasourceParseUrl, DATASOURCE_TYPE, typesData } from '../../components/table'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
+
+const { t: $t } = useI18n()
 
 interface DatabaseConfig {
   host: string
@@ -70,49 +73,49 @@ const getDatabaseName = computed(() => {
 const databaseItems = computed<DescriptionItem[]>(() => [
   {
     key: 'connectionMode',
-    label: '连接方式',
-    value: isBasicMode.value ? '通过基本配置连接' : '连接URL',
+    label: $t('Info.Rdb.100066-1'),
+    value: isBasicMode.value ? $t('Info.Rdb.100066-2') : $t('Info.Rdb.100066-3'),
     condition: true
   },
   {
     key: 'address',
-    label: isBasicMode.value ? '数据库地址' : '连接地址',
+    label: isBasicMode.value ? $t('Info.Rdb.100066-4') : $t('Info.Rdb.100066-5'),
     value: isBasicMode.value ? databaseData.host : databaseData.url,
     condition: true
   },
   {
     key: 'port',
-    label: '端口',
+    label: $t('Info.Rdb.100066-6'),
     value: databaseData.port || '--',
     condition: isBasicMode.value
   },
   {
     key: 'serviceName',
-    label: '服务名',
+    label: $t('Info.Rdb.100066-7'),
     value: databaseData.databaseName,
     condition: isOracle.value && isBasicMode.value
   },
   {
     key: 'databaseName',
-    label: '数据库名称',
+    label: $t('Info.Rdb.100066-8'),
     value: getDatabaseName.value,
     condition: !isOracle.value && !isDameng.value && isBasicMode.value
   },
   {
     key: 'schema',
-    label: 'schema',
+    label: $t('Info.Rdb.100066-9'),
     value: databaseData.schema || '--',
     condition: true
   },
   {
     key: 'username',
-    label: '用户名',
+    label: $t('Info.Rdb.100066-10'),
     value: databaseData.username || '--',
     condition: true
   },
   {
     key: 'password',
-    label: '密码',
+    label: $t('Info.Rdb.100066-11'),
     component: MaskDisplay,
     componentProps: {
       value: databaseData.password,

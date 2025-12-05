@@ -1,7 +1,7 @@
 <template>
   <div class="response-container">
     <div class="response-header">
-      <TitleComponent data="响应结果" />
+      <TitleComponent :data="$t('DataSource.WebSocketResponseResult.100086-0')" />
       <div
         class="response-meta"
         v-if="data.status"
@@ -27,6 +27,9 @@
 import { onlyMessage } from '@jetlinks-web/utils'
 import dayjs from 'dayjs'
 import JsonEditor from '../../components/JsonEditor.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {
@@ -58,7 +61,7 @@ const handleBlur = () => {
     emit('blur', bodyData)
   } catch (error) {
     isValid.value = false
-    onlyMessage('响应体格式错误', 'error')
+    onlyMessage($t('DataSource.WebSocketResponseResult.100086-1'), 'error')
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     open
-    title="在线调试"
+    :title="$t('DataSource.DebugModal.100089-0')"
     centered
     @cancel="handleCancel"
     width="900px"
@@ -18,11 +18,11 @@
 
       <div class="meta">
         <div class="meta-item">
-          <span>标识：</span>
+          <span>{{ $t('DataSource.DebugModal.100089-1') }}：</span>
           {{ data.id }}
         </div>
         <div class="meta-item">
-          <span>说明：</span>
+          <span>{{ $t('DataSource.DebugModal.100089-2') }}：</span>
           <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
         </div>
       </div>
@@ -34,7 +34,7 @@
     <section class="debug-section">
       <!-- 输入参数区域 -->
       <div class="params-section">
-        <TitleComponent data="输入参数" />
+        <TitleComponent :data="$t('DataSource.DebugModal.100089-3')" />
 
         <div class="section-content">
           <a-form
@@ -58,7 +58,7 @@
               class="empty"
               v-else
             >
-              <j-empty description="无需输入参数" />
+              <j-empty :description="$t('DataSource.DebugModal.100089-4')" />
             </div>
           </a-form>
         </div>
@@ -69,14 +69,14 @@
       <!-- 执行结果区域 -->
       <div class="result-section">
         <h4 class="section-title">
-          <TitleComponent data="执行结果" />
+          <TitleComponent :data="$t('DataSource.DebugModal.100089-5')" />
         </h4>
         <div class="section-content">
           <template v-if="debugLoading">
             <div class="loading-wrapper">
               <a-spin
                 size="large"
-                tip="执行中..."
+                :tip="$t('DataSource.DebugModal.100089-6')"
               />
             </div>
           </template>
@@ -91,9 +91,9 @@
                   <template #icon>
                     <AIcon :type="debugResult.success ? 'CheckCircleOutlined' : 'CloseCircleOutlined'" />
                   </template>
-                  {{ debugResult.success ? '执行成功' : '执行失败' }}
+                  {{ debugResult.success ? $t('DataSource.DebugModal.100089-7') : $t('DataSource.DebugModal.100089-8') }}
                 </a-tag>
-                <span class="execute-time">执行时间: {{ debugResult.executeTime || '--' }}ms</span>
+                <span class="execute-time">{{ $t('DataSource.DebugModal.100089-9') }}: {{ debugResult.executeTime || '--' }}ms</span>
               </div>
 
               <!-- 结果内容 -->
@@ -105,14 +105,14 @@
                   :showFormatBtn="false"
                   formatOnBlur
                   showMinimap
-                  :placeholder="debugResult.success ? '返回结果为空' : ''"
+                  :placeholder="debugResult.success ? $t('DataSource.DebugModal.100089-10') : ''"
                 />
               </div>
             </div>
           </template>
           <template v-else>
             <div class="empty">
-              <j-empty description="点击「运行」按钮查看结果" />
+              <j-empty :description="$t('DataSource.DebugModal.100089-11')" />
             </div>
           </template>
         </div>
@@ -121,7 +121,7 @@
 
     <template #footer>
       <div class="modal-footer">
-        <a-button @click="handleCancel">关闭</a-button>
+        <a-button @click="handleCancel">{{ $t('DataSource.DebugModal.100089-12') }}</a-button>
         <a-button
           type="primary"
           :loading="debugLoading"
@@ -130,7 +130,7 @@
           <template #icon>
             <AIcon type="ThunderboltOutlined" />
           </template>
-          运行
+          {{ $t('DataSource.DebugModal.100089-13') }}
         </a-button>
       </div>
     </template>
@@ -142,6 +142,9 @@ import JsonEditor from './JsonEditor.vue'
 import { queryDataSourceCm1 } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { moduleRegistry } from '@/utils/module-registry'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const { DataInputsItem } = moduleRegistry.getResource('visualization-designer-ui', 'components')
 
@@ -201,19 +204,19 @@ const handleExecuteDebug = async () => {
         data: res,
         executeTime
       }
-      onlyMessage('执行成功')
+      onlyMessage($t('DataSource.DebugModal.100089-7'))
     } else {
-      throw new Error('执行失败')
+      throw new Error($t('DataSource.DebugModal.100089-8'))
     }
   } catch (error: any) {
     debugResult.value = {
       success: false,
       data: {
-        error: error.message || '执行失败',
+        error: error.message || $t('DataSource.DebugModal.100089-8'),
         stack: error.stack
       }
     }
-    onlyMessage('执行失败: ' + (error.message || '未知错误'), 'error')
+    onlyMessage($t('DataSource.DebugModal.100089-14') + (error.message || $t('DataSource.DebugModal.100089-15')), 'error')
   } finally {
     debugLoading.value = false
     await scrollToBottom()

@@ -6,14 +6,14 @@
     >
       <template #count>
         <slot name="header">
-          共
-          <a>&nbsp;{{ total }}&nbsp;</a>
-          个索引
+          <span>{{ $t('DataSource.EsIndexList.100056-0') }}</span>
+          <a class="index-count">&nbsp;{{ total }}&nbsp;</a>
+          <span>{{ $t('DataSource.EsIndexList.100056-1') }}</span>
         </slot>
       </template>
 
       <template #actions>
-        <a-tooltip title="刷新索引">
+        <a-tooltip :title="$t('DataSource.EsIndexList.100056-2')">
           <a-button
             type="text"
             @click="handleRefresh"
@@ -54,7 +54,7 @@
         class="empty-index"
         style="height: 100%"
       >
-        <j-empty description="暂无数据" />
+        <j-empty :description="$t('DataSource.List.100002-0')" />
       </div>
     </div>
   </div>
@@ -64,6 +64,9 @@
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['select'])
 const props = defineProps<{
@@ -94,9 +97,9 @@ const handleRefresh = async () => {
     })
 
     if (res.status === 200) {
-      onlyMessage('操作成功')
+      onlyMessage($t('DataSource.index.100001-11'))
     } else {
-      onlyMessage('操作失败', 'error')
+      onlyMessage($t('DataSource.EsIndexList.100056-3'), 'error')
     }
 
     await loadIndexData()

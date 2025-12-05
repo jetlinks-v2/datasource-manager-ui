@@ -2,7 +2,7 @@
   <div class="redis-connection">
     <!-- 数据连接配置信息 -->
     <DescriptionItemList
-      title="数据连接"
+      :title="$t('Info.Redis.100067-0')"
       :column="3"
       :items="visibleItems"
     />
@@ -10,7 +10,7 @@
     <!-- 键值统计 -->
     <DescriptionItemList
       v-if="serverInfo?.dbSize"
-      title="键值统计"
+      :title="$t('Info.Redis.100067-1')"
       :items="dbSizeItems"
       :column="3"
     />
@@ -21,7 +21,7 @@
       v-if="serverInfo"
     >
       <TitleComponent
-        data="服务器信息"
+        :data="$t('Info.Redis.100067-2')"
         class="section-title"
       />
 
@@ -41,12 +41,13 @@
       v-else-if="loading"
       class="loading-container"
     >
-      <a-spin tip="加载服务器信息中..." />
+      <a-spin :tip="$t('Info.Redis.100067-21')" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import DescriptionItemList, { type DescriptionItem } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
 import TitleComponent from '@/components/TitleComponent/index.vue'
@@ -54,6 +55,8 @@ import InfoCard from './components/InfoCard.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { formatExpiration } from '../utils'
+
+const { t: $t } = useI18n()
 
 const route = useRoute()
 const typeId = route.query.typeId as string
@@ -111,18 +114,18 @@ const serverInfo = ref<ServerInfo>()
 const loading = ref(false)
 
 const items = computed<DescriptionItem[]>(() => [
-  { key: 'host', label: '连接地址', value: redisData.host || '--', condition: true },
-  { key: 'port', label: '端口', value: String(redisData.port || '--'), condition: true },
-  { key: 'databaseIndex', label: '数据库索引', value: String(redisData.databaseIndex || '--'), condition: true },
-  { key: 'userName', label: '用户名', value: redisData.userName || '--', condition: true },
+  { key: 'host', label: $t('Info.Redis.100067-3'), value: redisData.host || '--', condition: true },
+  { key: 'port', label: $t('Info.Redis.100067-4'), value: String(redisData.port || '--'), condition: true },
+  { key: 'databaseIndex', label: $t('Info.Redis.100067-5'), value: String(redisData.databaseIndex || '--'), condition: true },
+  { key: 'userName', label: $t('Info.Redis.100067-6'), value: redisData.userName || '--', condition: true },
   {
     key: 'password',
-    label: '密码',
+    label: $t('Info.Redis.100067-7'),
     component: MaskDisplay,
     componentProps: { value: redisData.password, placeholder: '--' },
     condition: true
   },
-  { key: 'delimiter', label: '分隔符', value: redisData.delimiter || '--', condition: true }
+  { key: 'delimiter', label: $t('Info.Redis.100067-8'), value: redisData.delimiter || '--', condition: true }
 ])
 
 const visibleItems = computed(() =>
@@ -132,30 +135,30 @@ const visibleItems = computed(() =>
 // 服务器信息卡片配置
 const infoCards = computed(() => [
   {
-    title: '服务器',
+    title: $t('Info.Redis.100067-9'),
     icon: 'DatabaseOutlined',
     items: [
-      { label: 'Redis版本', value: serverInfo.value?.redisVersion || '--', highlight: true },
-      { label: 'OS', value: serverInfo.value?.os || '--' },
-      { label: '进程ID', value: serverInfo.value?.processId || '--' }
+      { label: $t('Info.Redis.100067-10'), value: serverInfo.value?.redisVersion || '--', highlight: true },
+      { label: $t('Info.Redis.100067-11'), value: serverInfo.value?.os || '--' },
+      { label: $t('Info.Redis.100067-12'), value: serverInfo.value?.processId || '--' }
     ]
   },
   {
-    title: '内存',
+    title: $t('Info.Redis.100067-13'),
     icon: 'DashboardOutlined',
     items: [
-      { label: '已用内存', value: serverInfo.value?.usedMemory || '--', highlight: true },
-      { label: '内存占用峰值', value: serverInfo.value?.usedMemoryPeak || '--' },
-      { label: 'Lua占用内存', value: serverInfo.value?.usedMemoryLua || '--' }
+      { label: $t('Info.Redis.100067-14'), value: serverInfo.value?.usedMemory || '--', highlight: true },
+      { label: $t('Info.Redis.100067-15'), value: serverInfo.value?.usedMemoryPeak || '--' },
+      { label: $t('Info.Redis.100067-16'), value: serverInfo.value?.usedMemoryLua || '--' }
     ]
   },
   {
-    title: '状态',
+    title: $t('Info.Redis.100067-17'),
     icon: 'CheckCircleOutlined',
     items: [
-      { label: '客户端连接数', value: String(serverInfo.value?.connectedClients || '--'), highlight: true },
-      { label: '历史连接数', value: String(serverInfo.value?.totalConnectionsReceived || '--') },
-      { label: '历史命令数', value: String(serverInfo.value?.totalCommandsProcessed || '--') }
+      { label: $t('Info.Redis.100067-18'), value: String(serverInfo.value?.connectedClients || '--'), highlight: true },
+      { label: $t('Info.Redis.100067-19'), value: String(serverInfo.value?.totalConnectionsReceived || '--') },
+      { label: $t('Info.Redis.100067-20'), value: String(serverInfo.value?.totalCommandsProcessed || '--') }
     ]
   }
 ])
@@ -164,9 +167,9 @@ const infoCards = computed(() => [
 const dbSizeItems = computed<DescriptionItem[]>(() => {
   const { keys = '--', expires = '--', avg_ttl = '--' } = serverInfo.value?.dbSize || {}
   return [
-    { key: 'keys', label: '键总数', value: String(keys) },
-    { key: 'expires', label: '过期键数', value: String(expires) },
-    { key: 'avg_ttl', label: '平均TTL', value: avg_ttl ? formatExpiration(avg_ttl) : '--' }
+    { key: 'keys', label: $t('Info.Redis.100067-23'), value: String(keys) },
+    { key: 'expires', label: $t('Info.Redis.100067-24'), value: String(expires) },
+    { key: 'avg_ttl', label: $t('Info.Redis.100067-25'), value: avg_ttl ? formatExpiration(avg_ttl) : '--' }
   ]
 })
 
@@ -190,7 +193,7 @@ const fetchServerInfo = async () => {
     }
   } catch (error) {
     console.error('获取服务器信息失败:', error)
-    onlyMessage('获取服务器信息失败', 'error')
+    onlyMessage($t('Info.Redis.100067-22'), 'error')
   } finally {
     loading.value = false
   }

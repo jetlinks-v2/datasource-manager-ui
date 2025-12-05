@@ -7,40 +7,40 @@
     <a-form-item
       name="uri"
       :rules="[{ required: true, validator: validateUri, trigger: 'blur' }]"
-      label="URI地址"
+      :label="$t('DataSource.FormItemEs.100073-0')"
     >
       <a-input
         v-model:value="formData.uri"
-        placeholder="请输入URI地址，例：http://localhost:9100"
+        :placeholder="$t('DataSource.FormItemEs.100073-1')"
       />
     </a-form-item>
 
     <a-form-item
       name="pathPrefix"
-      label="路径前缀"
+      :label="$t('DataSource.FormItemEs.100073-2')"
     >
       <a-input
         v-model:value="formData.pathPrefix"
-        placeholder="请输入路径前缀（可选）"
+        :placeholder="$t('DataSource.FormItemEs.100073-3')"
         :maxlength="64"
       />
     </a-form-item>
 
     <a-form-item
       name="username"
-      label="用户名"
+      :label="$t('DataSource.FormItemEs.100073-4')"
     >
       <a-input
         v-model:value="formData.username"
-        placeholder="请输入用户名（可选）"
+        :placeholder="$t('DataSource.FormItemEs.100073-5')"
         :maxlength="64"
       />
     </a-form-item>
 
-    <a-form-item label="密码">
+    <a-form-item :label="$t('DataSource.FormItemEs.100073-6')">
       <a-input-password
         v-model:value="formData.password"
-        placeholder="请输入密码（可选）"
+        :placeholder="$t('DataSource.FormItemEs.100073-7')"
         :maxlength="64"
       />
     </a-form-item>
@@ -48,7 +48,10 @@
 </template>
 
 <script setup lang="ts" name="FormItemEs">
+import { useI18n } from 'vue-i18n'
 import { useSourceDetailStore } from '../../../sourceDetail'
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -73,12 +76,12 @@ const canTestConnection = computed(() => {
 
 const validateUri = (rule: any, value: string) => {
   if (!value) {
-    return Promise.reject('请输入URI地址')
+    return Promise.reject($t('DataSource.FormItemEs.100073-8'))
   }
 
   const urlPattern = /^https?:\/\/.+/
   if (!urlPattern.test(value)) {
-    return Promise.reject('请输入有效的URI地址，格式：http://host:port 或 https://host:port')
+    return Promise.reject($t('DataSource.FormItemEs.100073-9'))
   }
 
   return Promise.resolve()

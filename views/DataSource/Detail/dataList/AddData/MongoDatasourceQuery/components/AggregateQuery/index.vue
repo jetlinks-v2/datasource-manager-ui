@@ -11,7 +11,7 @@
         >
           <template #header>
             <TitleComponent
-              data="集合列表"
+              :data="$t('DataSource.MongoAggregate.100047-0')"
               :style="{ margin: 0 }"
             />
           </template>
@@ -62,7 +62,7 @@
             <template #icon>
               <AIcon type="PlayCircleOutlined" />
             </template>
-            执行
+            {{ $t('DataSource.MongoAggregate.100047-1') }}
           </a-button>
         </template>
       </CheckTest>
@@ -75,12 +75,12 @@
     >
       <div class="section-header">
         <TitleComponent
-          data="执行结果"
+          :data="$t('DataSource.MongoAggregate.100047-2')"
           class="section-title"
         />
         <div class="result-info">
           <a-tag :color="executionSuccess ? 'success' : 'error'">
-            {{ executionSuccess ? '执行成功' : '执行失败' }}
+            {{ executionSuccess ? $t('DataSource.MongoAggregate.100047-3') : $t('DataSource.MongoAggregate.100047-4') }}
           </a-tag>
         </div>
       </div>
@@ -115,6 +115,7 @@ import {
   createDefaultStage,
   checkAdvancedModeRequired
 } from '../../utils/pipelineParser'
+import { useI18n } from 'vue-i18n'
 
 interface CollectionSchema {
   name: string
@@ -142,6 +143,7 @@ const emit = defineEmits(['update:expression'])
 const route = useRoute()
 const typeId = route.query.typeId as string
 const datasourceId = route.params.id as string
+const { t: $t } = useI18n()
 
 const checkTestRef = ref<any>()
 const pipelineStagesRef = ref<any>()
@@ -179,7 +181,7 @@ const handleAddStage = () => {
 const handleRemoveStage = (index: number) => {
   // 至少保留一个阶段
   if (pipelineStages.value.length <= 1) {
-    onlyMessage('至少需要保留一个阶段', 'warning')
+    onlyMessage($t('DataSource.MongoAggregate.100047-5'), 'warning')
     return
   }
 
@@ -268,12 +270,12 @@ const handleAdvancedModeChange = (value: boolean) => {
 
 const handleExecute = async () => {
   if (!selectedCollection.value) {
-    onlyMessage('请先选择集合', 'error')
+    onlyMessage($t('DataSource.MongoAggregate.100047-6'), 'error')
     return
   }
 
   if (pipelineStages.value.length === 0) {
-    onlyMessage('请至少添加一个聚合阶段', 'error')
+    onlyMessage($t('DataSource.MongoAggregate.100047-7'), 'error')
     return
   }
 
@@ -292,7 +294,7 @@ const handleExecute = async () => {
   // 检查是否需要高级模式
   const advancedCheck = checkAdvancedModeRequired(pipelineStages.value)
   if (advancedCheck.required && !isAdvancedMode.value) {
-    onlyMessage(`${advancedCheck.reason}，请切换到高级模式`, 'warning')
+    onlyMessage($t('DataSource.MongoAggregate.100047-8', { reason: advancedCheck.reason }), 'warning')
     return
   }
 
@@ -318,7 +320,7 @@ const handleExecute = async () => {
 
     if (res.success) {
       nextTick(() => {
-        onlyMessage('聚合执行成功')
+        onlyMessage($t('DataSource.MongoAggregate.100047-9'))
         const modalBody = document.querySelector('.ant-modal-body')
         if (modalBody) {
           modalBody.scrollTop = modalBody.scrollHeight
@@ -330,14 +332,14 @@ const handleExecute = async () => {
     resultJson.value = JSON.stringify(
       {
         success: false,
-        error: error.message || '聚合执行失败',
+        error: error.message || $t('DataSource.MongoAggregate.100047-10'),
         timestamp: Date.now()
       },
       null,
       2
     )
     hasResult.value = true
-    onlyMessage(error.message || '聚合执行失败', 'error')
+    onlyMessage(error.message || $t('DataSource.MongoAggregate.100047-10'), 'error')
   } finally {
     executing.value = false
   }
@@ -345,12 +347,12 @@ const handleExecute = async () => {
 
 const validateAll = async () => {
   if (!selectedCollection.value) {
-    onlyMessage('请先选择集合', 'error')
+    onlyMessage($t('DataSource.MongoAggregate.100047-6'), 'error')
     return false
   }
 
   if (pipelineStages.value.length === 0) {
-    onlyMessage('请至少添加一个聚合阶段', 'error')
+    onlyMessage($t('DataSource.MongoAggregate.100047-7'), 'error')
     return false
   }
 
@@ -367,7 +369,7 @@ const validateAll = async () => {
   }
 
   if (!checkTestRef.value.validateAll()) {
-    onlyMessage('请检查参数配置', 'error')
+    onlyMessage($t('DataSource.MongoAggregate.100047-11'), 'error')
     return false
   }
 

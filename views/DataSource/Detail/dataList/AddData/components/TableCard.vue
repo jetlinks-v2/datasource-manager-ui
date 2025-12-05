@@ -22,19 +22,19 @@
     </header>
 
     <div class="badge-wrapper">
-      <span class="badge">标识：</span>
+      <span class="badge">{{ $t('DataSource.TableCard.100088-0') }}：</span>
       <j-ellipsis>{{ data.id }}</j-ellipsis>
     </div>
 
     <section>
       <p>
         <a-space>
-          <span>说明：</span>
+          <span>{{ $t('DataSource.TableCard.100088-1') }}：</span>
           <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
         </a-space>
       </p>
       <p>
-        <span>创建时间：</span>
+        <span>{{ $t('DataSource.TableCard.100088-2') }}：</span>
         {{ formatTime }}
       </p>
     </section>
@@ -43,6 +43,9 @@
 
 <script lang="ts" setup>
 import dayjs from 'dayjs'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {

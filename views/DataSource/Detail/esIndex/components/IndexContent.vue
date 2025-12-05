@@ -10,7 +10,7 @@
       <!-- 基本信息 Tab -->
       <a-tab-pane
         key="basic"
-        tab="基本信息"
+        :tab="$t('DataSource.Detail.100008-4')"
       >
         <div
           class="info-section"
@@ -35,14 +35,14 @@
           v-else
           class="empty-content custom-table"
         >
-          <j-empty description="暂无数据" />
+          <j-empty :description="$t('DataSource.List.100002-0')" />
         </div>
       </a-tab-pane>
 
       <!-- 索引字段 Tab -->
       <a-tab-pane
         key="fields"
-        tab="索引字段"
+        :tab="$t('DataSource.EsIndexContent.100057-0')"
       >
         <j-pro-table
           v-if="fieldData.length > 0"
@@ -58,14 +58,14 @@
           v-else
           class="empty-content custom-table"
         >
-          <j-empty description="暂无数据" />
+          <j-empty :description="$t('DataSource.List.100002-0')" />
         </div>
       </a-tab-pane>
 
       <!-- 数据列表 Tab -->
       <a-tab-pane
         key="data"
-        tab="数据列表"
+        :tab="$t('DataSource.EsIndexContent.100057-1')"
       >
         <j-pro-table
           :columns="dataColumns"
@@ -78,7 +78,7 @@
         >
           <template #emptyText>
             <div class="empty-table">
-              <j-empty description="暂无数据" />
+              <j-empty :description="$t('DataSource.List.100002-0')" />
             </div>
           </template>
         </j-pro-table>
@@ -88,7 +88,7 @@
       v-else
       class="empty-content"
     >
-      <j-empty description="暂无数据" />
+      <j-empty :description="$t('DataSource.List.100002-0')" />
     </div>
   </div>
 </template>
@@ -96,10 +96,13 @@
 <script setup lang="ts" name="IndexContent">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import DescriptionItemList, { type DescriptionItem } from '../../info/components/DescriptionItemList.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   selectedItem: any
 }>()
+
+const { t: $t } = useI18n()
 
 const route = useRoute()
 const typeId = route.query.typeId as string
@@ -127,74 +130,74 @@ const getHealthColor = (health: string) => {
 const basicInfoItems = computed<DescriptionItem[]>(() => [
   {
     key: 'health',
-    label: '健康状态'
+    label: $t('DataSource.EsIndexContent.100057-2')
   },
   {
     key: 'status',
-    label: '状态',
+    label: $t('DataSource.EsIndexContent.100057-3'),
     value: props.selectedItem?.status || '--'
   },
   {
     key: 'primaries',
-    label: '主分片数',
+    label: $t('DataSource.EsIndexContent.100057-4'),
     value: props.selectedItem?.primaries || '--'
   },
   {
     key: 'replicas',
-    label: '副本数',
+    label: $t('DataSource.EsIndexContent.100057-5'),
     value: props.selectedItem?.replicas || '--'
   },
   {
     key: 'docsCount',
-    label: '文档数',
+    label: $t('DataSource.EsIndexContent.100057-6'),
     value: props.selectedItem?.docsCount || '--'
   },
   {
     key: 'storeSize',
-    label: '存储大小',
+    label: $t('DataSource.EsIndexContent.100057-7'),
     value: props.selectedItem?.storeSize || '--'
   },
   {
     key: 'index',
-    label: '索引名称',
+    label: $t('DataSource.EsIndexContent.100057-8'),
     value: props.selectedItem?.index || '--'
   }
 ])
 
 // 索引字段表格列配置
-const fieldColumns = [
+const fieldColumns = computed(() => [
   {
-    title: '序号',
+    title: $t('Detail.table.100009-0'),
     key: 'index',
     dataIndex: 'index',
     width: 80,
     scopedSlots: true
   },
   {
-    title: '名称',
+    title: $t('DataSource.table.100003-0'),
     dataIndex: 'id',
     key: 'id',
     ellipsis: true
   },
   {
-    title: '注释',
+    title: $t('Detail.table.100009-1'),
     dataIndex: 'name',
     key: 'name',
     ellipsis: true
   },
   {
-    title: '字段类型',
+    title: $t('Detail.table.100009-2'),
     dataIndex: ['valueType', 'type'],
     key: 'type',
     ellipsis: true
   },
   {
-    title: '字段名称',
+    title: $t('DataSource.EsIndexContent.100057-9'),
     dataIndex: ['valueType', 'name'],
     key: 'typeName',
     ellipsis: true
   }
-]
+])
 
 // 加载索引元数据（字段信息）
 const loadIndexMetadata = async () => {

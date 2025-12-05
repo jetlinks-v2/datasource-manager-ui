@@ -1,12 +1,13 @@
 import { isString, isObject } from 'lodash-es'
+import i18n from '@/locales'
 
 // 格式化过期时间
 export const formatExpiration = (exp: number | string) => {
-  if (!exp) return '查询中...'
+  if (!exp) return i18n.global.t('DataSource.Utils.100093-0')
   const expNum = parseInt(String(exp))
-  if (expNum === -1) return '永久'
-  if (expNum === -2) return '键不存在'
-  if (expNum < 0) return '未知'
+  if (expNum === -1) return i18n.global.t('DataSource.Utils.100093-1')
+  if (expNum === -2) return i18n.global.t('DataSource.Utils.100093-2')
+  if (expNum < 0) return i18n.global.t('DataSource.Utils.100093-3')
 
   const now = new Date()
   const expirationTime = new Date(now.getTime() + expNum * 1000)

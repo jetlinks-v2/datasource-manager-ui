@@ -1,26 +1,29 @@
 <template>
   <DescriptionItemList
-    title="数据连接"
+    :title="$t('Info.Api.100063-0')"
     :column="3"
     :items="descriptionItems"
   />
 
   <div v-if="isOAuth2">
     <KeyValueTable
-      title="请求头"
+      :title="$t('Info.Api.100063-21')"
       :data-source="requestHeaderData"
     />
     <KeyValueTable
-      title="参数"
+      :title="$t('Info.Api.100063-22')"
       :data-source="argumentData"
     />
   </div>
 </template>
 
 <script lang="ts" name="ApiConnection" setup>
+import { useI18n } from 'vue-i18n'
 import DescriptionItemList, { type DescriptionItem, type DescriptionLabel } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
 import KeyValueTable from './components/KeyValueTable.vue'
+
+const { t: $t } = useI18n()
 
 interface KeyValueItem {
   key?: string
@@ -62,19 +65,19 @@ interface ApiShareConfig {
 }
 
 const AUTH_TYPE_TEXT: Record<string, string> = {
-  basic: '基本认证',
-  bearer: 'Bearer认证',
-  OAuth2: 'OAuth2认证',
-  none: '不鉴权'
+  basic: $t('Info.Api.100063-3'),
+  bearer: $t('Info.Api.100063-4'),
+  OAuth2: $t('Info.Api.100063-5'),
+  none: $t('Info.Api.100063-6')
 }
 
 const TOKEN_REQUEST_TYPE_TEXT: Record<string, string> = {
-  POST_URI: 'URL参数',
-  POST_BODY: '请求体'
+  POST_URI: $t('Info.Api.100063-14'),
+  POST_BODY: $t('Info.Api.100063-15')
 }
 
 const OAUTH_GRANT_TYPE_TEXT: Record<string, string> = {
-  client_credentials: '客户端凭证'
+  client_credentials: $t('Info.Api.100063-11')
 }
 
 const props = defineProps<{ info: any }>()
@@ -93,12 +96,12 @@ const authTypeText = computed(() => AUTH_TYPE_TEXT[authType.value] ?? '--')
 const baseItems = computed<DescriptionItem[]>(() => [
   {
     key: 'baseUrl',
-    label: 'API地址',
+    label: $t('Info.Api.100063-1'),
     value: shareConfig.value.baseUrl || '--'
   },
   {
     key: 'authType',
-    label: '鉴权方式',
+    label: $t('Info.Api.100063-2'),
     value: authTypeText.value
   }
 ])
@@ -106,12 +109,12 @@ const baseItems = computed<DescriptionItem[]>(() => [
 const createBasicItems = (basic: BasicAuthConfig = {}): DescriptionItem[] => [
   {
     key: 'username',
-    label: '用户名',
+    label: $t('Info.Api.100063-7'),
     value: basic.username || '--'
   },
   {
     key: 'password',
-    label: '密码',
+    label: $t('Info.Api.100063-8'),
     component: MaskDisplay,
     componentProps: {
       value: basic.password,
@@ -123,7 +126,7 @@ const createBasicItems = (basic: BasicAuthConfig = {}): DescriptionItem[] => [
 const createBearerItems = (bearer: BearerAuthConfig = {}): DescriptionItem[] => [
   {
     key: 'token',
-    label: 'Token',
+    label: $t('Info.Api.100063-9'),
     value: bearer.token || '--'
   }
 ]
@@ -139,22 +142,22 @@ const createOAuthItems = (oauth2: OAuth2AuthConfig = {}): DescriptionItem[] => {
   return [
     {
       key: 'grantType',
-      label: '模式',
+      label: $t('Info.Api.100063-10'),
       value: (oauth2.grantType && OAUTH_GRANT_TYPE_TEXT[oauth2.grantType]) || '--'
     },
     {
       key: 'tokenUrl',
-      label: 'Token地址',
+      label: $t('Info.Api.100063-12'),
       value: oauth2.tokenUrl || '--'
     },
     {
       key: 'tokenRequestType',
-      label: '请求方式',
-      value: (oauth2.tokenRequestType && TOKEN_REQUEST_TYPE_TEXT[oauth2.tokenRequestType]) || '请求体'
+      label: $t('Info.Api.100063-13'),
+      value: (oauth2.tokenRequestType && TOKEN_REQUEST_TYPE_TEXT[oauth2.tokenRequestType]) || $t('Info.Api.100063-15')
     },
     {
       key: 'scope',
-      label: 'Scope',
+      label: $t('Info.Api.100063-16'),
       component: MaskDisplay,
       componentProps: {
         value: scopeValue,
@@ -163,12 +166,12 @@ const createOAuthItems = (oauth2: OAuth2AuthConfig = {}): DescriptionItem[] => {
     },
     {
       key: 'clientId',
-      label: createOAuthLabel('Client ID', '应用唯一标识'),
+      label: createOAuthLabel($t('Info.Api.100063-17'), $t('Info.Api.100063-19')),
       value: oauth2.clientId || '--'
     },
     {
       key: 'clientSecret',
-      label: createOAuthLabel('Client Secret', '应用唯一标识的密钥'),
+      label: createOAuthLabel($t('Info.Api.100063-18'), $t('Info.Api.100063-20')),
       component: MaskDisplay,
       componentProps: {
         value: oauth2.clientSecret,

@@ -1,7 +1,7 @@
 <template>
   <div class="websocket-send-container">
     <a-form-item
-      label="请求路径"
+      :label="$t('DataSource.WebSocketSend.100084-0')"
       :name="['configuration', 'expression', 'uri', 'url']"
       :rules="[{ required: true, validator: validateUri, trigger: 'blur' }]"
     >
@@ -21,7 +21,7 @@
           <a-input
             v-model:value="expression.uri.url"
             style="width: 90%"
-            placeholder="请输入请求路径"
+            :placeholder="$t('DataSource.WebSocketSend.100084-1')"
             :maxlength="65535"
             @change="handleUriChange"
           />
@@ -47,7 +47,7 @@
               :loading="sending"
             >
               <AIcon type="SendOutlined" />
-              发送请求
+              {{ $t('DataSource.WebSocketSend.100084-2') }}
             </a-button>
           </template>
         </CheckTest>
@@ -73,6 +73,9 @@ import { convertParamsToObject, transformArray } from '../components/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { WebSocketProtocol } from '../type'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   formRef: {
@@ -105,20 +108,20 @@ const getUrl = (value: string) => {
 const validateUri = async (_: Rule) => {
   const value = expression.value?.uri?.url
   if (!value) {
-    return Promise.reject('请输入请求路径')
+    return Promise.reject($t('DataSource.WebSocketSend.100084-1'))
   }
 
   if (value.startsWith('/')) {
-    return Promise.reject('请求路径不能以/开头')
+    return Promise.reject($t('DataSource.WebSocketSend.100084-4'))
   }
   if (value.endsWith('/')) {
-    return Promise.reject('请求路径不能以/结尾')
+    return Promise.reject($t('DataSource.WebSocketSend.100084-5'))
   }
 
   try {
     new URL(getUrl(value))
   } catch (error) {
-    return Promise.reject('请输入有效的WebSocket路径')
+    return Promise.reject($t('DataSource.WebSocketSend.100084-6'))
   }
 
   return Promise.resolve()
@@ -159,7 +162,7 @@ const validateAll = () => {
       }
 
       if (!responseResultRef.value?.isValid) {
-        onlyMessage('请检查响应体', 'error')
+        onlyMessage($t('DataSource.WebSocketSend.100084-7'), 'error')
         return false
       }
 
@@ -170,7 +173,7 @@ const validateAll = () => {
       return true
     })
     .catch(() => {
-      onlyMessage('请检查请求路径', 'error')
+      onlyMessage($t('DataSource.WebSocketSend.100084-8'), 'error')
       return false
     })
 }
@@ -178,7 +181,7 @@ const validateAll = () => {
 const handleSend = async () => {
   if (!(await checkTestRef.value?.validateAll())) {
     requestParamsRef.value?.handleCheckTest?.()
-    onlyMessage('请检查动态参数输入项', 'error')
+    onlyMessage($t('DataSource.WebSocketSend.100084-9'), 'error')
     return false
   }
 
@@ -208,7 +211,7 @@ const handleSend = async () => {
 
         if (res.status === 200) {
           checkTestDataSource.value = res.result?.payload || {}
-          onlyMessage('WebSocket请求发送成功')
+          onlyMessage($t('DataSource.WebSocketSend.100084-10'))
           emit('update:expression', expression.value, checkTestDataSource.value, dynamicParamsData)
         }
       })

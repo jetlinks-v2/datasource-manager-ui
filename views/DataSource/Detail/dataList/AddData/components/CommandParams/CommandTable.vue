@@ -82,7 +82,7 @@
         @click="handleAdd"
       >
         <AIcon type="PlusOutlined" />
-        新增参数
+        {{ $t('DataSource.ParamTable.100034-8') }}
       </a-button>
     </div>
   </div>
@@ -95,6 +95,9 @@ import DataTypeCell from './DataTypeCell.vue'
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import { randomString } from '@jetlinks-web/utils'
 import { useDataTypeManagement } from './setting'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   mode: {
@@ -139,11 +142,11 @@ const { validateDataType } = useDataTypeManagement()
 const tableData = ref<any[]>([])
 const formItemErrors = ref<Record<string, Record<string, string>>>({})
 const popoverVisible = ref<Record<string, boolean>>({})
-const placeholders: Record<string, string> = {
-  id: '请输入标识',
-  name: '请输入名称',
-  description: '请输入说明'
-}
+const placeholders = computed(() => ({
+  id: $t('DataSource.BasicForm.100017-0'),
+  name: $t('DataSource.BasicForm.100017-1'),
+  description: $t('DataSource.ParamTable.100034-2')
+}))
 
 // 根据预览模式过滤列
 const filteredColumns = computed(() => {
@@ -215,14 +218,14 @@ const updateFormError = (recordKey: string, field: string, error?: string): bool
 
 const validateField = (field: string, value: string): string => {
   if (!value) {
-    return field === 'id' ? '请输入参数标识' : '请输入参数名称'
+    return field === 'id' ? $t('DataSource.CommandTable.100045-0') : $t('DataSource.CommandTable.100045-1')
   }
   if (field === 'id') {
-    if (!/^[a-zA-Z0-9_-]+$/.test(value)) return '只能输入英文、数字、-或_'
-    if (value.length > 64) return '参数标识长度不能超过64个字符'
+    if (!/^[a-zA-Z0-9_-]+$/.test(value)) return $t('DataSource.CommandTable.100045-2')
+    if (value.length > 64) return $t('DataSource.CommandTable.100045-3')
   }
   if (field === 'name' && value.length > 64) {
-    return '参数名称长度不能超过64个字符'
+    return $t('DataSource.CommandTable.100045-4')
   }
   return ''
 }
@@ -295,7 +298,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
   // 验证必填字段
   if (!record.id) {
     hasErr = true
-    updateFormError(record.key, 'id', '请输入参数标识')
+    updateFormError(record.key, 'id', $t('DataSource.CommandTable.100045-0'))
     // 记录第一个错误
     if (!firstErrorInfo.value) {
       firstErrorInfo.value = {
@@ -308,7 +311,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
 
   if (record.id && record.id.length > 64) {
     hasErr = true
-    updateFormError(record.key, 'id', '参数标识长度不能超过64个字符')
+    updateFormError(record.key, 'id', $t('DataSource.CommandTable.100045-3'))
     if (!firstErrorInfo.value) {
       firstErrorInfo.value = {
         key: record.key,
@@ -320,7 +323,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
 
   if (record.id && !/^[a-zA-Z0-9_-]+$/.test(record.id)) {
     hasErr = true
-    updateFormError(record.key, 'id', '只能输入英文、数字、-或_')
+    updateFormError(record.key, 'id', $t('DataSource.CommandTable.100045-2'))
     if (!firstErrorInfo.value) {
       firstErrorInfo.value = {
         key: record.key,
@@ -332,7 +335,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
 
   if (!record.name) {
     hasErr = true
-    updateFormError(record.key, 'name', '请输入参数名称')
+    updateFormError(record.key, 'name', $t('DataSource.CommandTable.100045-1'))
     if (!firstErrorInfo.value) {
       firstErrorInfo.value = {
         key: record.key,
@@ -344,7 +347,7 @@ const validateRecord = (record: any, path: string[] = []): boolean => {
 
   if (record.name && record.name.length > 64) {
     hasErr = true
-    updateFormError(record.key, 'name', '参数名称长度不能超过64个字符')
+    updateFormError(record.key, 'name', $t('DataSource.CommandTable.100045-4'))
     if (!firstErrorInfo.value) {
       firstErrorInfo.value = {
         key: record.key,

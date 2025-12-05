@@ -1,19 +1,19 @@
 <template>
   <div class="table-sidebar">
     <ListHeader
-      search-placeholder="请输入表名"
+      :search-placeholder="$t('DataSource.Table.100013-0')"
       @search="handleSearch"
     >
       <template #count>
         <slot name="header">
-          共
-          <a>&nbsp;{{ listData.length }}&nbsp;</a>
-          个表
+          <span>{{ $t('DataSource.Table.100013-1') }}</span>
+          <a class="table-count">&nbsp;{{ listData.length }}&nbsp;</a>
+          <span>{{ $t('DataSource.Table.100013-2') }}</span>
         </slot>
       </template>
 
       <template #actions>
-        <a-tooltip title="刷新表">
+        <a-tooltip :title="$t('DataSource.Table.100013-3')">
           <a-button
             type="text"
             @click="handelRefresh"
@@ -48,7 +48,7 @@
                   v-if="showFieldCount"
                   class="table-col"
                 >
-                  {{ item.columns?.length || 0 }}个字段
+                  {{ $t('DataSource.TableSelector.100043-2', { count: item.columns?.length || 0 }) }}
                 </span>
               </div>
             </a-list-item>
@@ -69,6 +69,7 @@
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { queryDataSource, getDataSourceTables } from '@datasource-manager-ui/api/data/datasource'
+import { useI18n } from 'vue-i18n'
 
 interface TableSchema {
   name: string
@@ -84,6 +85,8 @@ const props = withDefaults(defineProps<Props>(), {
   showFieldCount: false,
   initialSelectedTable: ''
 })
+
+const { t: $t } = useI18n()
 
 const emit = defineEmits(['click', 'loaded'])
 
@@ -135,11 +138,11 @@ const handelRefresh = async () => {
         if (listData.value.length > 0) {
           handelClick(listData.value[0])
         }
-        onlyMessage('刷新成功', 'success')
+        onlyMessage($t('DataSource.Table.100013-6'), 'success')
       }
     }
   } catch (error) {
-    onlyMessage('刷新失败', 'error')
+    onlyMessage($t('DataSource.Table.100013-7'), 'error')
   } finally {
     refreshLoading.value = false
   }

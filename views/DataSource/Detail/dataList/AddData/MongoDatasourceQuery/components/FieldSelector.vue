@@ -2,13 +2,13 @@
   <div class="fields-container">
     <div class="title">
       <TitleComponent
-        data="字段选择"
+        :data="$t('DataSource.FieldSelector.100042-0')"
         :style="{ margin: 0 }"
       />
       <div class="selection-actions">
         <a-input
           v-model:value="searchText"
-          placeholder="请输入字段名"
+          :placeholder="$t('DataSource.FieldSelector.100042-1')"
         >
           <template #prefix>
             <AIcon type="SearchOutlined" />
@@ -35,6 +35,9 @@
 
 <script setup lang="ts">
 import TitleComponent from '@/components/TitleComponent/index.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface FieldSchema {
   name: string
@@ -64,11 +67,17 @@ const emit = defineEmits(['update:selectedKeys', 'selectChange'])
 const searchText = ref('')
 const selectedRowKeys = ref<Key[]>(props.selectedKeys)
 
-const columns = [
-  { title: '字段名', dataIndex: 'name', key: 'name', search: { type: 'input' } },
-  { title: '类型', dataIndex: 'type', key: 'type', search: { type: 'input' } },
-  { title: '说明', dataIndex: 'comment', key: 'comment', search: { type: 'input' }, ellipsis: true }
-]
+const columns = computed(() => [
+  { title: $t('DataSource.FieldSelector.100042-2'), dataIndex: 'name', key: 'name', search: { type: 'input' } },
+  { title: $t('DataSource.FieldSelector.100042-3'), dataIndex: 'type', key: 'type', search: { type: 'input' } },
+  {
+    title: $t('DataSource.table.100003-6'),
+    dataIndex: 'comment',
+    key: 'comment',
+    search: { type: 'input' },
+    ellipsis: true
+  }
+])
 
 const filteredFields = computed(() => {
   if (!searchText.value) {

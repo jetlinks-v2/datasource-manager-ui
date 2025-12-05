@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title="isEditor ? '编辑' : '新增数据源连接'"
+    :title="isEditor ? $t('DataSource.Modal.100070-0') : $t('DataSource.Modal.100070-1')"
     :open="true"
     :width="700"
     @cancel="cancelModal"
@@ -39,7 +39,7 @@
             v-if="!isEditor"
             @click="handleClick"
           >
-            上一步
+            {{ $t('DataSource.Modal.100070-2') }}
           </a-button>
           <j-permission-button
             v-if="showTestConnection"
@@ -50,17 +50,17 @@
             type="primary"
             ghost
           >
-            连接测试
+            {{ $t('DataSource.Modal.100070-3') }}
           </j-permission-button>
         </a-space>
 
         <a-space>
-          <a-button @click="cancelModal">取消</a-button>
+          <a-button @click="cancelModal">{{ $t('DataSource.Modal.100070-4') }}</a-button>
           <a-button
             type="primary"
             @click="handleSubmit"
           >
-            确定
+            {{ $t('DataSource.Modal.100070-5') }}
           </a-button>
         </a-space>
       </div>
@@ -69,6 +69,7 @@
 </template>
 
 <script lang="ts" name="SourceDetailsAdd" setup>
+import { useI18n } from 'vue-i18n'
 import {
   BaseFormInfo,
   FormItemApi,
@@ -78,6 +79,8 @@ import {
   FormItemRedis,
   FormItemMongo
 } from './FormItem'
+
+const { t: $t } = useI18n()
 import {
   RelationData,
   WebSocketData,
@@ -313,7 +316,7 @@ const handleSubmit = async () => {
     await baseFormRef.value.validate()
     await validateAndSubmit()
   } catch (err) {
-    onlyMessage('请检查输入项', 'error')
+    onlyMessage($t('DataSource.Modal.100070-6'), 'error')
     nextTick(() => {
       requestFlag.value = false
     })

@@ -1,6 +1,6 @@
 <template>
   <Modal
-    :title="title"
+    :title="title || $t('DataSource.Upload.100044-1')"
     open
     :width="400"
     @cancel="cancel"
@@ -25,6 +25,9 @@
 import 'vue-cropper/dist/index.css'
 import { VueCropper } from 'vue-cropper'
 import { fileUpload } from '@datasource-manager-ui/api/comm'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   img: {
@@ -32,7 +35,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: '图片编辑'
+    default: ''
   },
   width: {
     type: Number,

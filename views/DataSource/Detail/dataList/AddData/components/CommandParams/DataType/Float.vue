@@ -6,7 +6,7 @@
       layout="vertical"
     >
       <a-form-item
-        label="精度"
+        :label="$t('DataSource.Float.100039-0')"
         name="scale"
       >
         <a-input-number
@@ -16,7 +16,7 @@
           :max="99"
           :precision="0"
           :disabled="readonly"
-          placeholder="请输入0-99以内的整数"
+          :placeholder="$t('DataSource.Float.100039-1')"
         />
       </a-form-item>
     </a-form>
@@ -25,6 +25,9 @@
 
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps({
   data: {

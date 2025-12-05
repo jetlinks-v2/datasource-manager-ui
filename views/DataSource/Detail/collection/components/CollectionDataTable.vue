@@ -9,7 +9,7 @@
   >
     <template #emptyText>
       <div class="empty-table">
-        <j-empty description="暂无数据" />
+        <j-empty :description="$t('DataSource.Detail.Collection.Table.NoData')" />
       </div>
     </template>
     <template #action="slotProps">
@@ -33,6 +33,9 @@
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import PreviewModal from './PreviewModal.vue'
 import { convertObjectId } from '../../utils'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   currentCollection: string
@@ -153,7 +156,7 @@ const handleColumns = (arr: any[]): string[] => {
       width: 150
     })),
     {
-      title: '数据结构',
+      title: $t('DataSource.Detail.Collection.Table.DataStructure'),
       key: 'action',
       dataIndex: 'action',
       fixed: 'right',

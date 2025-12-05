@@ -1,3 +1,5 @@
+import i18n from '@/locales'
+
 /**
  * 生成随机数
  * @param length
@@ -19,10 +21,10 @@ export const randomString = (length?: number) => {
  * @param value
  * @returns {Promise<void>}
  */
-export const spaceValidator = async (_: any, value: string) => {
+export const spaceValidator = async (_: any, value: string): Promise<void> => {
   const reg = /(^\s+)|(\s+$)/
   if (reg.test(value)) {
-    return Promise.reject(new Error('前后不能有空格'))
+    return Promise.reject(new Error(i18n.global.t('DataSource.utils.100036-0')))
   }
   return Promise.resolve()
 }

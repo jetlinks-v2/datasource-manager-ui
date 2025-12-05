@@ -1,7 +1,7 @@
 <template>
   <div class="api-send-container">
     <a-form-item
-      label="请求路径"
+      :label="$t('DataSource.ApiSend.100020-0')"
       :name="['configuration', 'expression', 'uri', 'url']"
       :rules="[{ required: true, validator: validateUri, trigger: 'blur' }]"
     >
@@ -24,7 +24,7 @@
         <a-input
           v-model:value="expression.uri.url"
           style="width: calc(100% - 100px)"
-          placeholder="请输入请求路径"
+          :placeholder="$t('DataSource.ApiSend.100020-1')"
           :maxlength="65535"
           @change="handleUriChange"
         />
@@ -51,7 +51,7 @@
               @click="handleSend"
             >
               <AIcon type="SendOutlined" />
-              发送请求
+              {{ $t('DataSource.ApiSend.100020-4') }}
             </a-button>
           </template>
         </CheckTest>
@@ -76,6 +76,9 @@ import ResponseResult from './ResponseResult/index.vue'
 import { convertParamsToObject, transformArray } from '../components/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
 
@@ -111,9 +114,9 @@ const isAdvancedMode = ref(false)
 
 // URI 验证规则
 const validateUri = async (_: Rule, value: string) => {
-  if (!value) return Promise.reject('请输入请求路径')
-  if (!value.startsWith('/')) return Promise.reject('请求路径必须以/开头')
-  if (value.endsWith('/')) return Promise.reject('请求路径不能以/结尾')
+  if (!value) return Promise.reject($t('DataSource.ApiSend.100020-1'))
+  if (!value.startsWith('/')) return Promise.reject($t('DataSource.ApiSend.100020-2'))
+  if (value.endsWith('/')) return Promise.reject($t('DataSource.ApiSend.100020-3'))
   return Promise.resolve()
 }
 
@@ -123,7 +126,7 @@ const validateRequestParams = async (): Promise<boolean> => {
 
   if (!(await checkTestRef.value?.validateAll())) {
     requestParamsRef.value?.handleCheckTest()
-    onlyMessage('请检查动态参数输入项', 'error')
+    onlyMessage($t('DataSource.ApiSend.100020-7'), 'error')
     return false
   }
 
@@ -169,7 +172,7 @@ const handleResponseBlur = (bodyData: any) => {
 const handleSend = async () => {
   if (!(await checkTestRef.value?.validateAll())) {
     requestParamsRef.value?.handleCheckTest()
-    onlyMessage('请检查动态参数输入项', 'error')
+    onlyMessage($t('DataSource.ApiSend.100020-7'), 'error')
     return
   }
 
@@ -184,7 +187,7 @@ const handleSend = async () => {
 
     if (res.status === 200) {
       responseData.value = res.result || {}
-      onlyMessage('请求发送成功')
+      onlyMessage($t('DataSource.ApiSend.100020-8'))
     }
   } catch {
     // 验证失败
@@ -201,7 +204,7 @@ const validateAll = async () => {
     if (!(await validateRequestParams())) return false
 
     if (!responseResultRef.value?.isValid) {
-      onlyMessage('请检查响应体', 'error')
+      onlyMessage($t('DataSource.ApiSend.100020-5'), 'error')
       return false
     }
 
@@ -213,7 +216,7 @@ const validateAll = async () => {
     )
     return true
   } catch {
-    onlyMessage('请检查请求路径', 'error')
+    onlyMessage($t('DataSource.ApiSend.100020-6'), 'error')
     return false
   }
 }

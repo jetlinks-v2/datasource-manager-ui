@@ -9,7 +9,7 @@
         >
           <template #header>
             <TitleComponent
-              data="索引列表"
+              :data="$t('DataSource.EsDatasourceQuery.100061-0')"
               :style="{ margin: 0 }"
             />
           </template>
@@ -53,6 +53,7 @@ import { EsField } from './type'
 import IndexList from '@datasource-manager-ui/views/DataSource/Detail/esIndex/components/IndexList.vue'
 import EsFieldSelector from './components/EsFieldSelector.vue'
 import QueryResults from '../RdbDatasourceQuery/components/QueryResults.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   data: {
@@ -65,6 +66,7 @@ const emit = defineEmits(['update:configuration'])
 const route = useRoute()
 const typeId = route.query.typeId as string
 const dataSourceId = route.params.id as string
+const { t: $t } = useI18n()
 const selectedIndex = ref('')
 const fieldLoading = ref(false)
 const resultColumns = ref<any[]>([])
@@ -178,12 +180,12 @@ const handleRequest = (request: any) =>
 
 const validateAll = async () => {
   if (!selectedIndex.value) {
-    message.error('请选择索引')
+    message.error($t('DataSource.EsDatasourceQuery.100061-1'))
     return false
   }
 
   if (selectedFields.value.length === 0) {
-    message.error('至少选择一个字段')
+    message.error($t('DataSource.EsDatasourceQuery.100061-2'))
     return false
   }
 

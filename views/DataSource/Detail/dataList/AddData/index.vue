@@ -19,8 +19,8 @@
         :current="currentStep"
         class="steps-container"
       >
-        <a-step title="详细配置" />
-        <a-step title="命令生成" />
+        <a-step :title="$t('DataSource.AddData.100016-2')" />
+        <a-step :title="$t('DataSource.AddData.100016-3')" />
       </a-steps>
 
       <!-- 步骤内容 -->
@@ -57,7 +57,7 @@
           class="prev-btn"
           @click="handlePrevStep"
         >
-          上一步
+          {{ $t('DataSource.SourceAdd.100005-11') }}
         </a-button>
 
         <a-button
@@ -66,7 +66,7 @@
           :loading="loading"
           @click="handleNextStep"
         >
-          下一步
+          {{ $t('DataSource.TypeAdd.100004-2') }}
         </a-button>
 
         <a-button
@@ -75,7 +75,7 @@
           :loading="loading"
           @click="handleSave"
         >
-          保存
+          {{ $t('DataSource.AddData.100016-4') }}
         </a-button>
       </div>
     </template>
@@ -102,7 +102,9 @@ import type { TypeId } from '../../type'
 import { DATA_TYPE_ITEM } from '../../../components/table'
 import type { FormData, QueryParam, OutputConfig, ApiMethod } from './type'
 import { onlyMessage } from '@jetlinks-web/utils'
+import { useI18n } from 'vue-i18n'
 
+const { t: $t } = useI18n()
 interface Props {
   data?: Record<string, any>
   info?: Record<string, any>
@@ -175,7 +177,7 @@ const isEdit = computed(() => !!props.data?.id)
 const sourceClassify = computed(() => route.query.typeId as TypeId)
 const currentComponent = computed(() => COMPONENT_MAP[sourceClassify.value])
 
-const modalTitle = computed(() => (isEdit.value ? '编辑功能' : '新增功能'))
+const modalTitle = computed(() => (isEdit.value ? $t('DataSource.AddData.100016-0') : $t('DataSource.AddData.100016-1')))
 const modalWidth = computed(() => {
   if (currentStep.value !== STEP_CONFIG.COMMAND) {
     return '1200px'
@@ -185,7 +187,7 @@ const modalWidth = computed(() => {
 
   return narrowWidthTypes.includes(sourceClassify.value) ||
     formData.configuration.provider === PROVIDER_TYPE.GENERAL_QUERY
-    ? '600px'
+    ? '800px'
     : '1200px'
 })
 
@@ -266,7 +268,7 @@ const handleNextStep = async () => {
     currentStep.value++
     scrollToTop()
   } catch (error) {
-    handleError(error, '请检查表单填写是否完整')
+    handleError(error, $t('DataSource.AddData.100016-10'))
   } finally {
     loading.value = false
   }
@@ -299,10 +301,10 @@ const saveDataSource = async (params: FormData): Promise<void> => {
   const response = await api(params)
 
   if (!response.success) {
-    throw new Error(isEdit.value ? '编辑失败' : '新增失败')
+    throw new Error(isEdit.value ? $t('DataSource.AddData.100016-8') : $t('DataSource.AddData.100016-9'))
   }
 
-  onlyMessage(isEdit.value ? '编辑成功' : '新增成功')
+  onlyMessage(isEdit.value ? $t('DataSource.AddData.100016-6') : $t('DataSource.AddData.100016-7'))
   emit('ok')
   emit('cancel')
 }
@@ -311,10 +313,10 @@ const saveDataSource = async (params: FormData): Promise<void> => {
 const confirmSaveWithoutOutput = (params: FormData): Promise<boolean> => {
   return new Promise((resolve) => {
     Modal.confirm({
-      title: '提示',
-      content: '命令返回响应配置为空，是否继续保存',
-      cancelText: '取消',
-      okText: '确定',
+      title: $t('DataSource.DataList.100014-2'),
+      content: $t('DataSource.AddData.100016-5'),
+      cancelText: $t('DataSource.SourceAdd.100005-12'),
+      okText: $t('DataSource.SourceAdd.100005-13'),
       onOk: async () => {
         await saveDataSource(params)
         resolve(true)
@@ -327,7 +329,7 @@ const confirmSaveWithoutOutput = (params: FormData): Promise<boolean> => {
 // 构建输出配置
 const buildOutputConfig = (output: unknown, isArray: boolean): OutputConfig => {
   const baseConfig = {
-    name: isArray ? '数组' : '对象',
+    name: isArray ? $t('DataSource.AddData.100016-11') : $t('DataSource.AddData.100016-12'),
     id: isArray ? 'array' : 'object',
     type: (isArray ? 'array' : 'object') as 'array' | 'object'
   }
