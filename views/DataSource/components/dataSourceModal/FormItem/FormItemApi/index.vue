@@ -176,7 +176,6 @@ import { useSourceDetailStore } from '../../../../sourceDetail'
 import { UniversalData } from '../../../type'
 import HeaderParamsTable from './HeaderParamsTable.vue'
 import { cloneDeep } from 'lodash-es'
-import FormItem from './FormItem.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
@@ -282,8 +281,10 @@ const syncFormData = (newValue: any) => {
 
 watch(
   () => props.modelValue,
-  (newValue) => syncFormData(newValue),
-  { deep: true }
+  (newValue) => {
+    syncFormData(newValue)
+  },
+  { immediate: true }
 )
 
 watch(
