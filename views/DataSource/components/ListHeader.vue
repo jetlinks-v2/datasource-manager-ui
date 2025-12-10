@@ -30,9 +30,7 @@
           type="text"
           @click="handleSearchClick"
         >
-          <template #icon>
-            <AIcon type="SearchOutlined" />
-          </template>
+          <AIcon type="SearchOutlined" />
         </a-button>
       </div>
 
@@ -53,12 +51,9 @@ interface Props {
   searchPlaceholder?: string
 }
 
-const props = withDefaults(
-  defineProps<Props>(),
-  {
-    searchPlaceholder: ''
-  }
-)
+const props = withDefaults(defineProps<Props>(), {
+  searchPlaceholder: ''
+})
 
 const { t: $t } = useI18n()
 
@@ -131,7 +126,6 @@ defineExpose({
     transition: all 0.3s;
 
     .ant-btn {
-      font-size: 16px;
       transition: all 0.3s;
     }
 
@@ -156,7 +150,6 @@ defineExpose({
 
     .ant-btn {
       transition: all 0.3s;
-      font-size: 16px;
     }
   }
 }

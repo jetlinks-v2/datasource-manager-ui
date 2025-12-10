@@ -94,12 +94,13 @@
 </template>
 
 <script lang="ts" setup>
-import FileUpload from '@datasource-manager-ui/components/Upload/File/index.vue'
-import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
+import ListHeader from '../../../../components/ListHeader.vue'
+import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
 
+const { FileUpload } = moduleRegistry.getResource('visualization-manager-ui', 'components')
 interface Command {
   description: string
   id: string
