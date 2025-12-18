@@ -112,6 +112,7 @@ import { Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
+const isMicro = !!(window as any).microApp
 
 const permission = 'system/DataSource'
 const loading = ref(false)
@@ -131,7 +132,7 @@ const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
 const sourceClassify = ref<'database' | 'common'>('database')
 const routeLink = computed(() => ({
-  path: `/system/DataSource`,
+  path: `${isMicro ? '/application' : ''}/system/DataSource`,
   query: {
     group: info.value.group?.value
   }

@@ -15,7 +15,9 @@
         :class="{ 'empty-table-cell': !showDataTable }"
       >
         <template #name="slotProps">
-          <router-link :to="`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
+          <router-link
+            :to="`${isMicro ? '/application' : ''}/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`"
+          >
             <a-space>
               <AIcon :type="iconMaps[slotProps.searchCode]" />
               <j-ellipsis>
@@ -108,6 +110,7 @@ import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
+const isMicro = !!(window as any).microApp
 
 const props = defineProps({
   clickItem: {
