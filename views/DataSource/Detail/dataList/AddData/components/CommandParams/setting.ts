@@ -67,7 +67,12 @@ export function useDataTypeManagement() {
   const typeDefaults = {
     float: { scale: 0 },
     double: { scale: 0 },
-    boolean: { trueValue: 'true', trueText: i18n.global.t('CommandParams.Setting.100091-14'), falseValue: 'false', falseText: i18n.global.t('CommandParams.Setting.100091-15') },
+    boolean: {
+      trueValue: 'true',
+      trueText: i18n.global.t('CommandParams.Setting.100091-14'),
+      falseValue: 'false',
+      falseText: i18n.global.t('CommandParams.Setting.100091-15')
+    },
     date: { format: 'yyyy-MM-dd HH:mm:ss' },
     string: { expands: { maxLength: 1 } },
     enum: { elements: [], type: 'enum' },
@@ -100,17 +105,17 @@ export function useDataTypeManagement() {
     const isTree = mode === 'treeTable'
     const special = ['object', 'array'].includes(record.dataType.type)
     if (!isTree || (isTree && !special)) {
-      if (record.dataType.type === 'enum' && !record.dataType.elements?.length) {
+      if (record.dataType.type === 'enum') {
         return i18n.global.t('CommandParams.Setting.100091-17')
       }
-      if (record.dataType.type === 'object' && !record.dataType.properties?.length) {
-        return i18n.global.t('CommandParams.Setting.100091-18')
-      }
-      if (record.dataType.type === 'array') {
-        if (record.dataType.elementType.type === 'object' && !record.dataType.elementType.properties?.length) {
-          return i18n.global.t('CommandParams.Setting.100091-19')
-        }
-      }
+      // if (record.dataType.type === 'object' && !record.dataType.properties?.length) {
+      //   return i18n.global.t('CommandParams.Setting.100091-18')
+      // }
+      // if (record.dataType.type === 'array') {
+      //   if (record.dataType.elementType.type === 'object' && !record.dataType.elementType.properties?.length) {
+      //     return i18n.global.t('CommandParams.Setting.100091-19')
+      //   }
+      // }
     }
     return ''
   }

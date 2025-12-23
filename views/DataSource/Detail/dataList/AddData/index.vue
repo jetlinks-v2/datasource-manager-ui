@@ -177,7 +177,9 @@ const isEdit = computed(() => !!props.data?.id)
 const sourceClassify = computed(() => route.query.typeId as TypeId)
 const currentComponent = computed(() => COMPONENT_MAP[sourceClassify.value])
 
-const modalTitle = computed(() => (isEdit.value ? $t('DataSource.AddData.100016-0') : $t('DataSource.AddData.100016-1')))
+const modalTitle = computed(() =>
+  isEdit.value ? $t('DataSource.AddData.100016-0') : $t('DataSource.AddData.100016-1')
+)
 const modalWidth = computed(() => {
   if (currentStep.value !== STEP_CONFIG.COMMAND) {
     return '1200px'
@@ -375,9 +377,10 @@ const buildExpression = (expression?: any): any => {
     baseExpression.message = message || {}
   }
 
-  // API 添加 method
+  // API 添加 method 和 body
   if (sourceClassify.value === DATA_TYPE_ITEM.API_SEND) {
     baseExpression.method = method as ApiMethod
+    baseExpression.body = expression.body
   }
 
   return baseExpression
