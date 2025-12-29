@@ -54,6 +54,7 @@
   <DebugModal
     v-if="debugModal.visible"
     :data="debugModal.data"
+    :activeItem="activeItem"
     :info="info"
     @cancel="closeDebugModal"
   />

@@ -91,15 +91,19 @@
                   <template #icon>
                     <AIcon :type="debugResult.success ? 'CheckCircleOutlined' : 'CloseCircleOutlined'" />
                   </template>
-                  {{ debugResult.success ? $t('DataSource.DebugModal.100089-7') : $t('DataSource.DebugModal.100089-8') }}
+                  {{
+                    debugResult.success ? $t('DataSource.DebugModal.100089-7') : $t('DataSource.DebugModal.100089-8')
+                  }}
                 </a-tag>
-                <span class="execute-time">{{ $t('DataSource.DebugModal.100089-9') }}: {{ debugResult.executeTime || '--' }}ms</span>
+                <span class="execute-time">
+                  {{ $t('DataSource.DebugModal.100089-9') }}: {{ debugResult.executeTime || '--' }}ms
+                </span>
               </div>
 
               <!-- 结果内容 -->
               <div class="result-data">
                 <JsonEditor
-                  :value="JSON.stringify(debugResult.data, null, 2)"
+                  :modelValue="JSON.stringify(debugResult.data, null, 2)"
                   height="400px"
                   :readOnly="true"
                   :showFormatBtn="false"
@@ -139,7 +143,7 @@
 
 <script setup lang="ts">
 import JsonEditor from './JsonEditor.vue'
-import { queryDataSourceCm1 } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSourceCommand } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 import { useI18n } from 'vue-i18n'
@@ -163,6 +167,10 @@ const props = defineProps({
   info: {
     type: Object,
     required: true
+  },
+  activeItem: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -195,13 +203,14 @@ const handleExecuteDebug = async () => {
     debugResult.value = null
 
     const startTime = Date.now()
-    const res = await queryDataSourceCm1(formData.inputs)
+    const { dataSourceId, support, configuration } = props.activeItem
+    const res = await queryDataSourceCommand(dataSourceId, support, configuration.commandId, formData.inputs)
     const executeTime = Date.now() - startTime
 
     if (res.success) {
       debugResult.value = {
         success: true,
-        data: res,
+        data: res.result,
         executeTime
       }
       onlyMessage($t('DataSource.DebugModal.100089-7'))
@@ -216,7 +225,10 @@ const handleExecuteDebug = async () => {
         stack: error.stack
       }
     }
-    onlyMessage($t('DataSource.DebugModal.100089-14') + (error.message || $t('DataSource.DebugModal.100089-15')), 'error')
+    onlyMessage(
+      $t('DataSource.DebugModal.100089-14') + (error.message || $t('DataSource.DebugModal.100089-15')),
+      'error'
+    )
   } finally {
     debugLoading.value = false
     await scrollToBottom()

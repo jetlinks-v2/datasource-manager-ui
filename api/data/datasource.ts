@@ -69,11 +69,14 @@ export const getDataSourceCommands = (dataSourceId: string, support: string) =>
 
 /**
  * 命令查询
+ * @param serviceId
+ * @param supportId
+ * @param cmd
  * @param data 查询参数
  * @returns 查询结果
  */
-export const queryDataSourceCm1 = (data: any) =>
-  request.post('/datasource/data_source_a8X2/cm1/QueryList/execute', data)
+export const queryDataSourceCommand = (serviceId: string, supportId: string, cmd: string, data: any) =>
+  request.post(`/datasource/${serviceId}/${supportId}/${cmd}/execute`, data)
 
 /**
  * 通用数据源操作接口
