@@ -261,17 +261,24 @@ const handleDelete = (index: number) => {
 // 数据类型更新
 const handleDataTypeUpdate = (record: any, newDataType: any) => {
   if (newDataType.type === 'object') {
-    record.children = newDataType.properties.map((item: any) => ({
-      ...item,
-      key: item.key || item.id
-    }))
+    if (newDataType.properties?.length) {
+      record.children = newDataType.properties.map((item: any) => ({
+        ...item,
+        key: item.key || item.id
+      }))
+    } else {
+      delete record.children
+    }
   } else if (newDataType.type === 'array') {
     if (newDataType.elementType.type === 'object') {
-      record.children =
-        newDataType.elementType.properties?.map((item: any) => ({
+      if (newDataType.elementType.properties?.length) {
+        record.children = newDataType.elementType.properties.map((item: any) => ({
           ...item,
           key: item.key || item.id
-        })) || []
+        }))
+      } else {
+        delete record.children
+      }
     } else {
       delete record.children
       delete newDataType.elementType.properties
@@ -492,25 +499,25 @@ const handleDataType = (item: any) => {
   return item.dataType ? item.dataType : { type: item.type || typeof item.value || 'int' }
 }
 
-// 监听 dataSource
+const processRecord = (item: any): any => {
+  const rec: any = {
+    ...item,
+    key: item.key || item.id,
+    dataType: handleDataType(item)
+  }
+  if (isArray(rec.children) && rec.children.length) {
+    rec.children = rec.children.map((child: any) => processRecord(child))
+  } else {
+    delete rec.children
+  }
+  return rec
+}
+
 watch(
   () => props.dataSource,
   (newData) => {
     if (!isArray(newData)) return
-    tableData.value = cloneDeep(newData).map((item: any) => {
-      const rec: any = {
-        ...item,
-        key: item.key || item.id,
-        dataType: handleDataType(item)
-      }
-      if (isArray(rec.children)) {
-        rec.children = rec.children.map((child: any) => ({
-          ...child,
-          key: child.key || child.id
-        }))
-      }
-      return rec
-    })
+    tableData.value = cloneDeep(newData).map((item: any) => processRecord(item))
   },
   { deep: true, immediate: true }
 )

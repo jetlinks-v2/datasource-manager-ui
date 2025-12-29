@@ -57,15 +57,6 @@ const getData = () => {
 
 const setData = (data: object) => {
   Object.assign(formData, cloneDeep(data))
-  if (!formData.properties?.length && !readonly.value) {
-    formData.properties = [
-      {
-        key: randomString(6),
-        id: '',
-        name: ''
-      }
-    ]
-  }
 }
 
 watch(
