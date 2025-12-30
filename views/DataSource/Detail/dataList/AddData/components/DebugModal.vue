@@ -203,8 +203,8 @@ const handleExecuteDebug = async () => {
     debugResult.value = null
 
     const startTime = Date.now()
-    const { dataSourceId, support, configuration } = props.activeItem
-    const res = await queryDataSourceCommand(dataSourceId, support, configuration.commandId, formData.inputs)
+    const { dataSourceId, support } = props.activeItem
+    const res = await queryDataSourceCommand(dataSourceId, support, props.data.id, formData.inputs)
     const executeTime = Date.now() - startTime
 
     if (res.success) {

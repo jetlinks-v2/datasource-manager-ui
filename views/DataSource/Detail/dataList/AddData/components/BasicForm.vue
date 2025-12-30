@@ -27,34 +27,6 @@
       />
     </a-form-item>
 
-    <template v-if="sourceClassify === DATA_TYPE_ITEM.API_SEND">
-      <a-form-item
-        :label="$t('DataSource.BasicForm.100017-2')"
-        :name="['configuration', 'commandId']"
-        :rules="rules.configuration.commandId"
-      >
-        <a-input
-          :value="modelValue.configuration.commandId"
-          :placeholder="$t('DataSource.BasicForm.100017-3')"
-          :maxlength="64"
-          @change="(e) => handleFieldChange('configuration.commandId', e.target.value)"
-        />
-      </a-form-item>
-
-      <a-form-item
-        :label="$t('DataSource.BasicForm.100017-4')"
-        :name="['configuration', 'commandName']"
-        :rules="rules.configuration.commandName"
-      >
-        <a-input
-          :value="modelValue.configuration.commandName"
-          :placeholder="$t('DataSource.BasicForm.100017-5')"
-          :maxlength="64"
-          @change="(e) => handleFieldChange('configuration.commandName', e.target.value)"
-        />
-      </a-form-item>
-    </template>
-
     <a-form-item
       :label="$t('DataSource.table.100003-6')"
       name="description"
@@ -162,18 +134,7 @@ const rules = computed(() => ({
       trigger: 'blur'
     },
     { validator: validateID, trigger: 'blur' }
-  ] as Rule[],
-  configuration: {
-    commandId: [
-      { required: true, message: $t('DataSource.BasicForm.100017-3'), trigger: 'blur' },
-      {
-        pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
-        message: $t('DataSource.BasicForm.100017-8'),
-        trigger: 'blur'
-      }
-    ] as Rule[],
-    commandName: [{ required: true, message: $t('DataSource.BasicForm.100017-5'), trigger: 'blur' }] as Rule[]
-  }
+  ] as Rule[]
 }))
 
 const handleFieldChange = (fieldPath: string, value: any) => {
