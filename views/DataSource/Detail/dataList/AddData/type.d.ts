@@ -67,8 +67,6 @@ export interface FormData {
   dataSourceTypeId: string
   description: string
   configuration: {
-    commandId?: string
-    commandName?: string
     output?: OutputConfig | unknown
     input?: InputConfig[] | unknown[]
     param?: Record<string, unknown>
