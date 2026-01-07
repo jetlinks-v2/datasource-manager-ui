@@ -4,55 +4,47 @@
     :title="$t('DataSource.TypeAdd.100004-0')"
     @cancel="emit('close')"
     centered
-    :width="616"
-    :bodyStyle="{ maxHeight: '75vh', padding: '8px' }"
+    :width="516"
+    :bodyStyle="{ maxHeight: '75vh', padding: '12px' }"
   >
     <a-row class="data-source-modal">
-      <!-- <TitleComponent data="类型" /> -->
       <a-col :span="24">
-        <div
-          v-for="(dataTypeItem, index) in dataType"
-          :key="index"
-          class="type-section"
-        >
-          <TitleComponent :data="dataTypeItem.title" />
-          <div class="type-grid">
+        <div class="type-grid">
+          <div
+            v-for="item in dataType"
+            :key="item.value"
+            class="type-grid-item"
+            @click="handleSelect(item)"
+          >
             <div
-              v-for="item in dataTypeItem.types"
-              :key="item.value"
-              class="type-grid-item"
-              @click="handleSelect(item)"
+              class="type-card"
+              :class="{
+                'is-disabled': item.disable,
+                'is-active': item.value === activeType.value
+              }"
             >
+              <img
+                :alt="item.value"
+                :src="item.icon"
+                class="type-image"
+                draggable="false"
+              />
+              <!-- 敬请期待 -->
               <div
-                class="type-card"
-                :class="{
-                  'is-disabled': item.disable,
-                  'is-active': item.value === activeType.value
-                }"
+                class="type-image-mask"
+                v-if="item.disable"
               >
-                <img
-                  :alt="item.value"
-                  :src="item.icon"
-                  class="type-image"
-                  draggable="false"
+                <span>{{ $t('DataSource.TypeAdd.100092-0') }}</span>
+              </div>
+              <!-- 选中标记 -->
+              <div
+                v-if="item.value === activeType.value"
+                class="selected-mark"
+              >
+                <AIcon
+                  type="CheckOutlined"
+                  class="check-icon"
                 />
-                <!-- 敬请期待 -->
-                <div
-                  class="type-image-mask"
-                  v-if="item.disable"
-                >
-                  <span>{{ $t('DataSource.TypeAdd.100092-0') }}</span>
-                </div>
-                <!-- 选中标记 -->
-                <div
-                  v-if="item.value === activeType.value"
-                  class="selected-mark"
-                >
-                  <AIcon
-                    type="CheckOutlined"
-                    class="check-icon"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -110,14 +102,11 @@ const handleClickNext = () => {
 
 <style lang="less" scoped>
 .data-source-modal {
-  .type-section {
-    margin-bottom: 16px;
-  }
-
   .type-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+    justify-items: center;
   }
 
   .type-grid-item {

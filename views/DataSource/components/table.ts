@@ -10,7 +10,6 @@ import DataRedis from '@datasource-manager-ui/assets/svg/data-redis.svg'
 import DataSqlserver from '@datasource-manager-ui/assets/svg/data-sqlserver.svg'
 import DataWebsocket from '@datasource-manager-ui/assets/svg/data-websocket.svg'
 import { isArray } from 'lodash-es'
-import i18n from '@jetlinks-web-core/locales'
 
 export enum DATA_TYPE_ITEM {
   RDB_DATASOURCE = 'rdb', // 关系型数据库表单 (MySQL, PostgreSQL等)
@@ -52,119 +51,111 @@ export const DATASOURCE_NAME = {
 
 export const typesData = [
   {
-    title: i18n.global.t('DataSource.Type.100098-0'),
-    value: 'common',
-    types: [
-      {
-        icon: DataApi,
-        value: DATASOURCE_TYPE.API,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.API],
-        formType: DATA_TYPE_ITEM.API_SEND
-      },
-      {
-        icon: DataWebsocket,
-        value: DATASOURCE_TYPE.WEBSOCKET,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.WEBSOCKET],
-        formType: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
-        defaultConfig: {
-          handshakeTimeout: 0,
-          reconnectionAttempts: 0,
-          maxMessageSize: 2,
-          reconnectionIntervals: 5000,
-          payloadType: 'JSON'
-        }
-      }
-    ]
+    icon: DataApi,
+    value: DATASOURCE_TYPE.API,
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.API],
+    formType: DATA_TYPE_ITEM.API_SEND
   },
   {
-    title: i18n.global.t('DataSource.Type.100098-1'),
-    value: 'database',
-    types: [
-      {
-        icon: DataMysql,
-        value: DATASOURCE_TYPE.MYSQL,
-        jdbcHeaders: 'r2dbc:mysql://',
-        headersEnum: ['r2dbc:mysql://', 'jdbc:mysql://'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.MYSQL],
-        placeholderPort: '3306',
-        type: 'r2dbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataPostgresql,
-        value: DATASOURCE_TYPE.POSTGRESQL,
-        jdbcHeaders: 'r2dbc:postgresql://',
-        headersEnum: ['r2dbc:postgresql://', 'jdbc:postgresql://'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.POSTGRESQL],
-        placeholderPort: '5432',
-        type: 'r2dbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataSqlserver,
-        value: DATASOURCE_TYPE.SQLSERVER,
-        jdbcHeaders: 'jdbc:sqlserver://',
-        headersEnum: ['jdbc:sqlserver://'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.SQLSERVER],
-        placeholderPort: '1433',
-        type: 'jdbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataDm,
-        value: DATASOURCE_TYPE.DAMENG,
-        jdbcHeaders: 'jdbc:dm://',
-        headersEnum: ['jdbc:dm://', 'r2dbc:jdbc:dm://'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.DAMENG],
-        placeholderPort: '5236',
-        type: 'jdbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataMariadb,
-        value: DATASOURCE_TYPE.MARIADB,
-        jdbcHeaders: 'r2dbc:mysql://',
-        headersEnum: ['r2dbc:mysql://', 'r2dbc:mariadb://'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.MARIADB],
-        placeholderPort: '3306',
-        type: 'r2dbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataOracle,
-        value: DATASOURCE_TYPE.ORACLE,
-        jdbcHeaders: 'jdbc:oracle:thin:@jetlinks-web-core//',
-        headersEnum: ['jdbc:oracle:thin:@jetlinks-web-core//', 'jdbc:oracle:thin:@', 'jdbc:oracle:thin:user/password@jetlinks-web-core//'],
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.ORACLE],
-        placeholderPort: '1521',
-        type: 'jdbc',
-        formType: DATA_TYPE_ITEM.RDB_DATASOURCE
-      },
-      {
-        icon: DataMongodb,
-        value: DATASOURCE_TYPE.MONGODB,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.MONGODB],
-        formType: DATA_TYPE_ITEM.MONGODB_DATASOURCE
-      },
-      {
-        icon: DataRedis,
-        value: DATASOURCE_TYPE.REDIS,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.REDIS],
-        formType: DATA_TYPE_ITEM.REDIS_DATASOURCE
-      },
-      {
-        icon: DataEsApi,
-        value: DATASOURCE_TYPE.ELASTICSEARCH,
-        name: DATASOURCE_NAME[DATASOURCE_TYPE.ELASTICSEARCH],
-        formType: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
-      }
-    ]
+    icon: DataWebsocket,
+    value: DATASOURCE_TYPE.WEBSOCKET,
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.WEBSOCKET],
+    formType: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
+    defaultConfig: {
+      handshakeTimeout: 0,
+      reconnectionAttempts: 0,
+      maxMessageSize: 2,
+      reconnectionIntervals: 5000,
+      payloadType: 'JSON'
+    }
+  },
+  {
+    icon: DataMysql,
+    value: DATASOURCE_TYPE.MYSQL,
+    jdbcHeaders: 'r2dbc:mysql://',
+    headersEnum: ['r2dbc:mysql://', 'jdbc:mysql://'],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.MYSQL],
+    placeholderPort: '3306',
+    type: 'r2dbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataPostgresql,
+    value: DATASOURCE_TYPE.POSTGRESQL,
+    jdbcHeaders: 'r2dbc:postgresql://',
+    headersEnum: ['r2dbc:postgresql://', 'jdbc:postgresql://'],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.POSTGRESQL],
+    placeholderPort: '5432',
+    type: 'r2dbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataSqlserver,
+    value: DATASOURCE_TYPE.SQLSERVER,
+    jdbcHeaders: 'jdbc:sqlserver://',
+    headersEnum: ['jdbc:sqlserver://'],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.SQLSERVER],
+    placeholderPort: '1433',
+    type: 'jdbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataDm,
+    value: DATASOURCE_TYPE.DAMENG,
+    jdbcHeaders: 'jdbc:dm://',
+    headersEnum: ['jdbc:dm://', 'r2dbc:jdbc:dm://'],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.DAMENG],
+    placeholderPort: '5236',
+    type: 'jdbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataMariadb,
+    value: DATASOURCE_TYPE.MARIADB,
+    jdbcHeaders: 'r2dbc:mysql://',
+    headersEnum: ['r2dbc:mysql://', 'r2dbc:mariadb://'],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.MARIADB],
+    placeholderPort: '3306',
+    type: 'r2dbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataOracle,
+    value: DATASOURCE_TYPE.ORACLE,
+    jdbcHeaders: 'jdbc:oracle:thin:@jetlinks-web-core//',
+    headersEnum: [
+      'jdbc:oracle:thin:@jetlinks-web-core//',
+      'jdbc:oracle:thin:@',
+      'jdbc:oracle:thin:user/password@jetlinks-web-core//'
+    ],
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.ORACLE],
+    placeholderPort: '1521',
+    type: 'jdbc',
+    formType: DATA_TYPE_ITEM.RDB_DATASOURCE
+  },
+  {
+    icon: DataMongodb,
+    value: DATASOURCE_TYPE.MONGODB,
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.MONGODB],
+    formType: DATA_TYPE_ITEM.MONGODB_DATASOURCE
+  },
+  {
+    icon: DataRedis,
+    value: DATASOURCE_TYPE.REDIS,
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.REDIS],
+    formType: DATA_TYPE_ITEM.REDIS_DATASOURCE
+  },
+  {
+    icon: DataEsApi,
+    value: DATASOURCE_TYPE.ELASTICSEARCH,
+    name: DATASOURCE_NAME[DATASOURCE_TYPE.ELASTICSEARCH],
+    formType: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE
   }
 ]
 
 //获取数据源详情
 export const getTypesDataDetail = (value: string) => {
-  return typesData.flatMap((data: any) => data.types).find((type: any) => type.value === value)
+  return typesData.find((type: any) => type.value === value)
 }
 
 /**

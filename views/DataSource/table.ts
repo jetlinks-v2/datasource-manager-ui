@@ -20,7 +20,6 @@ export const iconMaps = {
 const getDataTypeOptions = () => {
   return (
     typesData
-      .flatMap((data: any) => data.types)
       // 先过滤掉禁用的类型
       .filter((type: any) => !type.disable)
       // 然后映射剩余的类型到新的对象

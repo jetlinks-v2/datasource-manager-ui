@@ -210,7 +210,7 @@ const getDataSourceName = (value: string) => {
 
 const handleAdd = () => {
   activeKey.value = {
-    ...typesData[0].types[0],
+    ...typesData[0],
     group: clickItem.value
   }
   showTypeAdd.value = true

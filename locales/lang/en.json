@@ -29,8 +29,6 @@
   "DataSource.TypeAdd.100004-0": "Add Data Source Connection",
   "DataSource.TypeAdd.100004-1": "Type",
   "DataSource.TypeAdd.100004-2": "Next",
-  "DataSource.TypeAdd.100004-3": "General",
-  "DataSource.TypeAdd.100004-4": "Database",
   "DataSource.SourceAdd.100005-0": "Edit",
   "DataSource.SourceAdd.100005-1": "Add Data Source Connection",
   "DataSource.SourceAdd.100005-2": "Data Source Name",
@@ -446,6 +444,7 @@
   "DataSource.RedisKeyDetail.100058-4": "Loading...",
   "DataSource.RedisKeyDetail.100058-5": "Confirm deletion",
   "DataSource.RedisKeyDetail.100058-6": "Are you sure you want to delete key \"{name}\"? This cannot be undone.",
+  "DataSource.Detail.Redis.String.TotalCharacters": "Total {count} characters",
   "DataSource.CheckTest.100022-5": "Advanced",
   "DataSource.CheckTest.100022-6": "Normal",
   "DataSource.CheckTest.100022-7": "Advanced mode accepts any JSON type (number, boolean, array, object, etc.) but parameter names cannot change",
@@ -853,7 +852,5 @@
   "DataSource.Message.100096-1": "Create successful",
   "DataSource.Upload.100097-0": "Upload failed",
   "DataSource.Upload.100097-1": "Please upload files in correct format",
-  "DataSource.Upload.100097-2": "File size must be less than {0}M",
-  "DataSource.Type.100098-0": "General",
-  "DataSource.Type.100098-1": "Database"
+  "DataSource.Upload.100097-2": "File size must be less than {0}M"
 }
