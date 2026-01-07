@@ -136,8 +136,7 @@ const visibleItems = computed(() =>
 
 const parseDatabaseConfig = (shareConfig: ShareConfig, searchCode: string) => {
   const { other, url, schema, username, password } = shareConfig
-  const { types = [] } = typesData.find((item: any) => item.value === 'database') || {}
-  const activeType = types.find((item: any) => item.value === searchCode)
+  const activeType = typesData.find((item: any) => item.value === searchCode)
   const { host, port, path } = datasourceParseUrl(url, activeType)
 
   return {

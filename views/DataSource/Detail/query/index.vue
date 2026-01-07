@@ -89,16 +89,13 @@
 </template>
 
 <script setup>
-import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+import { queryDataSource, getDataSourceTables } from '@datasource-manager-ui/api/data/datasource'
 import { useSqlKeywords } from '@datasource-manager-ui/hooks/useSqlKeywords'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { useI18n } from 'vue-i18n'
 
 const { t: $t } = useI18n()
 
-const props = defineProps({
-  sourceData: Object
-})
 const route = useRoute()
 const typeId = route.query.typeId
 const dataSourceId = route.params.id
@@ -109,8 +106,10 @@ const executionResult = ref([])
 const errorMessage = ref('')
 const initialize = ref(true)
 const tips = ref()
-//表头
+// 表头
 const columns = ref([])
+// 表结构数据（用于 SQL 提示）
+const tablesData = ref([])
 
 const tabClick = (a) => {
   activeKey.value = a
@@ -225,7 +224,23 @@ const handleSQL = async () => {
 }
 
 const handleRegistrationTips = () => {
-  tips.value = sqlKeywords.getTableSuggestions(props.sourceData)
+  tips.value = sqlKeywords.getTableSuggestions(tablesData.value)
+}
+
+// 加载表结构数据
+const loadTablesData = async () => {
+  try {
+    // 先刷新表结构
+    await queryDataSource(typeId, dataSourceId, 'Refresh', {})
+    // 获取表数据
+    const res = await getDataSourceTables(dataSourceId)
+    if (res.success) {
+      tablesData.value = res.result || []
+      handleRegistrationTips()
+    }
+  } catch (error) {
+    console.error('加载表结构失败:', error)
+  }
 }
 
 watch(
@@ -246,22 +261,8 @@ watch(
   }
 )
 
-watch(
-  () => props.sourceData,
-  (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      handleRegistrationTips()
-    }
-  },
-  {
-    deep: true
-  }
-)
-
 onMounted(() => {
-  if (props.sourceData) {
-    handleRegistrationTips()
-  }
+  loadTablesData()
 })
 </script>
 

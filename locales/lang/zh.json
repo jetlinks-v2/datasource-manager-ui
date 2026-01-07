@@ -29,8 +29,6 @@
   "DataSource.TypeAdd.100004-0": "新增数据源连接",
   "DataSource.TypeAdd.100004-1": "类型",
   "DataSource.TypeAdd.100004-2": "下一步",
-  "DataSource.TypeAdd.100004-3": "通用库",
-  "DataSource.TypeAdd.100004-4": "数据库",
   "DataSource.SourceAdd.100005-0": "编辑",
   "DataSource.SourceAdd.100005-1": "新增数据源连接",
   "DataSource.SourceAdd.100005-2": "数据源名称",
@@ -446,6 +444,7 @@
   "DataSource.RedisKeyDetail.100058-4": "加载中...",
   "DataSource.RedisKeyDetail.100058-5": "确认删除",
   "DataSource.RedisKeyDetail.100058-6": "确定要删除键 \"{name}\" 吗？删除后将无法恢复。",
+  "DataSource.Detail.Redis.String.TotalCharacters": "共 {count} 个字符",
   "DataSource.CheckTest.100022-5": "高级",
   "DataSource.CheckTest.100022-6": "普通",
   "DataSource.CheckTest.100022-7": "高级模式支持输入任意 JSON 类型的值（数字、布尔、数组、对象等），但不能修改参数名",
@@ -853,7 +852,5 @@
   "DataSource.Message.100096-1": "新增成功",
   "DataSource.Upload.100097-0": "上传失败",
   "DataSource.Upload.100097-1": "请上传正确格式的文件",
-  "DataSource.Upload.100097-2": "文件大小必须小于{0}M",
-  "DataSource.Type.100098-0": "通用库",
-  "DataSource.Type.100098-1": "数据库"
+  "DataSource.Upload.100097-2": "文件大小必须小于{0}M"
 }
