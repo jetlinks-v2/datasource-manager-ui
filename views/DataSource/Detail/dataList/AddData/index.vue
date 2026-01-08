@@ -523,8 +523,6 @@ const handleSave = async () => {
     const handler = SAVE_HANDLERS[sourceClassify.value]
     if (handler) {
       await handler()
-    } else {
-      throw new Error(`不支持的数据源类型: ${sourceClassify.value}`)
     }
   } catch (error: unknown) {
     handleError(error, '操作失败')

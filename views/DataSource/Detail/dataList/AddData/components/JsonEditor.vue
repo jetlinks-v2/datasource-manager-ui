@@ -216,7 +216,7 @@ const validateAndMark = (value: string): boolean => {
   const markers: MonacoMarker[] = []
 
   // 先校验非法的变量包裹（支持 {{xxx}} 和 ${xxx}）
-  const illegalWrappedVariablePattern = /"\s*(\{\{.*?}}|\$\{.*?\})\s*"/g
+  const illegalWrappedVariablePattern = /"\s*(\{\{.*?}}|\$\{.*?})\s*"/g
   let match
   while ((match = illegalWrappedVariablePattern.exec(value)) !== null) {
     const startOffset = match.index
@@ -351,7 +351,7 @@ const registerCustomJsonLanguage = (): void => {
         [/[ \t\r\n]+/, ''],
         [/"([^"\\]|\\.)*"/, 'string'], // 字符串（优先匹配）
         [/\{\{[^{}]*}}/, 'variable.custom'], // 变量 {{xxx}}
-        [/\$\{[^}]+\}/, 'variable.custom'], // 变量 ${xxx}
+        [/\$\{[^}]+}/, 'variable.custom'], // 变量 ${xxx}
         [/\b(true|false|null)\b/, 'keyword'], // 布尔和null
         [/-?\d+(\.\d+)?([eE][+\-]?\d+)?/, 'number'] // 数字，支持负数、浮点数、科学计数法
       ]
