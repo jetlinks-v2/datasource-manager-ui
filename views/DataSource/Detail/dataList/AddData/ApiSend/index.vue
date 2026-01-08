@@ -39,7 +39,7 @@
         <CheckTest
           ref="checkTestRef"
           :query-params="params"
-          :history-params="data.param"
+          :history-params="data.defaultParams"
           :advanced-mode="isAdvancedMode"
           @update:data="handleCheckTestSave"
           @update:advanced-mode="handleAdvancedModeChange"
@@ -73,7 +73,7 @@ import type { SelectValue } from 'ant-design-vue/lib/select'
 import RequestParams from './RequestParams/index.vue'
 import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
-import { convertParamsToObject, transformArray } from '../components/utils'
+import { convertParamsToObject, transformArray, validateDynamicParams, validateUrlChars } from '../components/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 import { useI18n } from 'vue-i18n'
@@ -117,6 +117,21 @@ const validateUri = async (_: Rule, value: string) => {
   if (!value) return Promise.reject($t('DataSource.ApiSend.100020-1'))
   if (!value.startsWith('/')) return Promise.reject($t('DataSource.ApiSend.100020-2'))
   if (value.endsWith('/')) return Promise.reject($t('DataSource.ApiSend.100020-3'))
+
+  // 验证动态参数格式
+  const validationResult = validateDynamicParams(value)
+  if (!validationResult.valid) {
+    const firstError = validationResult.errors[0]
+    return Promise.reject($t(firstError.message))
+  }
+
+  // 验证 URL 特殊字符
+  const urlCharsResult = validateUrlChars(value)
+  if (!urlCharsResult.valid) {
+    const firstError = urlCharsResult.errors[0]
+    return Promise.reject($t(firstError.message, { char: firstError.text }))
+  }
+
   return Promise.resolve()
 }
 

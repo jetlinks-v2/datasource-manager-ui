@@ -342,6 +342,7 @@ onMounted(() => {
 
     dynamicParams.query = findQueryParams(copyRequestParamData.value)
     dynamicParams.headers = findQueryParams(requestHeaderDataSource.value)
+    dynamicParams.uri = findUriParams(props.data.uri?.url || '')
 
     const type = (props.data.body?.contentType || 'none') as BodyFormatType
     bodyFormat.value = type
@@ -366,7 +367,6 @@ onMounted(() => {
           value,
           enable: true
         })) as ParamItem[]
-        dynamicParams.uri = findUriParams(props.data.uri.url)
         break
       case 'none':
         requestParamsData.value.body = {

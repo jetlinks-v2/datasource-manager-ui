@@ -5,7 +5,81 @@ interface ParamItem {
   value: string
 }
 
-const DYNAMIC_PARAM_REGEX = /{{\s*(.*?)\s*}}/g
+// 有效的动态参数正则：{{变量名}}，变量名必须是有效的标识符（字母、数字、下划线、连字符，不能为空）
+const DYNAMIC_PARAM_REGEX = /\{\{([a-zA-Z_][a-zA-Z0-9_-]*)}}/g
+
+// 检测格式错误的变量语法
+const INVALID_PATTERNS = [
+  { pattern: /\{\{\s*}}/g, message: 'DataSource.utils.100036-1' }, // {{}} 或 {{  }}
+  { pattern: /\{\{\s+[^}\s]/g, message: 'DataSource.utils.100036-2' }, // {{ test}} 变量名前有空格
+  { pattern: /[^{\s]\s+}}/g, message: 'DataSource.utils.100036-3' }, // {{test }} 变量名后有空格
+  { pattern: /\{\{\{+/g, message: 'DataSource.utils.100036-4' }, // {{{ 或更多
+  { pattern: /}}}+/g, message: 'DataSource.utils.100036-4' }, // }}} 或更多
+  { pattern: /\{\{[^}]*\{/g, message: 'DataSource.utils.100036-5' }, // {{ 内部有 {
+  { pattern: /}[^{]*}}/g, message: 'DataSource.utils.100036-5' } // }} 前有额外的 }
+]
+
+// URL 中不允许的特殊字符（排除常见的 URL 合法字符和变量占位符）
+const URL_INVALID_CHARS = /[<>"\s\\|^`\[\]]/
+
+export interface ValidationResult {
+  valid: boolean
+  errors: Array<{ text: string; message: string; index: number }>
+}
+
+/**
+ * 验证字符串中的动态参数格式是否正确
+ * @param {string} text - 需要验证的字符串
+ * @returns {ValidationResult} - 验证结果
+ */
+export const validateDynamicParams = (text: string): ValidationResult => {
+  const errors: Array<{ text: string; message: string; index: number }> = []
+
+  for (const { pattern, message } of INVALID_PATTERNS) {
+    pattern.lastIndex = 0
+    let match
+    while ((match = pattern.exec(text)) !== null) {
+      errors.push({
+        text: match[0],
+        message,
+        index: match.index
+      })
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+/**
+ * 验证 URL 中是否包含非法特殊字符
+ * @param {string} url - 需要验证的 URL
+ * @returns {ValidationResult} - 验证结果
+ */
+export const validateUrlChars = (url: string): ValidationResult => {
+  const errors: Array<{ text: string; message: string; index: number }> = []
+
+  // 先移除变量占位符再检查特殊字符
+  const urlWithoutVars = url.replace(/\{\{[^}]*}}/g, '')
+
+  for (let i = 0; i < urlWithoutVars.length; i++) {
+    const char = urlWithoutVars[i]
+    if (URL_INVALID_CHARS.test(char)) {
+      errors.push({
+        text: char,
+        message: 'DataSource.utils.100036-6',
+        index: i
+      })
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
 
 /**
  * 格式化输出对象
@@ -30,7 +104,11 @@ export const extractUniqueParamsFromString = (text: string): Set<string> => {
   DYNAMIC_PARAM_REGEX.lastIndex = 0 // 重置正则表达式的状态
   while ((match = DYNAMIC_PARAM_REGEX.exec(text)) !== null) {
     // match[1] 包含捕获组的内容，即 {{}} 中间的参数名
-    paramNames.add(match[1].trim()) // trim() 去除可能存在的前后空格
+    const paramName = match[1].trim()
+    // 只添加非空的有效参数名
+    if (paramName) {
+      paramNames.add(paramName)
+    }
   }
   return paramNames
 }

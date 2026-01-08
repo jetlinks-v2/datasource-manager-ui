@@ -19,7 +19,7 @@
     <!-- 普通模式：表格输入 -->
     <a-table
       v-if="!isAdvancedMode"
-      :columns="responseTreeTableColumns"
+      :columns="tableColumns"
       :data-source="dynamicParams"
       :pagination="false"
       size="small"
@@ -32,7 +32,7 @@
             :error="formErrors[index]?.value"
             :value="record.value"
             :placeholder="$t('DataSource.CheckTest.100022-3')"
-            @change="(val) => handleFieldChange(val, 'value', record)"
+            @change="(val) => handleFieldChange(val, record)"
           />
         </template>
       </template>
@@ -57,11 +57,8 @@
         language="json"
         :blur-format="true"
         class="monaco-editor-container"
-        :class="jsonErrorMsg ? 'monaco-editor-container-error' : ''"
-        :options="{
-          formatOnPaste: true,
-          fixedOverflowWidgets: true
-        }"
+        :class="{ 'monaco-editor-container-error': jsonErrorMsg }"
+        :options="{ formatOnPaste: true, fixedOverflowWidgets: true }"
         @change="handleJsonChange"
         @error-change="handleJsonError"
       />
@@ -76,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { isObject, isArray, isEmpty, set, unset, difference } from 'lodash-es'
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import MonacoEditor from '@jetlinks-web-core/components/MonacoEditor/monacoEditor.vue'
 import { useI18n } from 'vue-i18n'
@@ -88,12 +86,7 @@ interface ParamItem {
 const props = defineProps({
   queryParams: {
     type: Object,
-    default: {
-      query: [],
-      headers: [],
-      body: [],
-      uri: []
-    }
+    default: () => ({ query: [], headers: [], body: [], uri: [] })
   },
   historyParams: {
     type: Object,
@@ -105,123 +98,74 @@ const props = defineProps({
   }
 })
 
-type ValidatorKey = 'value'
-type ValidatorFn = (value: string, record: ParamItem, index: number) => string
-
-const responseTreeTableColumns = computed(() => [
-  {
-    title: $t('DataSource.CheckTest.100022-1'),
-    dataIndex: 'name',
-    key: 'name',
-    width: '20%',
-    ellipsis: true
-  },
-  {
-    title: $t('DataSource.CheckTest.100022-2'),
-    dataIndex: 'value',
-    key: 'value'
-  }
-])
-
 const { t: $t } = useI18n()
-
 const emit = defineEmits(['update:data', 'update:advancedMode'])
+
 const dynamicParams = ref<ParamItem[]>([])
 const formErrors = ref<Record<number, Record<string, string>>>({})
-
-// 高级模式相关
 const isAdvancedMode = ref(props.advancedMode)
 const jsonEditorValue = ref('{}')
-const jsonError = ref<boolean>(false)
-const jsonErrorMsg = ref<string>('')
+const jsonError = ref(false)
+const jsonErrorMsg = ref('')
 
-const validators: Record<ValidatorKey, ValidatorFn> = {
-  value: (value: string) => {
-    if (value.length > 64) return $t('DataSource.CheckTest.100022-4')
-    return ''
-  }
-}
+const tableColumns = computed(() => [
+  { title: $t('DataSource.CheckTest.100022-1'), dataIndex: 'name', key: 'name', width: '20%', ellipsis: true },
+  { title: $t('DataSource.CheckTest.100022-2'), dataIndex: 'value', key: 'value' }
+])
+
+// 获取允许的参数名
+const allowedParamKeys = computed(() => new Set(dynamicParams.value.map((item) => item.name)))
 
 // 验证单个字段
-const validateField = (field: ValidatorKey, record: ParamItem, index: number) => {
-  const error = validators[field](record[field], record, index)
+const validateField = (record: ParamItem, index: number): boolean => {
+  const error = record.value.length > 64 ? $t('DataSource.CheckTest.100022-4') : ''
 
   if (error) {
-    formErrors.value = {
-      ...formErrors.value,
-      [index]: {
-        ...formErrors.value[index],
-        [field]: error
-      }
-    }
+    set(formErrors.value, [index, 'value'], error)
     return false
   }
 
-  // 清除错误
-  if (formErrors.value[index]) {
-    const newErrors = { ...formErrors.value[index] }
-    delete newErrors[field]
-
-    if (Object.keys(newErrors).length === 0) {
-      const { [index]: _, ...rest } = formErrors.value
-      formErrors.value = rest
-    } else {
-      formErrors.value = {
-        ...formErrors.value,
-        [index]: newErrors
-      }
-    }
+  unset(formErrors.value, [index, 'value'])
+  if (isEmpty(formErrors.value[index])) {
+    delete formErrors.value[index]
   }
-
   return true
 }
 
 // 验证所有字段
-const validateAll = () => {
-  // 高级模式下验证 JSON 格式
+const validateAll = (): boolean => {
   if (isAdvancedMode.value) {
     return validateJson(jsonEditorValue.value)
   }
 
-  // 普通模式下验证表格
-  let isValid = true
   formErrors.value = {}
-
-  dynamicParams.value.forEach((record, index) => {
-    if (!validateField('value', record, index)) {
-      isValid = false
-    }
-  })
-
-  return isValid
+  return dynamicParams.value.every((record, index) => validateField(record, index))
 }
 
-const handleFieldChange = (value: string, field: ValidatorKey, record: any) => {
-  record[field] = value
+const handleFieldChange = (value: string, record: any) => {
+  record.value = value
   emit('update:data', dynamicParams.value)
 }
 
-// 将 dynamicParams 转换为 JSON 对象
-const paramsToJson = () => {
-  const obj: Record<string, any> = {}
-  dynamicParams.value.forEach((item) => {
-    obj[item.name] = item.value
-  })
-  return obj
+// 将 dynamicParams 转换为 JSON 对象（值转义为 JSON）
+const paramsToJson = (): Record<string, any> => {
+  return dynamicParams.value.reduce((obj, item) => {
+    try {
+      obj[item.name] = JSON.parse(item.value)
+    } catch {
+      obj[item.name] = item.value
+    }
+    return obj
+  }, {} as Record<string, any>)
 }
 
-// 将 JSON 对象转换为 dynamicParams
-const jsonToParams = (jsonObj: Record<string, any>) => {
+// 将 JSON 对象转换为 dynamicParams（值反转义为字符串）
+const jsonToParams = (jsonObj: Record<string, any>): ParamItem[] => {
   return Object.entries(jsonObj).map(([name, value]) => ({
     name,
-    value
+    value: isObject(value) ? JSON.stringify(value) : String(value)
   }))
 }
-
-// 获取允许的参数名列表
-const allowedParamKeys = computed(() => {
-  return new Set(dynamicParams.value.map((item) => item.name))
-})
 
 // 验证 key 格式
 const validateKey = (key: string): string => {
@@ -232,9 +176,9 @@ const validateKey = (key: string): string => {
 
 // 递归验证对象所有 key
 const validateAllKeys = (obj: any, path = ''): string => {
-  if (typeof obj !== 'object' || obj === null) return ''
+  if (!isObject(obj)) return ''
 
-  if (Array.isArray(obj)) {
+  if (isArray(obj)) {
     for (let i = 0; i < obj.length; i++) {
       const error = validateAllKeys(obj[i], `${path}[${i}]`)
       if (error) return error
@@ -243,151 +187,117 @@ const validateAllKeys = (obj: any, path = ''): string => {
     for (const key of Object.keys(obj)) {
       const keyError = validateKey(key)
       if (keyError) return keyError
-
-      const error = validateAllKeys(obj[key], path ? `${path}.${key}` : key)
+      const error = validateAllKeys((obj as Record<string, any>)[key], path ? `${path}.${key}` : key)
       if (error) return error
     }
   }
   return ''
 }
 
-// 验证 JSON 是否有效（包括参数名校验）
+// 设置 JSON 验证错误
+const setJsonError = (msg: string): boolean => {
+  jsonError.value = true
+  jsonErrorMsg.value = msg
+  return false
+}
+
+// 清除 JSON 验证错误
+const clearJsonError = (): boolean => {
+  jsonError.value = false
+  jsonErrorMsg.value = ''
+  return true
+}
+
+// 验证 JSON 格式（包括参数名校验）
 const validateJson = (value: string): boolean => {
   try {
     const parsed = JSON.parse(value)
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      jsonError.value = true
-      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-10')
-      return false
+
+    if (!isObject(parsed) || isArray(parsed)) {
+      return setJsonError($t('DataSource.CheckTest.100022-10'))
     }
 
-    // 校验参数名是否被修改
-    const inputKeys = new Set(Object.keys(parsed))
-    const allowedKeys = allowedParamKeys.value
-
-    // 递归检查所有 key 的格式
     const keyError = validateAllKeys(parsed)
-    if (keyError) {
-      jsonError.value = true
-      jsonErrorMsg.value = keyError
-      return false
-    }
+    if (keyError) return setJsonError(keyError)
 
-    // 检查是否有新增的 key
-    const addedKeys: string[] = []
-    for (const key of inputKeys) {
-      if (!allowedKeys.has(key)) {
-        addedKeys.push(key)
-      }
-    }
+    const inputKeys = Object.keys(parsed)
+    const allowedKeys = [...allowedParamKeys.value]
+
+    const addedKeys = difference(inputKeys, allowedKeys)
     if (addedKeys.length > 0) {
-      jsonError.value = true
-      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-11', { keys: addedKeys.join(', ') })
-      return false
+      return setJsonError($t('DataSource.CheckTest.100022-11', { keys: addedKeys.join(', ') }))
     }
 
-    // 检查是否有缺失的 key
-    const missingKeys: string[] = []
-    for (const key of allowedKeys) {
-      if (!inputKeys.has(key)) {
-        missingKeys.push(key)
-      }
-    }
+    const missingKeys = difference(allowedKeys, inputKeys)
     if (missingKeys.length > 0) {
-      jsonError.value = true
-      jsonErrorMsg.value = $t('DataSource.CheckTest.100022-12', { keys: missingKeys.join(', ') })
-      return false
+      return setJsonError($t('DataSource.CheckTest.100022-12', { keys: missingKeys.join(', ') }))
     }
 
-    jsonError.value = false
-    jsonErrorMsg.value = ''
-    return true
+    return clearJsonError()
   } catch {
-    jsonError.value = true
-    jsonErrorMsg.value = $t('DataSource.CheckTest.100022-13')
-    return false
+    return setJsonError($t('DataSource.CheckTest.100022-13'))
   }
 }
 
 // 处理 JSON 编辑器内容变化
 const handleJsonChange = (value: string) => {
   if (validateJson(value)) {
-    const parsed = JSON.parse(value)
-    dynamicParams.value = jsonToParams(parsed)
+    dynamicParams.value = jsonToParams(JSON.parse(value))
     emit('update:data', dynamicParams.value)
   }
 }
 
-// 处理 JSON 错误
 const handleJsonError = (markers: any[]) => {
   jsonError.value = markers?.length > 0
 }
 
 // 模式切换时同步数据
-watch(isAdvancedMode, (newVal) => {
-  if (newVal) {
-    // 切换到高级模式，将表格数据转为 JSON
+watch(isAdvancedMode, (isAdvanced) => {
+  if (isAdvanced) {
     jsonEditorValue.value = JSON.stringify(paramsToJson(), null, 2)
     jsonError.value = false
-  } else {
-    // 切换到普通模式，尝试将 JSON 转回表格数据
-    if (validateJson(jsonEditorValue.value)) {
-      const parsed = JSON.parse(jsonEditorValue.value)
-      dynamicParams.value = jsonToParams(parsed)
-      emit('update:data', dynamicParams.value)
-    }
+  } else if (validateJson(jsonEditorValue.value)) {
+    dynamicParams.value = jsonToParams(JSON.parse(jsonEditorValue.value))
+    emit('update:data', dynamicParams.value)
   }
-  emit('update:advancedMode', newVal)
+  emit('update:advancedMode', isAdvanced)
 })
 
-// 监听 prop 变化
 watch(
   () => props.advancedMode,
-  (newVal) => {
-    isAdvancedMode.value = newVal
+  (val) => {
+    isAdvancedMode.value = val
   }
 )
 
+// 初始化参数
 const init = () => {
   if (!props.queryParams) return
 
-  const mergedUniqueParams = Array.from(
+  // 合并并去重所有参数
+  const mergedParams = Array.from(
     new Map(
       Object.values(props.queryParams)
-        .flat() // 展开所有数组
-        .map((param) => [param.key, param]) // 按照 key 进行去重
+        .flat()
+        .map((param: any) => [param.key, param])
     ).values()
   )
 
-  const existingValues = new Map<string, string>()
-  dynamicParams.value?.forEach((item) => {
-    if (item?.name) {
-      existingValues.set(item.name, item.value || '')
-    }
-  })
+  // 保留已有值
+  const existingValues = new Map(dynamicParams.value.map((item) => [item.name, item.value]))
 
-  dynamicParams.value = mergedUniqueParams.map((param) => ({
+  dynamicParams.value = mergedParams.map((param: any) => ({
     name: param.key,
     value: existingValues.get(param.key) ?? props.historyParams?.[param.key] ?? ''
-  })) as ParamItem[]
+  }))
 
-  // 同步更新 JSON 编辑器的值
   jsonEditorValue.value = JSON.stringify(paramsToJson(), null, 2)
-
   emit('update:data', dynamicParams.value)
 }
 
-watch(
-  () => props.queryParams,
-  () => {
-    init()
-  },
-  { immediate: true, deep: true }
-)
+watch(() => props.queryParams, init, { immediate: true, deep: true })
 
-defineExpose({
-  validateAll
-})
+defineExpose({ validateAll })
 </script>
 
 <style scoped lang="less">
@@ -424,10 +334,10 @@ defineExpose({
   border: 1px solid #d9d9d9;
   border-radius: 4px;
   overflow: hidden;
-}
 
-.monaco-editor-container-error {
-  border-color: #ff4d4f;
+  &-error {
+    border-color: #ff4d4f;
+  }
 }
 
 .error-tip {

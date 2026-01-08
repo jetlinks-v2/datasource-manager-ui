@@ -21,6 +21,7 @@ import * as monaco from 'monaco-editor'
 import { parse, parseTree, format, applyEdits, ParseError } from 'jsonc-parser'
 import { isArray } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+import { validateDynamicParams } from './utils'
 
 const { t: $t } = useI18n()
 
@@ -113,7 +114,7 @@ const VARIABLE_REGEX = computed(() => new RegExp(props.variablePattern, 'g'))
 const PLACEHOLDER_REGEX = /"__VAR_PLACEHOLDER_(\d+)__"/g
 
 // JSON解析和格式化选项
-const JSON_PARSE_OPTIONS = { allowTrailingComma: true, disallowComments: true }
+const JSON_PARSE_OPTIONS = { allowTrailingComma: false, disallowComments: true }
 const JSON_FORMAT_OPTIONS = { insertSpaces: true, tabSize: 2 }
 
 const getErrorMessage = (code: number): string => {
@@ -229,6 +230,22 @@ const validateAndMark = (value: string): boolean => {
     markers.push({
       severity: monaco.MarkerSeverity.Error,
       message: $t('DataSource.JsonEditor.100083-18'),
+      startLineNumber: startPos.lineNumber,
+      startColumn: startPos.column,
+      endLineNumber: endPos.lineNumber,
+      endColumn: endPos.column
+    })
+  }
+
+  // 校验动态参数格式（如 {{}}, {{{}}}, {{}}}} 等错误格式）
+  const validationResult = validateDynamicParams(value)
+  for (const error of validationResult.errors) {
+    const startPos = model.getPositionAt(error.index)
+    const endPos = model.getPositionAt(error.index + error.text.length)
+
+    markers.push({
+      severity: monaco.MarkerSeverity.Error,
+      message: $t(error.message),
       startLineNumber: startPos.lineNumber,
       startColumn: startPos.column,
       endLineNumber: endPos.lineNumber,

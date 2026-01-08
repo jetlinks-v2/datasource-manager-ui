@@ -90,16 +90,16 @@ const handleCancel = () => emit('cancel')
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 
     &-content {
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 500;
     }
 
     .anticon {
       color: #1890ff;
-      font-size: 20px;
+      font-size: 16px;
     }
   }
 

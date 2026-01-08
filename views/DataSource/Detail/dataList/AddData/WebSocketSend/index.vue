@@ -37,7 +37,7 @@
         <CheckTest
           ref="checkTestRef"
           :queryParams="params"
-          :historyParams="data.param"
+          :historyParams="data.defaultParams"
           @update:data="handleCheckTestSave"
         >
           <template #sendOutButton>
@@ -69,7 +69,7 @@ import ResponseResult from './ResponseResult/index.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { Rule } from 'ant-design-vue/es/form'
 import { SelectValue } from 'ant-design-vue/lib/select'
-import { convertParamsToObject, transformArray } from '../components/utils'
+import { convertParamsToObject, transformArray, validateDynamicParams, validateUrlChars } from '../components/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { WebSocketProtocol } from '../type'
 import { cloneDeep } from 'lodash-es'
@@ -116,6 +116,20 @@ const validateUri = async (_: Rule) => {
   }
   if (value.endsWith('/')) {
     return Promise.reject($t('DataSource.WebSocketSend.100084-5'))
+  }
+
+  // 验证动态参数格式
+  const validationResult = validateDynamicParams(value)
+  if (!validationResult.valid) {
+    const firstError = validationResult.errors[0]
+    return Promise.reject($t(firstError.message))
+  }
+
+  // 验证 URL 特殊字符
+  const urlCharsResult = validateUrlChars(value)
+  if (!urlCharsResult.valid) {
+    const firstError = urlCharsResult.errors[0]
+    return Promise.reject($t(firstError.message, { char: firstError.text }))
   }
 
   try {
