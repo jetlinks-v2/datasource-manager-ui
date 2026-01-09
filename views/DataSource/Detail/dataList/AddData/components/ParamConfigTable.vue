@@ -74,6 +74,7 @@ import type { TableColumnType } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { DEFAULT_PARAM_ITEM, type ParamItem } from './setting'
+import { validateDynamicParams } from './utils'
 import FormItem from '@datasource-manager-ui/views/DataSource/components/FormItem.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -99,7 +100,12 @@ type ValidatorFn = (value: string, record: ParamItem, index: number) => string
 const validators: Record<ValidatorKey, ValidatorFn> = {
   key: (value: string, record: ParamItem, index: number) => {
     if (!value) return $t('DataSource.ParamConfigTable.100082-0')
-    if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(value) && !/^\{\{(.*?)}}$/.test(value)) {
+    // 验证动态参数格式
+    const dynamicValidation = validateDynamicParams(value)
+    if (!dynamicValidation.valid) {
+      return $t(dynamicValidation.errors[0].message)
+    }
+    if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(value) && !/^\{\{([a-zA-Z_][a-zA-Z0-9_-]*)}}$/.test(value)) {
       return $t('DataSource.ParamConfigTable.100082-5')
     }
     if (tableData.value.some((item, idx) => idx !== index && item.enable && item.key === value && value !== '')) {
@@ -109,7 +115,13 @@ const validators: Record<ValidatorKey, ValidatorFn> = {
     return ''
   },
   value: (value: string) => {
-    // if (!value) return $t('DataSource.ParamConfigTable.100082-1')
+    // 验证动态参数格式
+    if (value) {
+      const dynamicValidation = validateDynamicParams(value)
+      if (!dynamicValidation.valid) {
+        return $t(dynamicValidation.errors[0].message)
+      }
+    }
     if (value.length > 64) return $t('DataSource.ParamConfigTable.100082-9')
     return ''
   },

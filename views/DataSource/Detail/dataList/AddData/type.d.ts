@@ -69,7 +69,8 @@ export interface FormData {
   configuration: {
     output?: OutputConfig | unknown
     input?: InputConfig[] | unknown[]
-    param?: Record<string, unknown>
+    others?: Record<string, unknown>
+    defaultParams?: Record<string, unknown>
     expression?: ExpressionConfig
     rdbDefinition?: Record<string, unknown>
     elasticsearchConfig?: Record<string, unknown>

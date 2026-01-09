@@ -198,41 +198,23 @@ const handleInputStateChange = (value: any) => {
 }
 
 const handleExecuteDebug = async () => {
-  try {
-    debugLoading.value = true
-    debugResult.value = null
+  debugLoading.value = true
+  debugResult.value = null
 
-    const startTime = Date.now()
-    const { dataSourceId, support } = props.activeItem
-    const res = await queryDataSourceCommand(dataSourceId, support, props.data.id, formData.inputs)
-    const executeTime = Date.now() - startTime
+  const startTime = Date.now()
+  const { dataSourceId, support } = props.activeItem
+  const res = await queryDataSourceCommand(dataSourceId, support, props.data.id, formData.inputs)
+  const executeTime = Date.now() - startTime
 
-    if (res.success) {
-      debugResult.value = {
-        success: true,
-        data: res.result,
-        executeTime
-      }
-      onlyMessage($t('DataSource.DebugModal.100089-7'))
-    } else {
-      throw new Error($t('DataSource.DebugModal.100089-8'))
-    }
-  } catch (error: any) {
-    debugResult.value = {
-      success: false,
-      data: {
-        error: error.message || $t('DataSource.DebugModal.100089-8'),
-        stack: error.stack
-      }
-    }
-    onlyMessage(
-      $t('DataSource.DebugModal.100089-14') + (error.message || $t('DataSource.DebugModal.100089-15')),
-      'error'
-    )
-  } finally {
-    debugLoading.value = false
-    await scrollToBottom()
+  debugResult.value = {
+    success: res.success,
+    data: res.result,
+    executeTime
   }
+  onlyMessage(res.success ? $t('DataSource.DebugModal.100089-7') : $t('DataSource.DebugModal.100089-8'))
+
+  debugLoading.value = false
+  await scrollToBottom()
 }
 
 const scrollToBottom = async () => {

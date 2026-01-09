@@ -153,7 +153,7 @@ const formData = reactive<FormData>({
   configuration: {
     output: {},
     input: [],
-    param: {},
+    defaultParams: {},
     expression: {
       uri: { url: '' },
       method: 'GET',
@@ -220,7 +220,7 @@ const handleExpressionUpdate = (expression: any, testData: any, dynamicParamsDat
   formData.configuration = {
     ...formData.configuration,
     expression: _expression,
-    param: dynamicParamsData,
+    defaultParams: dynamicParamsData,
     others: expression.others
   }
 }
@@ -523,8 +523,6 @@ const handleSave = async () => {
     const handler = SAVE_HANDLERS[sourceClassify.value]
     if (handler) {
       await handler()
-    } else {
-      throw new Error(`不支持的数据源类型: ${sourceClassify.value}`)
     }
   } catch (error: unknown) {
     handleError(error, '操作失败')
@@ -557,12 +555,10 @@ const handleApiSendInit = (data: FormData) => {
   }
 
   if (uri?.url) {
+    const baseUrl = uri.url.split('?')[0]
     const queryString = buildQueryString(formData.configuration.expression?.queryParams as QueryParam[])
-    if (queryString) {
-      const separator = uri.url.includes('?') ? '&' : '?'
-      if (formData.configuration.expression) {
-        formData.configuration.expression.uri.url = `${uri.url}${separator}${queryString}`
-      }
+    if (formData.configuration.expression) {
+      formData.configuration.expression.uri.url = queryString ? `${baseUrl}?${queryString}` : baseUrl
     }
   }
 

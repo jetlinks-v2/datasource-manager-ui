@@ -53,7 +53,8 @@
             style="padding: 4px 8px"
             :hasPermission="`${permission}:delete`"
             :popConfirm="{
-              title: $t('DataSource.List.100002-3'),
+              title: $t('DataSource.index.100001-10'),
+              content: $t('DataSource.List.100002-3'),
               onConfirm: () => handleDelete(slotProps.id)
             }"
             :tooltip="{ title: $t('DataSource.index.100001-10') }"
