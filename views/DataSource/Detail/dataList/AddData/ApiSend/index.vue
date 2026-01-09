@@ -77,6 +77,7 @@ import { convertParamsToObject, transformArray, validateDynamicParams, validateU
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 import { useI18n } from 'vue-i18n'
+import { isObject } from 'lodash-es'
 
 const { t: $t } = useI18n()
 
@@ -211,6 +212,14 @@ const handleSend = async () => {
   }
 }
 
+// 检查响应体是否有内容
+const hasResponseBody = (): boolean => {
+  const body = responseData.value?.body
+  if (!body) return false
+  if (isObject(body) && Object.keys(body).length === 0) return false
+  return true
+}
+
 // 验证并提交
 const validateAll = async () => {
   try {
@@ -220,6 +229,13 @@ const validateAll = async () => {
 
     if (!responseResultRef.value?.isValid) {
       onlyMessage($t('DataSource.ApiSend.100020-5'), 'error')
+      return false
+    }
+
+    // 如果响应体为空，需要先发送请求
+    if (!hasResponseBody()) {
+      requestParamsRef.value?.handleCheckTest()
+      onlyMessage($t('DataSource.ApiSend.100020-9'), 'error')
       return false
     }
 

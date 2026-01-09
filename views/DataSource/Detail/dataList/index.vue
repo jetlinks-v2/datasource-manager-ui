@@ -1,6 +1,7 @@
 <template>
   <div class="parameter-container">
     <CommandList
+      ref="commandListRef"
       :typeId="typeId"
       :commands="commands"
       @add="handleAdd"
@@ -40,7 +41,7 @@
     v-if="addDataModal.visible"
     :data="addDataModal.data"
     :info="info"
-    @ok="handleQueryCommandGroup"
+    @ok="handleSaveSuccess"
     @cancel="closeAddDataModal"
   />
 
@@ -104,6 +105,7 @@ const router = useRouter()
 
 // 响应式数据
 const tableRef = ref()
+const commandListRef = ref()
 const tableData = ref<any[]>([])
 const activeItem = ref<any>(null)
 const commands = ref<any[]>([])
@@ -201,7 +203,7 @@ const handleDebugClick = (data: any) => {
 }
 
 // 查询命令组
-const handleQueryCommandGroup = async () => {
+const handleQueryCommandGroup = async (selectId?: string) => {
   try {
     const params = {
       terms: [
@@ -227,11 +229,21 @@ const handleQueryCommandGroup = async () => {
     const res = await getDatasource(params)
     if (res.status === 200) {
       commands.value = res.result
+      if (selectId) {
+        await nextTick(() => {
+          commandListRef.value?.selectById(selectId)
+        })
+      }
     }
   } catch (error) {
     console.error('Query command group error:', error)
     onlyMessage($t('DataSource.DataList.100014-4'), 'error')
   }
+}
+
+// 保存成功后的处理
+const handleSaveSuccess = (savedId: string) => {
+  handleQueryCommandGroup(savedId)
 }
 
 // 查询命令

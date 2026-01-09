@@ -476,7 +476,6 @@ const initEditor = (): void => {
 
   // 首次验证
   validateAndMark(props.modelValue)
-  console.log('props.modelValue', props.modelValue)
 
   // 初始化时提取变量
   const initialVariables = extractVariables(props.modelValue)

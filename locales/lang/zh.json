@@ -194,6 +194,7 @@
   "DataSource.ApiSend.100020-6": "请检查请求路径",
   "DataSource.ApiSend.100020-7": "请检查动态参数输入项",
   "DataSource.ApiSend.100020-8": "请求发送成功",
+  "DataSource.ApiSend.100020-9": "请先发送请求获取响应结果",
   "DataSource.RequestParams.100021-0": "查询参数",
   "DataSource.RequestParams.100021-1": "请求头",
   "DataSource.RequestParams.100021-2": "请求体",
