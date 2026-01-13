@@ -362,7 +362,7 @@ const handleSubmit = async () => {
   formRef.value
     .validate()
     .then(async () => {
-      if (formData.value.id) {
+      if (isEditor.value) {
         await disableDataSource(formData.value.id)
       }
       formItemRef
@@ -377,7 +377,7 @@ const handleSubmit = async () => {
           })
         })
         .finally(async () => {
-          if (formData.value.id) {
+          if (isEditor.value) {
             await enableDataSource(formData.value.id)
           }
         })
