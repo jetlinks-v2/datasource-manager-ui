@@ -15,16 +15,15 @@
         :class="{ 'empty-table-cell': !showDataTable }"
       >
         <template #name="slotProps">
-          <router-link
-            :to="`${isMicro ? '/application' : ''}/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`"
+          <a-space
+            class="datasource-name-link"
+            @click="handleDetail(slotProps)"
           >
-            <a-space>
-              <AIcon :type="iconMaps[slotProps.searchCode]" />
-              <j-ellipsis>
-                <span>{{ slotProps.name }}</span>
-              </j-ellipsis>
-            </a-space>
-          </router-link>
+            <AIcon :type="iconMaps[slotProps.searchCode]" />
+            <j-ellipsis>
+              <span>{{ slotProps.name }}</span>
+            </j-ellipsis>
+          </a-space>
         </template>
         <template #searchCode="{ searchCode }">
           <span>{{ getDataSourceName(searchCode) }}</span>
@@ -108,10 +107,9 @@ import { onlyMessage } from '@jetlinks-web/utils'
 import { DATASOURCE_NAME, DATASOURCE_TYPE } from './components/table'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { useI18n } from 'vue-i18n'
+import { useMenuStore } from '@/store/menu'
 
 const { t: $t } = useI18n()
-const isMicro = !!(window as any).microApp
-
 const props = defineProps({
   clickItem: {
     type: Object,
@@ -127,6 +125,7 @@ const props = defineProps({
   }
 })
 const emits = defineEmits(['update:value', 'refreshCategoryList'])
+const menuStory = useMenuStore()
 const { clickItem } = toRefs(props)
 const tableRef = ref()
 const showTypeAdd = ref(false)
@@ -236,6 +235,10 @@ const handleShowTypeAdd = (active: string) => {
   showTypeAdd.value = true
 }
 
+const handleDetail = (slotProps: any) => {
+  menuStory.jumpPage('system/DataSource/Detail', { params: { id: slotProps.id }, query: { typeId: slotProps.typeId } })
+}
+
 const handleEdit = (slotProps: any) => {
   editData.value = slotProps
   showSourceAdd.value = true
@@ -298,6 +301,15 @@ defineExpose({
   .empty-table-cell {
     :deep(.ant-table-cell) {
       border: none !important;
+    }
+  }
+
+  .datasource-name-link {
+    cursor: pointer;
+    color: @primary-color;
+
+    &:hover {
+      opacity: 0.8;
     }
   }
 }

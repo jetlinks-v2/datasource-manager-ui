@@ -7,9 +7,12 @@
     >
       <template #title>
         <div class="page-header">
-          <router-link :to="routeLink">
-            <a-button class="back-btn">{{ $t('DataSource.Detail.100008-0') }}</a-button>
-          </router-link>
+          <a-button
+            class="back-btn"
+            @click="handleBack"
+          >
+            {{ $t('DataSource.Detail.100008-0') }}
+          </a-button>
           <j-ellipsis>
             <div class="page-title">{{ info?.name || '--' }}</div>
           </j-ellipsis>
@@ -110,14 +113,14 @@ import { getSourceClassify } from '../components/table'
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
+import { useMenuStore } from '@/store/menu'
 
 const { t: $t } = useI18n()
 const isMicro = !!(window as any).microApp
-
+const menuStory = useMenuStore()
 const permission = 'system/DataSource'
 const loading = ref(false)
 const route = useRoute()
-const router = useRouter()
 const sourceId = route.params.id as string
 const sourceData = ref()
 const info = ref({} as SourceDataInfo)
@@ -191,6 +194,10 @@ const handleTestDataSource = async () => {
   }
 }
 
+const handleBack = () => {
+  menuStory.jumpPage('system/DataSource', {})
+}
+
 const handleDeleteOk = async () => {
   Modal.confirm({
     title: $t('DataSource.index.100001-10'),
@@ -200,7 +207,7 @@ const handleDeleteOk = async () => {
       if (res.success) {
         const res = await deleteDataSource(sourceId)
         if (res.success) {
-          router.push(routeLink.value)
+          handleBack()
           onlyMessage($t('DataSource.List.100002-4'))
         }
       }
