@@ -23,11 +23,11 @@
         <j-ellipsis>{{ info.description || '--' }}</j-ellipsis>
       </a-descriptions-item>
     </a-descriptions>
+    <DataConnection
+      :info="info"
+      :sourceClassify="sourceClassify"
+    ></DataConnection>
   </div>
-  <DataConnection
-    :info="info"
-    :sourceClassify="sourceClassify"
-  ></DataConnection>
 </template>
 
 <script setup lang="ts" name="Info">

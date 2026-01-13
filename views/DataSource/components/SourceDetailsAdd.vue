@@ -382,7 +382,7 @@ const handleSubmit = async () => {
           })
         })
         .finally(async () => {
-          if (formData.value.id) {
+          if (isEditor.value) {
             await enableDataSource(formData.value.id)
           }
         })

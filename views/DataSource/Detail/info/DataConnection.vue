@@ -387,7 +387,7 @@ watch(
   font-weight: 700;
   line-height: 1.5715;
   font-family: AliRegular !important;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .hover-hidden {
