@@ -194,6 +194,7 @@
   "DataSource.ApiSend.100020-6": "Please check request path",
   "DataSource.ApiSend.100020-7": "Please check dynamic parameter input",
   "DataSource.ApiSend.100020-8": "Request sent successfully",
+  "DataSource.ApiSend.100020-9": "Please send request to get response first",
   "DataSource.RequestParams.100021-0": "Query Parameters",
   "DataSource.RequestParams.100021-1": "Request Headers",
   "DataSource.RequestParams.100021-2": "Request Body",

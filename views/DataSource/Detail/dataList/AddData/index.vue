@@ -117,7 +117,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   cancel: []
-  ok: []
+  ok: [id: string]
 }>()
 
 // 常量定义
@@ -307,7 +307,8 @@ const saveDataSource = async (params: FormData): Promise<void> => {
   }
 
   onlyMessage(isEdit.value ? $t('DataSource.AddData.100016-6') : $t('DataSource.AddData.100016-7'))
-  emit('ok')
+  const savedId = isEdit.value ? formData.id : response.result?.id || response.result
+  emit('ok', savedId)
   emit('cancel')
 }
 

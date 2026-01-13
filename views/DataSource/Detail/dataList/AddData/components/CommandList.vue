@@ -125,6 +125,7 @@ const emit = defineEmits(['add', 'edit', 'delete', 'importChange', 'selectComman
 const importSourceData = ref()
 const selectedCommandId = ref<string | null>(null)
 const searchQuery = ref('')
+const pendingSelectId = ref<string | null>(null)
 
 // 根据搜索关键词过滤命令列表
 const filteredCommands = computed(() => {
@@ -155,23 +156,39 @@ const handleDelete = (item: Command) => {
   emit('delete', item)
 }
 
-// 处理命令选中事件
 const handleCommandSelect = (item: Command) => {
-  if (selectedCommandId.value === item.id) {
-    return
-  } else {
+  if (selectedCommandId.value !== item.id) {
     selectedCommandId.value = item.id
     emit('selectCommand', item)
   }
 }
 
+const selectCommand = (item: Command | undefined) => {
+  selectedCommandId.value = item?.id || null
+  emit('selectCommand', item)
+}
+
+const selectById = (id: string) => {
+  const item = filteredCommands.value.find((cmd) => cmd.id === id)
+  if (item) {
+    selectCommand(item)
+  } else {
+    pendingSelectId.value = id
+  }
+}
+
 watch(
   () => filteredCommands.value,
-  () => {
-    selectedCommandId.value = filteredCommands.value[0]?.id
-    emit('selectCommand', filteredCommands.value[0])
+  (newCommands) => {
+    const targetId = pendingSelectId.value || selectedCommandId.value
+    const targetItem = newCommands.find((cmd) => cmd.id === targetId)
+
+    pendingSelectId.value = null
+    selectCommand(targetItem || newCommands[0])
   }
 )
+
+defineExpose({ selectById })
 </script>
 
 <style lang="less" scoped>
