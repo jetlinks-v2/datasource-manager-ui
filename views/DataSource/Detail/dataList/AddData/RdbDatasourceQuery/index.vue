@@ -142,6 +142,8 @@ const handleTablesLoaded = (tables: TableSchema[]) => {
 }
 
 const onSelectChange = (keys: Key[]) => {
+  if (activeTab.value !== 'visual') return
+
   selectedRowKeys.value = keys
   resultQueryParams.value = {
     ...resultQueryParams.value,
@@ -162,7 +164,7 @@ const onSelectChange = (keys: Key[]) => {
 
   if (keys.length > 0) {
     resultColumns.value = keys.map((key: any) => buildColumn(key))
-  } else if (activeTab.value === 'visual') {
+  } else {
     resultColumns.value = fieldsData.value.map((field: any) => buildColumn(field.name))
   }
 
@@ -262,30 +264,75 @@ const handleSearch = (e: any) => {
 const handleRequest = (request: any) =>
   new Promise((resolve) => {
     if (request?.table || request?.sql) {
+      // 捕获请求发起时的 tab 状态，避免竞态条件
+      const requestTabState = activeTab.value
+
       queryDataSource(typeId, dataSourceId, 'QueryPager', request)
         .then((resp: any) => {
-          if (activeTab.value === 'sql') {
-            const resultData = resp.result?.data || []
-            if (resultData.length > 0) {
-              const _columns = Object.keys(resultData[0] || {}).map((key: any) => ({
-                title: key,
-                dataIndex: key,
-                key: key,
-                width: 100,
-                search: { type: 'string' }
-              }))
-
-              if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
-                resultColumns.value = _columns
+          // 如果当前 tab 已经切换，忽略此次响应，返回空数据
+          if (activeTab.value !== requestTabState) {
+            resolve({
+              code: resp.status,
+              status: resp.status,
+              success: resp.success,
+              result: {
+                data: [],
+                pageSize: resp.result.pageSize,
+                pageIndex: resp.result.pageIndex,
+                total: 0
               }
+            })
+            return
+          }
+
+          if (requestTabState === 'sql') {
+            // SQL模式下，只有 sql 非空且没有 table 参数时才是有效请求
+            const isValidSqlRequest = request?.sql && !request?.table
+
+            if (isValidSqlRequest) {
+              const resultData = resp.result?.data || []
+              if (resultData.length > 0) {
+                const _columns = Object.keys(resultData[0] || {}).map((key: any) => ({
+                  title: key,
+                  dataIndex: key,
+                  key: key,
+                  width: 100,
+                  search: { type: 'string' }
+                }))
+
+                if (JSON.stringify(_columns) !== JSON.stringify(resultColumns.value)) {
+                  resultColumns.value = _columns
+                }
+              }
+            } else {
+              // 无效的 SQL 请求（混合参数或空 sql），返回空数据
+              resolve({
+                code: resp.status,
+                status: resp.status,
+                success: resp.success,
+                result: {
+                  data: [],
+                  pageSize: resp.result.pageSize,
+                  pageIndex: resp.result.pageIndex,
+                  total: 0
+                }
+              })
+              return
             }
           }
+
+          // 计算返回的数据
+          let resultData = resp.result.data
+          if (requestTabState === 'visual' && selectedRowKeys.value.length === 0) {
+            resultData = []
+          }
+
           resolve({
             code: resp.status,
             status: resp.status,
             success: resp.success,
             result: {
-              data: activeTab.value === 'visual' && selectedRowKeys.value.length === 0 ? [] : resp.result.data,
+              data: resultData,
               pageSize: resp.result.pageSize,
               pageIndex: resp.result.pageIndex,
               total: resp.result.total

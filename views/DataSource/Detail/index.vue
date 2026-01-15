@@ -131,11 +131,7 @@ const tabs = {
 
 const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
-
 const sourceClassify = ref<DATA_TYPE_ITEM>()
-
-const baseTabs = computed(() => [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }])
-const endTabs = computed(() => [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }])
 
 const getDataSourceTabs = (type?: DATA_TYPE_ITEM) => {
   const map: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
@@ -200,14 +196,16 @@ const handleDeleteOk = async () => {
 }
 
 const getDetailInfo = async () => {
-  const res = await getDataSourceDetail(sourceId)
+  const baseTabs = [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }]
+  const endTabs = [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }]
 
+  const res = await getDataSourceDetail(sourceId)
   if (res.status === 200) {
     info.value = res.result
-    sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
+    sourceClassify.value = getTypesDataDetail(info.value.searchCode)?.formType as DATA_TYPE_ITEM
 
     const dynamicTabs = getDataSourceTabs(sourceClassify.value)
-    list.value = [...baseTabs.value, ...dynamicTabs, ...endTabs.value]
+    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
   }
 }
 

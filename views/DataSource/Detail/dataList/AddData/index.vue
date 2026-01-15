@@ -19,8 +19,14 @@
         :current="currentStep"
         class="steps-container"
       >
-        <a-step :title="$t('DataSource.AddData.100016-2')" />
-        <a-step :title="$t('DataSource.AddData.100016-3')" />
+        <a-step
+          :title="$t('DataSource.AddData.100016-2')"
+          disabled
+        />
+        <a-step
+          :title="$t('DataSource.AddData.100016-3')"
+          disabled
+        />
       </a-steps>
 
       <!-- 步骤内容 -->

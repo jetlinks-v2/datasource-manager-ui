@@ -23,7 +23,7 @@
         </div>
         <div class="meta-item">
           <span class="label">{{ $t('DataSource.CommandModal.100018-3') }}</span>
-          <span class="value">{{ data.description || '--' }}</span>
+          <j-ellipsis class="value">{{ data.description || '--' }}</j-ellipsis>
         </div>
       </div>
     </header>

@@ -15,14 +15,14 @@
         :class="{ 'empty-table-cell': !showDataTable }"
       >
         <template #name="slotProps">
-          <router-link :to="`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`">
-            <a-space>
-              <AIcon :type="iconMaps[slotProps.searchCode]" />
+          <a-space @click="handleDetail(slotProps)">
+            <AIcon :type="iconMaps[slotProps.searchCode]" />
+            <a>
               <j-ellipsis>
-                <span>{{ slotProps.name }}</span>
+                {{ slotProps.name }}
               </j-ellipsis>
-            </a-space>
-          </router-link>
+            </a>
+          </a-space>
         </template>
         <template #searchCode="{ searchCode }">
           <span>{{ getDataSourceName(searchCode) }}</span>
@@ -38,31 +38,45 @@
           </j-ellipsis>
         </template>
         <template #action="slotProps">
-          <!-- 编辑按钮 -->
-          <j-permission-button
-            style="padding: 4px 8px"
-            :hasPermission="`${permission}:update`"
-            :tooltip="{ title: $t('DataSource.List.100002-2') }"
-            type="link"
-            @click="handleEdit(slotProps)"
-          >
-            <AIcon type="EditOutlined" />
-          </j-permission-button>
-          <!-- 删除按钮 -->
-          <j-permission-button
-            style="padding: 4px 8px"
-            :hasPermission="`${permission}:delete`"
-            :popConfirm="{
-              title: $t('DataSource.index.100001-10'),
-              content: $t('DataSource.List.100002-3'),
-              onConfirm: () => handleDelete(slotProps.id)
-            }"
-            :tooltip="{ title: $t('DataSource.index.100001-10') }"
-            danger
-            type="link"
-          >
-            <AIcon type="DeleteOutlined" />
-          </j-permission-button>
+          <div @click.stop>
+            <!-- 编辑按钮 -->
+            <j-permission-button
+              style="padding: 4px 8px"
+              :hasPermission="`${permission}:update`"
+              :tooltip="{ title: $t('DataSource.List.100002-2') }"
+              type="link"
+              @click="handleEdit(slotProps)"
+            >
+              <AIcon type="EditOutlined" />
+            </j-permission-button>
+
+            <!-- 详情按钮 -->
+            <j-permission-button
+              style="padding: 4px 8px"
+              :hasPermission="`${permission}:update`"
+              :tooltip="{ title: $t('DataSource.List.100002-6') }"
+              type="link"
+              @click="handleDetail(slotProps)"
+            >
+              <AIcon type="ControlOutlined" />
+            </j-permission-button>
+
+            <!-- 删除按钮 -->
+            <j-permission-button
+              style="padding: 4px 8px"
+              :hasPermission="`${permission}:delete`"
+              :popConfirm="{
+                title: $t('DataSource.index.100001-10'),
+                content: $t('DataSource.List.100002-3'),
+                onConfirm: () => handleDelete(slotProps.id)
+              }"
+              :tooltip="{ title: $t('DataSource.index.100001-10') }"
+              danger
+              type="link"
+            >
+              <AIcon type="DeleteOutlined" />
+            </j-permission-button>
+          </div>
         </template>
 
         <template #emptyText>
@@ -108,8 +122,10 @@ import { DATASOURCE_NAME, typesData } from './components/table'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { useSourceDetailStore } from './sourceDetail'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const { t: $t } = useI18n()
+const router = useRouter()
 
 const props = defineProps({
   clickItem: {
@@ -235,6 +251,10 @@ const handleShowTypeAdd = (active: string) => {
   activeKey.value = active
   showSourceAdd.value = false
   showTypeAdd.value = true
+}
+
+const handleDetail = (slotProps: any) => {
+  router.push(`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`)
 }
 
 const handleEdit = (slotProps: any) => {
