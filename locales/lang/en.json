@@ -114,6 +114,8 @@
   "DataSource.Detail.100008-5": "Table Structure",
   "DataSource.Detail.100008-6": "Query",
   "DataSource.Detail.100008-7": "Function List",
+  "DataSource.Detail.Collection.Table.DataStructure": "Data Structure",
+  "DataSource.Detail.Collection.Table.NoData": "No Data",
   "Detail.table.100009-0": "Index",
   "Detail.table.100009-1": "Comment",
   "Detail.table.100009-2": "Field Type",

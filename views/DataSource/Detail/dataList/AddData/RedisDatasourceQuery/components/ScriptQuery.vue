@@ -158,9 +158,6 @@ const helpContent = ref(`-- Redis Lua 脚本示例
 local pattern = \${pattern}
 local value = \${value}
 
--- 设置键值
-redis.call('SET', key, \${value})
-
 -- 获取键值
 local result = redis.call('GET', key)
 

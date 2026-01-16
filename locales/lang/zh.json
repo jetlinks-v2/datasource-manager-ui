@@ -114,6 +114,8 @@
   "DataSource.Detail.100008-5": "表结构",
   "DataSource.Detail.100008-6": "查询",
   "DataSource.Detail.100008-7": "功能列表",
+  "DataSource.Detail.Collection.Table.DataStructure": "数据结构",
+  "DataSource.Detail.Collection.Table.NoData": "暂无数据",
   "Detail.table.100009-0": "序号",
   "Detail.table.100009-1": "注释",
   "Detail.table.100009-2": "字段类型",
