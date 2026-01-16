@@ -122,10 +122,9 @@ import { DATASOURCE_NAME, typesData } from './components/table'
 import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { useSourceDetailStore } from './sourceDetail'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useMenuStore } from '@jetlinks-web-core/store'
 
 const { t: $t } = useI18n()
-const router = useRouter()
 
 const props = defineProps({
   clickItem: {
@@ -144,6 +143,7 @@ const props = defineProps({
 const emits = defineEmits(['update:value', 'refreshCategoryList'])
 const sourceDetailStore = useSourceDetailStore()
 
+const menuStory = useMenuStore()
 const { clickItem } = toRefs(props)
 const tableRef = ref()
 const showTypeAdd = ref(false)
@@ -254,7 +254,7 @@ const handleShowTypeAdd = (active: string) => {
 }
 
 const handleDetail = (slotProps: any) => {
-  router.push(`/system/DataSource/Detail/${slotProps.id}?typeId=${slotProps.typeId}`)
+  menuStory.jumpPage('system/DataSource/Detail', { params: { id: slotProps.id }, query: { typeId: slotProps.typeId } })
 }
 
 const handleEdit = (slotProps: any) => {
