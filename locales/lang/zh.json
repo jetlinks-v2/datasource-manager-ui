@@ -631,7 +631,6 @@
   "DataSource.FormItemMongo.100074-1": "通过基本配置连接",
   "DataSource.FormItemMongo.100074-2": "连接URL",
   "DataSource.FormItemMongo.100074-3": "连接地址",
-  "DataSource.FormItemMongo.100074-4": "mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true",
   "DataSource.FormItemMongo.100074-5": "请输入数据库名称",
   "DataSource.FormItemMongo.100074-6": "数据库名称",
   "DataSource.FormItemMongo.100074-7": "请输入数据库名称",

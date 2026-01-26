@@ -631,7 +631,6 @@
   "DataSource.FormItemMongo.100074-1": "Connect via Basic Configuration",
   "DataSource.FormItemMongo.100074-2": "Connection URL",
   "DataSource.FormItemMongo.100074-3": "Connection Address",
-  "DataSource.FormItemMongo.100074-4": "mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true",
   "DataSource.FormItemMongo.100074-5": "Please enter database name",
   "DataSource.FormItemMongo.100074-6": "Database Name",
   "DataSource.FormItemMongo.100074-7": "Please enter database name",

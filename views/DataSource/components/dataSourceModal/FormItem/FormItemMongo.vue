@@ -26,7 +26,7 @@
         <a-textarea
           v-model:value="formData.uri"
           :autoSize="{ minRows: 6, maxRows: 6 }"
-          :placeholder="$t('DataSource.FormItemMongo.100074-4')"
+          placeholder="mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true"
         />
       </a-form-item>
 
