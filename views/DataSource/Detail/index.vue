@@ -7,9 +7,12 @@
     >
       <template #title>
         <div class="page-header">
-          <router-link :to="routeLink">
-            <a-button class="back-btn">{{ $t('DataSource.Detail.100008-0') }}</a-button>
-          </router-link>
+          <a-button
+            class="back-btn"
+            @click="handleBack"
+          >
+            {{ $t('DataSource.Detail.100008-0') }}
+          </a-button>
           <j-ellipsis>
             <div class="page-title">{{ info?.name || '--' }}</div>
           </j-ellipsis>
@@ -106,13 +109,14 @@ import { DeleteOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/i
 import { Modal } from 'ant-design-vue'
 import { useTestConnection } from '../composables/useTestConnection'
 import { useI18n } from 'vue-i18n'
+import { useMenuStore } from '@jetlinks-web-core/store'
 
 const { t: $t } = useI18n()
 
 const permission = 'system/DataSource'
 
+const menuStory = useMenuStore()
 const route = useRoute()
-const router = useRouter()
 const sourceId = route.params.id as string
 
 const { loading: testLoading, testConnection } = useTestConnection()
@@ -131,11 +135,7 @@ const tabs = {
 
 const showSourceAdd = ref(false)
 const tabActiveKey = ref('Info')
-
 const sourceClassify = ref<DATA_TYPE_ITEM>()
-
-const baseTabs = computed(() => [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }])
-const endTabs = computed(() => [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }])
 
 const getDataSourceTabs = (type?: DATA_TYPE_ITEM) => {
   const map: Record<DATA_TYPE_ITEM, { key: string; tab: string }[]> = {
@@ -152,13 +152,9 @@ const getDataSourceTabs = (type?: DATA_TYPE_ITEM) => {
   return (type && map[type]) || []
 }
 
-const routeLink = computed(() => ({
-  path: `/system/DataSource`,
-  query: {
-    group: info.value.group?.value
-  }
-}))
-
+const handleBack = () => {
+  menuStory.jumpPage('system/DataSource', {})
+}
 // 是否显示测试连接按钮
 const showTestConnection = computed(() => {
   return (
@@ -191,7 +187,7 @@ const handleDeleteOk = async () => {
       if (res.success) {
         const res = await deleteDataSource(sourceId)
         if (res.success) {
-          router.push(routeLink.value)
+          handleBack()
           onlyMessage($t('DataSource.List.100002-4'))
         }
       }
@@ -200,14 +196,16 @@ const handleDeleteOk = async () => {
 }
 
 const getDetailInfo = async () => {
-  const res = await getDataSourceDetail(sourceId)
+  const baseTabs = [{ key: 'Info', tab: $t('DataSource.Detail.100008-4') }]
+  const endTabs = [{ key: 'DataList', tab: $t('DataSource.Detail.100008-7') }]
 
+  const res = await getDataSourceDetail(sourceId)
   if (res.status === 200) {
     info.value = res.result
-    sourceClassify.value = getTypesDataDetail(info.value.searchCode).formType as DATA_TYPE_ITEM
+    sourceClassify.value = getTypesDataDetail(info.value.searchCode)?.formType as DATA_TYPE_ITEM
 
     const dynamicTabs = getDataSourceTabs(sourceClassify.value)
-    list.value = [...baseTabs.value, ...dynamicTabs, ...endTabs.value]
+    list.value = [...baseTabs, ...dynamicTabs, ...endTabs]
   }
 }
 

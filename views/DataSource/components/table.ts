@@ -122,12 +122,8 @@ export const typesData = [
   {
     icon: DataOracle,
     value: DATASOURCE_TYPE.ORACLE,
-    jdbcHeaders: 'jdbc:oracle:thin:@jetlinks-web-core//',
-    headersEnum: [
-      'jdbc:oracle:thin:@jetlinks-web-core//',
-      'jdbc:oracle:thin:@',
-      'jdbc:oracle:thin:user/password@jetlinks-web-core//'
-    ],
+    jdbcHeaders: 'jdbc:oracle:thin:@//',
+    headersEnum: ['jdbc:oracle:thin:@//', 'jdbc:oracle:thin:@', 'jdbc:oracle:thin:user/password@//'],
     name: DATASOURCE_NAME[DATASOURCE_TYPE.ORACLE],
     placeholderPort: '1521',
     type: 'jdbc',
@@ -172,11 +168,11 @@ const parseProtocol = (url: string, active: any): { protocol: string; restUrl: s
     }
   }
 
-  // 针对 oracle 特殊格式 jdbc:oracle:thin:user/password@jetlinks-web-core//
+  // 针对 oracle 特殊格式 jdbc:oracle:thin:user/password@//
   if (active.value === DATASOURCE_TYPE.ORACLE) {
     const match = url.match(/^jdbc:oracle:thin:([^@]+)@\/\//)
     if (match) {
-      const dynamicHeader = `jdbc:oracle:thin:${match[1]}@jetlinks-web-core//`
+      const dynamicHeader = `jdbc:oracle:thin:${match[1]}@//`
       return {
         protocol: dynamicHeader,
         restUrl: url.slice(dynamicHeader.length)

@@ -5,23 +5,15 @@
     layout="vertical"
   >
     <a-form-item :label="$t('DataSource.FormItemMongo.100074-0')">
-      <a-radio-group
+      <a-segmented
         v-model:value="formData.connectionMode"
+        :options="[
+          { label: $t('DataSource.FormItemMongo.100074-1'), value: 'basic' },
+          { label: $t('DataSource.FormItemMongo.100074-2'), value: 'url' }
+        ]"
         @change="handleConnectionModeChange"
-      >
-        <a-radio-button
-          class="button-width basic"
-          value="basic"
-        >
-          {{ $t('DataSource.FormItemMongo.100074-1') }}
-        </a-radio-button>
-        <a-radio-button
-          class="button-width url"
-          value="url"
-        >
-          {{ $t('DataSource.FormItemMongo.100074-2') }}
-        </a-radio-button>
-      </a-radio-group>
+        block
+      />
     </a-form-item>
 
     <!-- 连接URL模式 -->
@@ -34,7 +26,7 @@
         <a-textarea
           v-model:value="formData.uri"
           :autoSize="{ minRows: 6, maxRows: 6 }"
-          :placeholder="$t('DataSource.FormItemMongo.100074-4')"
+          placeholder="mongodb://user:pwd@host1:27017,host2:27017?authSource=admin&ssl=true"
         />
       </a-form-item>
 
@@ -442,15 +434,4 @@ defineExpose({ validate, canTestConnection })
 </script>
 
 <style scoped lang="less">
-.button-width {
-  min-width: 150px;
-  text-align: center;
-}
-
-:deep(.ant-radio-group-outline .ant-radio-button-wrapper:first-child) {
-  border-radius: 6px 0 0 6px;
-}
-:deep(.ant-radio-group-outline .ant-radio-button-wrapper:last-child) {
-  border-radius: 0 6px 6px 0;
-}
 </style>

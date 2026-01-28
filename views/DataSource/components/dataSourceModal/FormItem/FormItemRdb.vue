@@ -5,23 +5,15 @@
     layout="vertical"
   >
     <a-form-item :label="$t('DataSource.FormRelation.100006-0')">
-      <a-radio-group
+      <a-segmented
         v-model:value="formData.connectionMode"
+        :options="[
+          { label: $t('DataSource.FormRelation.100006-1'), value: 'basic' },
+          { label: $t('DataSource.FormRelation.100006-2'), value: 'url' }
+        ]"
         @change="handleConnectionModeChange"
-      >
-        <a-radio-button
-          class="button-width basic"
-          value="basic"
-        >
-          {{ $t('DataSource.FormRelation.100006-1') }}
-        </a-radio-button>
-        <a-radio-button
-          class="button-width url"
-          value="url"
-        >
-          {{ $t('DataSource.FormRelation.100006-2') }}
-        </a-radio-button>
-      </a-radio-group>
+        block
+      />
     </a-form-item>
 
     <div v-if="formData?.connectionMode === 'basic'">
@@ -356,15 +348,4 @@ defineExpose({
 </script>
 
 <style scoped lang="less">
-.button-width {
-  min-width: 150px;
-  text-align: center;
-}
-
-:deep(.ant-radio-group-outline .ant-radio-button-wrapper:first-child) {
-  border-radius: 6px 0 0 6px;
-}
-:deep(.ant-radio-group-outline .ant-radio-button-wrapper:last-child) {
-  border-radius: 0 6px 6px 0;
-}
 </style>
