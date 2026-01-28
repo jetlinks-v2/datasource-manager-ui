@@ -198,11 +198,14 @@ const validateAll = async () => {
 }
 
 watch(
-  () => props.data,
-  (newData) => {
-    if (newData?.pattern) {
-      searchPattern.value = newData.pattern
-      loadQueryResults(newData.pattern)
+  () => props.data?.pattern,
+  (newPattern) => {
+    const normalizedNew = newPattern || '*'
+    const normalizedCurrent = searchPattern.value || '*'
+
+    if (normalizedNew !== normalizedCurrent || queryResultList.value.length === 0) {
+      searchPattern.value = newPattern || ''
+      loadQueryResults(searchPattern.value)
     }
   },
   { immediate: true }
