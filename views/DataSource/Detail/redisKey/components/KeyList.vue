@@ -28,7 +28,7 @@
         <a-button
           type="text"
           size="small"
-          @click="fetchKeyTotal(false)"
+          @click="handleRefreshBtn"
         >
           <AIcon :type="refreshLoading ? 'LoadingOutlined' : 'SyncOutlined'" />
         </a-button>
@@ -300,6 +300,12 @@ const handleBack = () => {
   }
 
   selectFirstAvailableKey(currentLevelData.data)
+}
+
+const handleRefreshBtn = () => {
+  fetchKeyTotal(false)
+  resetCurrentLevelState()
+  loadKeyData()
 }
 
 const handleSearch = (value: string) => {

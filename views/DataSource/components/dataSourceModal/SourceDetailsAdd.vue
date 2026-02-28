@@ -117,7 +117,7 @@ const props = defineProps({
 })
 // 详情数据
 const { active, editData } = toRefs(props)
-const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList']) as EmitFn
+const emit = defineEmits(['close', 'openType', 'update', 'refreshCategoryList', 'success']) as EmitFn
 
 const activeType = ref<any>(active.value)
 const baseFormRef = ref<any>()

@@ -251,10 +251,6 @@ const testQuery = () => {
   }
 
   updateConfiguration()
-
-  handleRequest(resultQueryParams.value).finally(() => {
-    testQueryLoading.value = false
-  })
 }
 
 const handleSearch = (e: any) => {
@@ -342,6 +338,9 @@ const handleRequest = (request: any) =>
         .catch(() => {
           resolve({ code: 'error', status: 500, success: false })
         })
+        .finally(() => {
+          testQueryLoading.value = false
+        })
     } else {
       resolve({
         code: 200,
@@ -354,6 +353,7 @@ const handleRequest = (request: any) =>
           total: 0
         }
       })
+      testQueryLoading.value = false
     }
   })
 

@@ -29,6 +29,12 @@ export const useDataSource = (opts: {
     try {
       const res = await action(params)
       if (res?.success) {
+        if (!isEditor.value) {
+          emit('success', {
+            id: res?.result?.id || params.id,
+            typeId: params.typeId
+          })
+        }
         emit('close')
         emit('update')
         onlyMessage(isEditor.value ? i18n.global.t('DataSource.Message.100096-0') : i18n.global.t('DataSource.Message.100096-1'))
