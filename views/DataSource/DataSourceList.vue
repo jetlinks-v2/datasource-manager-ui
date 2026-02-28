@@ -110,12 +110,16 @@
     @openType="handleShowTypeAdd"
     @update="updateSourceList"
     @refreshCategoryList="refreshCategoryList"
+    @success="handleCreateSuccess"
   />
+
+  <DialogTips ref="dialogTipsRef" />
 </template>
 <script lang="ts" name="DataSourceList" setup>
 import { dataSourceColumns, iconMaps } from './table'
 import TypeAdd from './components/dataSourceModal/TypeAdd.vue'
 import SourceDetailsAdd from './components/dataSourceModal/SourceDetailsAdd.vue'
+import DialogTips from './components/dataSourceModal/DialogTips.vue'
 import { deleteDataSource, disableDataSource, getDataSourceList } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { DATASOURCE_NAME, typesData } from './components/table'
@@ -154,6 +158,7 @@ const terms = ref<any[]>([])
 const pageIndex = ref(0)
 const pageSize = ref(12)
 const showDataTable = ref(false)
+const dialogTipsRef = ref()
 const queryParams = computed(() => ({
   sorts: [
     {
@@ -277,6 +282,10 @@ const handleDelete = async (id: string) => {
 const updateSourceList = () => {
   showDataTable.value = true
   tableRef.value?.reload()
+}
+
+const handleCreateSuccess = (payload: { id: string; typeId?: string }) => {
+  dialogTipsRef.value?.show(payload)
 }
 
 watch(
