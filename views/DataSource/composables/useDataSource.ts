@@ -23,6 +23,17 @@ export const useDataSource = (opts: {
 }) => {
   const { baseFormData, formData, activeType, formType, isEditor, requestFlag, emit } = opts
 
+  // 统一生成新增数据源标识: dataSource_<当前类型枚举>_<用户输入或随机串>
+  const buildDataSourceId = (id?: string) => {
+    // 编辑场景沿用原有标识，避免误改历史数据源ID
+    if (isEditor.value) {
+      return id
+    }
+    const typeCode = activeType.value?.value || DATA_TYPE_ITEM.API_SEND
+    const suffix = id?.trim() || randomString(6)
+    return `dataSource_${typeCode}_${suffix}`
+  }
+
   const submitDataSource = async (params: any) => {
     const action = isEditor.value ? updateDataSource : addDataSource
 
@@ -83,7 +94,7 @@ export const useDataSource = (opts: {
     const params: any = {
       name,
       typeId: DATA_TYPE_ITEM.API_SEND,
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       group,
       shareConfig: {
         baseUrl: protocol + api,
@@ -114,7 +125,7 @@ export const useDataSource = (opts: {
     const params: any = {
       name,
       typeId: DATA_TYPE_ITEM.RDB_DATASOURCE,
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       group,
       shareConfig: {
         type,
@@ -142,7 +153,7 @@ export const useDataSource = (opts: {
     const { value: activeValue, defaultConfig } = activeType.value
 
     const params = {
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       name,
       typeId: DATA_TYPE_ITEM.WEBSOCKET_DATASOURCE,
       group,
@@ -166,7 +177,7 @@ export const useDataSource = (opts: {
     const { value: activeValue } = activeType.value
 
     const params = {
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       name,
       typeId: DATA_TYPE_ITEM.ELASTICSEARCH_DATASOURCE,
       group,
@@ -185,7 +196,7 @@ export const useDataSource = (opts: {
     const { value: activeValue } = activeType.value
 
     const params = {
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       name,
       typeId: DATA_TYPE_ITEM.REDIS_DATASOURCE,
       group,
@@ -219,7 +230,7 @@ export const useDataSource = (opts: {
     }, {} as any)
 
     const params = {
-      id: id || `data_source_${randomString(4)}`,
+      id: buildDataSourceId(id),
       name,
       typeId: DATA_TYPE_ITEM.MONGODB_DATASOURCE,
       group,
