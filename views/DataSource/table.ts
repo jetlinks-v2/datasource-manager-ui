@@ -17,6 +17,14 @@ export const iconMaps = {
   elasticsearch: 'icon-ES-API'
 } as Record<string, string>
 
+/**
+ * 根据数据源类型获取图标
+ * @param type 数据源类型
+ */
+export const getDataSourceIcon = (type: string) => {
+  return iconMaps[type] || ''
+}
+
 const getDataTypeOptions = () => {
   return (
     typesData
