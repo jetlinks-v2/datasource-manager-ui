@@ -225,7 +225,7 @@ provide('CATEGORY_LIST', categoryListDeep)
   }
 }
 :deep(.content-list-item) {
-  padding: 7px 12px !important;
+  padding: 0 12px !important;
 }
 
 :deep(.JSearch-warp) {

@@ -23,15 +23,14 @@ export const useDataSource = (opts: {
 }) => {
   const { baseFormData, formData, activeType, formType, isEditor, requestFlag, emit } = opts
 
-  // 统一生成新增数据源标识: dataSource_<当前类型枚举>_<用户输入或随机串>
+  // 统一生成新增数据源标识: data_source_<用户输入或随机串>
   const buildDataSourceId = (id?: string) => {
     // 编辑场景沿用原有标识，避免误改历史数据源ID
     if (isEditor.value) {
       return id
     }
-    const typeCode = activeType.value?.value || DATA_TYPE_ITEM.API_SEND
     const suffix = id?.trim() || randomString(6)
-    return `dataSource_${typeCode}_${suffix}`
+    return `data_source_${suffix}`
   }
 
   const submitDataSource = async (params: any) => {
@@ -48,7 +47,9 @@ export const useDataSource = (opts: {
         }
         emit('close')
         emit('update')
-        onlyMessage(isEditor.value ? i18n.global.t('DataSource.Message.100096-0') : i18n.global.t('DataSource.Message.100096-1'))
+        onlyMessage(
+          isEditor.value ? i18n.global.t('DataSource.Message.100096-0') : i18n.global.t('DataSource.Message.100096-1')
+        )
       }
     } finally {
       Promise.resolve().then(() => {
