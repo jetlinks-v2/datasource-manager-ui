@@ -1,7 +1,7 @@
 {
   "name": "datasource-manager-ui",
   "id": "datasource-manager",
-  "version": "2.10.0",
+  "version": "2.12.0",
   "description": "数据源管理",
   "main": "index.js",
   "repository": {
