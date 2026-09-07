@@ -1,253 +1,271 @@
 [
   {
     "code": "system",
-    "name": "系统管理",
+    "name": "系统设置",
+    "owner": "iot",
     "i18nMessages": {
       "name": {
-        "zh_CN": "系统管理",
-        "en_US": "System Management",
-        "en": "System Management"
+        "zh_CN": "系统设置",
+        "en_US": "System Settings",
+        "en": "System Settings"
       }
     },
-    "owner": "iot",
     "id": "fd1670b860ae58cc58bcd01d027ccd35",
     "url": "/system",
     "icon": "icon-xitongguanli1",
-    "sortIndex": 4,
+    "sortIndex": 100,
     "permissions": [],
     "buttons": [],
     "children": [
       {
-        "code": "system/DataSource",
-        "name": "数据源",
+        "code": "platform/settings",
+        "name": "平台设置",
+        "owner": "iot",
         "i18nMessages": {
           "name": {
-            "zh_CN": "数据源",
-            "en_US": "Data Source",
-            "en": "Data Source"
+            "zh_CN": "平台设置",
+            "en_US": "Platform Settings",
+            "en": "Platform Settings"
           }
         },
-        "owner": "iot",
-        "id": "c62a6bd5018763dae9fc0d869b6df3a2",
-        "sortIndex": 8,
-        "url": "/system/DataSource",
-        "icon": "icon-shebei",
-        "showPage": [
-          "datasource-config"
-        ],
-        "permissions": [],
-        "buttons": [
+        "id": "fe2e589bcf09a5353cbb5adrgb0b715l",
+        "sortIndex": 30,
+        "url": "/system/platform-settings",
+        "icon": "icon-yonghuguanli",
+        "children": [
           {
-            "id": "view",
-            "name": "查看",
+            "code": "system/DataSource",
+            "name": "数据源",
             "i18nMessages": {
-              "zh_CN": "查看",
-              "en_US": "View",
-              "en": "View"
+              "name": {
+                "zh_CN": "数据源",
+                "en_US": "Data Sources",
+                "en": "Data Sources"
+              }
             },
-            "permissions": [
+            "owner": "iot",
+            "id": "c62a6bd5018763dae9fc0d869b6df3a2",
+            "sortIndex": 50,
+            "url": "/system/platform-settings/data-sources",
+            "icon": "icon-shebei",
+            "showPage": [
+              "datasource-config"
+            ],
+            "permissions": [],
+            "buttons": [
               {
-                "permission": "datasource-config",
-                "actions": [
-                  "query"
+                "id": "view",
+                "name": "查看",
+                "i18nMessages": {
+                  "zh_CN": "查看",
+                  "en_US": "View",
+                  "en": "View"
+                },
+                "permissions": [
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "query"
+                    ]
+                  },
+                  {
+                    "permission": "datasource-config-group",
+                    "actions": [
+                      "query"
+                    ]
+                  },
+                  {
+                    "permission": "datasource",
+                    "actions": [
+                      "query"
+                    ]
+                  },
+                  {
+                    "permission": "dictionary",
+                    "actions": [
+                      "query"
+                    ]
+                  }
+                ],
+                "i18nName": "查询"
+              },
+              {
+                "id": "delete",
+                "name": "删除",
+                "i18nMessages": {
+                  "zh_CN": "删除",
+                  "en_US": "Delete",
+                  "en": "Delete"
+                },
+                "permissions": [
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "delete"
+                    ]
+                  },
+                  {
+                    "permission": "datasource-config-group",
+                    "actions": [
+                      "delete"
+                    ]
+                  },
+                  {
+                    "permission": "datasource",
+                    "actions": [
+                      "delete"
+                    ]
+                  }
                 ]
               },
               {
-                "permission": "datasource-config-group",
-                "actions": [
-                  "query"
+                "id": "action",
+                "name": "启用/禁用",
+                "i18nMessages": {
+                  "zh_CN": "启用/禁用",
+                  "en_US": "Enable/Disable",
+                  "en": "Enable/Disable"
+                },
+                "permissions": [
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "save"
+                    ]
+                  },
+                  {
+                    "permission": "datasource-config-group",
+                    "actions": [
+                      "save"
+                    ]
+                  }
                 ]
               },
               {
-                "permission": "datasource",
-                "actions": [
-                  "query"
+                "id": "update",
+                "name": "编辑",
+                "i18nMessages": {
+                  "zh_CN": "编辑",
+                  "en_US": "Edit",
+                  "en": "Edit"
+                },
+                "permissions": [
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "save"
+                    ]
+                  },
+                  {
+                    "permission": "datasource-config-group",
+                    "actions": [
+                      "save"
+                    ]
+                  }
                 ]
               },
               {
-                "permission": "dictionary",
-                "actions": [
-                  "query"
+                "id": "add",
+                "name": "新增",
+                "i18nMessages": {
+                  "zh_CN": "新增",
+                  "en_US": "Add",
+                  "en": "Add"
+                },
+                "permissions": [
+                  {
+                    "permission": "datasource-config-group",
+                    "actions": [
+                      "save"
+                    ]
+                  },
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "save"
+                    ]
+                  },
+                  {
+                    "permission": "datasource",
+                    "actions": [
+                      "save"
+                    ]
+                  }
                 ]
+              },
+              {
+                "id": "state",
+                "name": "测试链接",
+                "description": "",
+                "permissions": [
+                  {
+                    "permission": "datasource-config",
+                    "actions": [
+                      "state"
+                    ]
+                  }
+                ],
+                "i18nName": "测试链接"
+              },
+              {
+                "id": "execute",
+                "name": "数据源命令执行",
+                "description": "",
+                "permissions": [
+                  {
+                    "permission": "datasource",
+                    "actions": [
+                      "execute"
+                    ]
+                  }
+                ],
+                "i18nName": "数据源命令执行"
+              },
+              {
+                "id": "add_class",
+                "name": "新增分类",
+                "permissions": [
+                  {
+                    "permission": "dictionary",
+                    "actions": [
+                      "save"
+                    ]
+                  }
+                ],
+                "i18nName": "新增分类"
+              },
+              {
+                "id": "delete_class",
+                "name": "删除分类",
+                "permissions": [
+                  {
+                    "permission": "dictionary",
+                    "actions": [
+                      "delete"
+                    ]
+                  }
+                ],
+                "i18nName": "删除分类"
+              },
+              {
+                "id": "edit_class",
+                "name": "编辑分类",
+                "permissions": [
+                  {
+                    "permission": "dictionary",
+                    "actions": [
+                      "save"
+                    ]
+                  }
+                ],
+                "i18nName": "编辑分类"
               }
             ],
-            "i18nName": "查询"
-          },
-          {
-            "id": "delete",
-            "name": "删除",
-            "i18nMessages": {
-              "zh_CN": "删除",
-              "en_US": "Delete",
-              "en": "Delete"
-            },
-            "permissions": [
-              {
-                "permission": "datasource-config",
-                "actions": [
-                  "delete"
-                ]
-              },
-              {
-                "permission": "datasource-config-group",
-                "actions": [
-                  "delete"
-                ]
-              },
-              {
-                "permission": "datasource",
-                "actions": [
-                  "delete"
-                ]
-              }
-            ]
-          },
-          {
-            "id": "action",
-            "name": "启用/禁用",
-            "i18nMessages": {
-              "zh_CN": "启用/禁用",
-              "en_US": "Enable/Disable",
-              "en": "Enable/Disable"
-            },
-            "permissions": [
-              {
-                "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
-              },
-              {
-                "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
-              }
-            ]
-          },
-          {
-            "id": "update",
-            "name": "编辑",
-            "i18nMessages": {
-              "zh_CN": "编辑",
-              "en_US": "Edit",
-              "en": "Edit"
-            },
-            "permissions": [
-              {
-                "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
-              },
-              {
-                "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
-              }
-            ]
-          },
-          {
-            "id": "add",
-            "name": "新增",
-            "i18nMessages": {
-              "zh_CN": "新增",
-              "en_US": "Add",
-              "en": "Add"
-            },
-            "permissions": [
-              {
-                "permission": "datasource-config-group",
-                "actions": [
-                  "save"
-                ]
-              },
-              {
-                "permission": "datasource-config",
-                "actions": [
-                  "save"
-                ]
-              },
-              {
-                "permission": "datasource",
-                "actions": [
-                  "save"
-                ]
-              }
-            ]
-          },
-          {
-            "id": "state",
-            "name": "测试链接",
-            "description": "",
-            "permissions": [
-              {
-                "permission": "datasource-config",
-                "actions": [
-                  "state"
-                ]
-              }
-            ],
-            "i18nName": "测试链接"
-          },
-          {
-            "id": "execute",
-            "name": "数据源命令执行",
-            "description": "",
-            "permissions": [
-              {
-                "permission": "datasource",
-                "actions": [
-                  "execute"
-                ]
-              }
-            ],
-            "i18nName": "数据源命令执行"
-          },
-          {
-            "id": "add_class",
-            "name": "新增分类",
-            "permissions": [
-              {
-                "permission": "dictionary",
-                "actions": [
-                  "save"
-                ]
-              }
-            ],
-            "i18nName": "新增分类"
-          },
-          {
-            "id": "delete_class",
-            "name": "删除分类",
-            "permissions": [
-              {
-                "permission": "dictionary",
-                "actions": [
-                  "delete"
-                ]
-              }
-            ],
-            "i18nName": "删除分类"
-          },
-          {
-            "id": "edit_class",
-            "name": "编辑分类",
-            "permissions": [
-              {
-                "permission": "dictionary",
-                "actions": [
-                  "save"
-                ]
-              }
-            ],
-            "i18nName": "编辑分类"
+            "accessSupport": "support",
+            "supportDataAccess": true,
+            "assetType": "datasource"
           }
-        ],
-        "accessSupport": "support",
-        "supportDataAccess": true,
-        "assetType": "datasource"
+        ]
       }
     ]
   }
