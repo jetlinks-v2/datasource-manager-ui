@@ -30,7 +30,7 @@
         },
         "id": "fe2e589bcf09a5353cbb5adrgb0b715l",
         "sortIndex": 30,
-        "url": "/system/platform-settings",
+        "url": "/system/ps",
         "icon": "icon-yonghuguanli",
         "children": [
           {
@@ -46,7 +46,7 @@
             "owner": "iot",
             "id": "c62a6bd5018763dae9fc0d869b6df3a2",
             "sortIndex": 50,
-            "url": "/system/platform-settings/data-sources",
+            "url": "/system/ps/data-sources",
             "icon": "icon-shebei",
             "showPage": [
               "datasource-config"
