@@ -1,59 +1,57 @@
 <template>
   <j-page-container>
     <FullPage>
-      <div class="datasource-container">
-        <div class="datasource-title">{{ $t('DataSource.index.100001-0') }}</div>
-        <j-permission-button
-          type="primary"
-          :hasPermission="`${permission}:add`"
-          @click="_handleAdd"
-        >
-          <AIcon type="PlusOutlined" />
-          {{ $t('DataSource.index.100001-1') }}
-        </j-permission-button>
-      </div>
-
-      <div class="parameter-container">
-        <div class="fixed-width">
-          <CategorySelect
-            :data="categoryList"
-            labelKey="name"
-            :labelRules="labelRules"
-            valueKey="id"
-            :defaultKey="DEFAULT_CATEGORY_ID"
-            :showId="false"
-            removeDefaultMore
-            :bodyStyle="{ maxHeight: 'calc(100vh - 270px)' }"
-            :permission="permission"
-            :active-id="clickItem.id"
-            @change="handleChange"
-            @search="handleSearch"
-            @click="handleClick"
-            @delete="handleClickDelete"
-          >
-            <template #content="{ item }">
-              <j-ellipsis>
-                <div>{{ item.name }}</div>
-              </j-ellipsis>
-            </template>
-          </CategorySelect>
-        </div>
-
-        <a-divider
-          type="vertical"
-          style="height: calc(100% - 20px); margin: 0"
-        />
-
-        <div style="flex: 1">
-          <DataSourceList
-            v-model:value="listLength"
-            :clickItem="clickItem"
-            :permission="permission"
-            ref="dataSourceListRef"
-            @refreshCategoryList="getCategoryList"
-          ></DataSourceList>
-        </div>
-      </div>
+      <ContentPanel>
+	      <EqualHeightColumns class="parameter-container" left-width="20rem">
+		      <template #left>
+			      <div class="fixed-width">
+				      <CategorySelect
+					      :data="categoryList"
+					      labelKey="name"
+					      :labelRules="labelRules"
+					      valueKey="id"
+					      :defaultKey="DEFAULT_CATEGORY_ID"
+					      :showId="false"
+					      removeDefaultMore
+					      :bodyStyle="{ maxHeight: 'calc(100vh - 270px)' }"
+					      :permission="permission"
+					      :active-id="clickItem.id"
+					      @change="handleChange"
+					      @search="handleSearch"
+					      @click="handleClick"
+					      @delete="handleClickDelete"
+				      >
+					      <template #content="{ item }">
+						      <j-ellipsis>
+							      <div>{{ item.name }}</div>
+						      </j-ellipsis>
+					      </template>
+				      </CategorySelect>
+			      </div>
+		      </template>
+		      
+		      <template #right>
+			      <div style="flex: 1">
+				      <DataSourceList
+					      v-model:value="listLength"
+					      :clickItem="clickItem"
+					      :permission="permission"
+					      ref="dataSourceListRef"
+					      @refreshCategoryList="getCategoryList"
+				      >
+					      <j-permission-button
+						      type="primary"
+						      :hasPermission="`${permission}:add`"
+						      @click="_handleAdd"
+					      >
+						      <AIcon type="PlusOutlined" />
+						      {{ $t('DataSource.index.100001-1') }}
+					      </j-permission-button>
+				      </DataSourceList>
+			      </div>
+		      </template>
+	      </EqualHeightColumns>
+      </ContentPanel>
     </FullPage>
   </j-page-container>
 </template>
@@ -214,13 +212,8 @@ provide('CATEGORY_LIST', categoryListDeep)
 }
 .parameter-container {
   height: calc(100% - 40px);
-  display: flex;
-  padding: 0 0 20px 20px;
 
   .fixed-width {
-    width: 280px;
-    min-width: 280px;
-    max-width: 280px;
     box-sizing: border-box;
   }
 }

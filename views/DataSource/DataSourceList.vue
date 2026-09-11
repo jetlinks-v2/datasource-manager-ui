@@ -1,10 +1,5 @@
 <template>
   <div class="main">
-    <pro-search
-      :columns="dataSourceColumns"
-      target="datasource-manager"
-      @search="onSearch"
-    />
     <FullPage>
       <j-pro-table
         ref="tableRef"
@@ -13,7 +8,18 @@
         :request="handleSearch"
         mode="TABLE"
         :class="{ 'empty-table-cell': !showDataTable }"
+        class="pro-table__no-padding"
       >
+	      <template #headerLeftRender>
+		      <a-flex :gap="16">
+			      <ConditionFilter
+				      :columns="dataSourceColumns"
+				      target="datasource-manager"
+				      @search="onSearch"
+			      />
+			      <slot></slot>
+		      </a-flex>
+	      </template>
         <template #name="slotProps">
           <a-space @click="handleDetail(slotProps)">
             <AIcon :type="iconMaps[slotProps.searchCode]" />
