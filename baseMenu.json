@@ -12,7 +12,7 @@
     },
     "id": "fd1670b860ae58cc58bcd01d027ccd35",
     "url": "/system",
-    "icon": "icon-xitongguanli1",
+    "icon": "icon-xitongshezhi",
     "sortIndex": 100,
     "permissions": [],
     "buttons": [],
@@ -31,7 +31,7 @@
         "id": "fe2e589bcf09a5353cbb5adrgb0b715l",
         "sortIndex": 30,
         "url": "/system/ps",
-        "icon": "icon-yonghuguanli",
+        "icon": "icon-pingtaishezhi",
         "children": [
           {
             "code": "system/DataSource",
@@ -47,7 +47,7 @@
             "id": "c62a6bd5018763dae9fc0d869b6df3a2",
             "sortIndex": 50,
             "url": "/system/ps/data-sources",
-            "icon": "icon-shebei",
+            "icon": "icon-yuandian",
             "showPage": [
               "datasource-config"
             ],
