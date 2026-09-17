@@ -1,7 +1,7 @@
 <template>
   <j-page-container>
     <FullPage>
-      <ContentPanel>
+      
 	      <EqualHeightColumns class="parameter-container" left-width="20rem">
 		      <template #left>
 			      <div class="fixed-width">
@@ -51,7 +51,7 @@
 			      </div>
 		      </template>
 	      </EqualHeightColumns>
-      </ContentPanel>
+      
     </FullPage>
   </j-page-container>
 </template>
