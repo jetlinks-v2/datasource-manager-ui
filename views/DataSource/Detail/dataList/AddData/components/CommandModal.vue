@@ -67,8 +67,8 @@ const emit = defineEmits(['cancel', 'update'])
 const modalBodyStyle = computed(() => ({
   maxHeight: '80vh',
   overflowY: 'auto' as any,
+  overflowX: 'hidden' as any,
   paddingRight: '8px',
-  marginRight: '-8px'
 }))
 
 const modelValue = computed(() => ({
