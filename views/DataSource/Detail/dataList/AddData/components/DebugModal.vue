@@ -186,8 +186,8 @@ const debugResult = ref<DebugResult | null>(null)
 const modalBodyStyle = computed(() => ({
   maxHeight: '80vh',
   overflowY: 'auto' as any,
+  overflowX: 'hidden' as any,
   paddingRight: '8px',
-  marginRight: '-8px'
 }))
 
 const commandInputs = ref<any[]>([])
