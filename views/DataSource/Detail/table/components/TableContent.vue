@@ -30,10 +30,10 @@
             {{ index + 1 }}
           </template>
           <template #precision="{ precision }">
-            {{ precision ?? '--' }}
+            {{ precision ?? $t('comm.table.empty-2') }}
           </template>
           <template #scale="{ scale }">
-            {{ scale ?? '--' }}
+            {{ scale ?? $t('comm.table.empty-2') }}
           </template>
           <template #notnull="slotProps">
             <AIcon

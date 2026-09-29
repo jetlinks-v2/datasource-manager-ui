@@ -40,7 +40,7 @@
         </template>
         <template #description="slotProps">
           <j-ellipsis>
-            <span>{{ slotProps.description || '--' }}</span>
+            <span>{{ slotProps.description || $t('comm.table.empty') }}</span>
           </j-ellipsis>
         </template>
         <template #action="slotProps">

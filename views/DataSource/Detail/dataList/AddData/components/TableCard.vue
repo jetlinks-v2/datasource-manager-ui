@@ -30,7 +30,7 @@
       <p>
         <a-space>
           <span>{{ $t('DataSource.TableCard.100088-1') }}：</span>
-          <j-ellipsis>{{ data.description || '--' }}</j-ellipsis>
+          <j-ellipsis>{{ data.description || $t('comm.table.empty') }}</j-ellipsis>
         </a-space>
       </p>
       <p>
