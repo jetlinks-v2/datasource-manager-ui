@@ -13,6 +13,9 @@
   ],
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "test:data-capabilities": "node --test tests/dataCapabilities.test.mjs"
+  },
   "bugs": {
     "url": "https://github.com/jetlinks-v2/datasource-manager-ui/issues"
   },

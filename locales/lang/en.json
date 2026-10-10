@@ -870,5 +870,8 @@
   "DataSource.DialogTips.100098-10": "Go to the function list page, click Bulk Import Functions, and upload the corresponding data source configuration file.",
   "DataSource.Upload.100097-0": "Upload failed",
   "DataSource.Upload.100097-1": "Please upload files in correct format",
-  "DataSource.Upload.100097-2": "File size must be less than {0}M"
+  "DataSource.Upload.100097-2": "File size must be less than {0}M",
+  "DataSource.binding.readOnlyRequired": "This operation is not declared as a repeatable read query",
+  "DataSource.binding.disabled": "Data source is disabled",
+  "DataSource.binding.partialCatalog": "Some custom queries could not load. Check permissions and source status, then refresh."
 }
