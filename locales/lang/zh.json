@@ -870,5 +870,8 @@
   "DataSource.DialogTips.100098-10": "进入功能列表页，点击批量导入功能，上传对应数据源的配置文件即可。",
   "DataSource.Upload.100097-0": "上传失败",
   "DataSource.Upload.100097-1": "请上传正确格式的文件",
-  "DataSource.Upload.100097-2": "文件大小必须小于{0}M"
+  "DataSource.Upload.100097-2": "文件大小必须小于{0}M",
+  "DataSource.binding.readOnlyRequired": "该操作未声明为可重复读取的查询，暂不支持自动绑定",
+  "DataSource.binding.disabled": "数据源已禁用",
+  "DataSource.binding.partialCatalog": "部分自定义查询的元数据加载失败，请检查权限或数据源状态后刷新"
 }
