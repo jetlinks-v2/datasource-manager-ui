@@ -19,7 +19,7 @@ export function createCustomSourceProvider(options: CustomSourceProviderOptions)
     const available = options.enabled() && readonly && enabled
     return {
       id: sourceCapabilityId({ queryId: query.id, commandId: command.id }), kind: 'data-source', version: 1,
-      name: `${query.name} · ${command.i18nName || command.name || command.id}`,
+      name: query.name,
       description: query.description || command.description,
       owner, tags: ['custom-datasource'], facets: { category: 'custom-datasource', mappingPolicy: 'manual', connectionName: connection?.name },
       modes: ['snapshot', 'poll'], querySchema: inputSchema(command, query), outputSchema: commandOutputSchema(query, command),

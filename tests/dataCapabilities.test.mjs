@@ -48,14 +48,16 @@ function client(overrides = {}) {
 }
 const id = sourceCapabilityId({ queryId: query.id, commandId: command.id })
 
-test('display descriptions contain query text without connection/type prefixes and preserve command identity', async () => {
+test('display uses only capability name and description while command identities remain distinct', async () => {
   const saved = { ...query, description: 'Saved function description' }
   const commands = [{ ...command, name: 'List', description: 'Command description' }, { ...command, id: 'Count', name: 'Count' }]
   const result = await provider().dynamicSources.discover({ request: client({ query: saved, commands }) })
-  assert.deepEqual(result.sources.map(source => source.name), ['Records · List', 'Records · Count'])
+  assert.deepEqual(result.sources.map(source => source.name), ['Records', 'Records'])
+  assert.equal(new Set(result.sources.map(source => source.id)).size, commands.length)
   assert.ok(result.sources.every(source => source.description === saved.description))
   assert.ok(result.sources.every(source => source.facets.connectionName === connection.name))
   const restored = await provider().dynamicSources.resolve(id, { request: client({ query: saved, commands }) })
+  assert.equal(restored.name, saved.name)
   assert.equal(restored.description, saved.description)
   const fallback = await provider().dynamicSources.resolve(id, { request: client({ commands }) })
   assert.equal(fallback.description, 'Command description')
