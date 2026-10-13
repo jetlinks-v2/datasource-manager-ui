@@ -20,7 +20,7 @@ export function createCustomSourceProvider(options: CustomSourceProviderOptions)
     return {
       id: sourceCapabilityId({ queryId: query.id, commandId: command.id }), kind: 'data-source', version: 1,
       name: `${query.name} · ${command.i18nName || command.name || command.id}`,
-      description: [connection?.name, query.dataSourceTypeId, query.description || command.description].filter(Boolean).join(' · '),
+      description: query.description || command.description,
       owner, tags: ['custom-datasource'], facets: { category: 'custom-datasource', mappingPolicy: 'manual', connectionName: connection?.name },
       modes: ['snapshot', 'poll'], querySchema: inputSchema(command, query), outputSchema: commandOutputSchema(query, command),
       availability: () => ({ discoverable: true, configurable: available, executable: available,

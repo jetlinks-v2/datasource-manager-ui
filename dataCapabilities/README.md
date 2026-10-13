@@ -6,6 +6,8 @@
 
 所有读取与执行通过传入的 `CapabilityContext.request`；不缓存远程定义或用户身份。稳定 ID 使用 UTF-8 hex 编码 `[queryId, commandId]`，不包含查询名称、连接配置、SQL 或凭据。
 
+目录名称保留功能名称和命令名称以区分同一功能的多个命令，描述仅使用功能描述（缺省时使用命令描述）；不在描述中拼接连接名称与数据源类型。连接名称保留在 facets 元数据中，供目录搜索使用。
+
 参数 / 输出通过 `schema.ts` 递归转换。查询参数只使用明确声明的默认值，不为未设置的可选对象或数组自动补空值。声明 `isTermsQuery` 且 `formComponent` 为根级 `query` 的命令将元数据中的字段转换为 `querySchema.queryEditor`；普通 API 的同名参数不会被当成条件协议，返回字段也不会自动成为可查询字段。RDB / Elasticsearch 的 `QueryList` 输出元数据为单行时补上数组，`QueryPager` 按声明的分页契约提取 `data`，保留总数。已保存 API 命令在后端返回响应体，不再猜测或剥离用户的 `body` / `result` 字段。
 
 自动预览与轮询仅接受明确 `forQuery` 且非动作 / 无限订阅的命令，以及已知 RDB / Elasticsearch 只读查询和 GET / HEAD API 查询。其他命令显示不可用原因。WebSocket 实时订阅 / 断线重连不在此契约内。元数据、查询详情和执行权限由服务端检查；运行时不会用普通登录身份替代发布身份。
