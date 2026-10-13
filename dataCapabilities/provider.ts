@@ -17,11 +17,13 @@ export function createCustomSourceProvider(options: CustomSourceProviderOptions)
     const readonly = isReadQuery(query, command)
     const enabled = !!connection && connection.state?.value !== 'disabled'
     const available = options.enabled() && readonly && enabled
+    // The saved query names the group; each command is a selectable function in that group.
     return {
       id: sourceCapabilityId({ queryId: query.id, commandId: command.id }), kind: 'data-source', version: 1,
-      name: query.name,
-      description: query.description || command.description,
-      owner, tags: ['custom-datasource'], facets: { category: 'custom-datasource', mappingPolicy: 'manual', connectionName: connection?.name },
+      name: command.i18nName || command.name || command.id,
+      description: command.description || query.description,
+      owner, tags: ['custom-datasource'],
+      facets: { category: 'custom-datasource', mappingPolicy: 'manual', connectionName: connection?.name, queryName: query.name },
       modes: ['snapshot', 'poll'], querySchema: inputSchema(command, query), outputSchema: commandOutputSchema(query, command),
       availability: () => ({ discoverable: true, configurable: available, executable: available,
         reason: available ? undefined : options.translate(enabled ? 'DataSource.binding.readOnlyRequired' : 'DataSource.binding.disabled') }),

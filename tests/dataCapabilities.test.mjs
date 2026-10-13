@@ -48,17 +48,23 @@ function client(overrides = {}) {
 }
 const id = sourceCapabilityId({ queryId: query.id, commandId: command.id })
 
-test('display uses only capability name and description while command identities remain distinct', async () => {
+test('flat function entries use command names and descriptions while preserving saved-query provenance', async () => {
   const saved = { ...query, description: 'Saved function description' }
-  const commands = [{ ...command, name: 'List', description: 'Command description' }, { ...command, id: 'Count', name: 'Count' }]
+  const commands = [
+    { ...command, name: 'List', i18nName: '列表查询', description: 'Command description' },
+    { ...command, id: 'Count', name: 'Count' },
+    { ...command, id: 'QueryPager' },
+  ]
   const result = await provider().dynamicSources.discover({ request: client({ query: saved, commands }) })
-  assert.deepEqual(result.sources.map(source => source.name), ['Records', 'Records'])
+  assert.deepEqual(result.sources.map(source => source.name), ['列表查询', 'Count', 'QueryPager'])
   assert.equal(new Set(result.sources.map(source => source.id)).size, commands.length)
-  assert.ok(result.sources.every(source => source.description === saved.description))
+  assert.deepEqual(result.sources.map(source => source.description), ['Command description', saved.description, saved.description])
   assert.ok(result.sources.every(source => source.facets.connectionName === connection.name))
+  assert.ok(result.sources.every(source => source.facets.queryName === saved.name))
   const restored = await provider().dynamicSources.resolve(id, { request: client({ query: saved, commands }) })
-  assert.equal(restored.name, saved.name)
-  assert.equal(restored.description, saved.description)
+  assert.equal(restored.name, '列表查询')
+  assert.equal(restored.description, 'Command description')
+  assert.equal(restored.id, id)
   const fallback = await provider().dynamicSources.resolve(id, { request: client({ commands }) })
   assert.equal(fallback.description, 'Command description')
 })
@@ -92,11 +98,15 @@ test('saved references recheck connection availability without relying on prior 
   assert.ok(request.calls.some(call => call.url === '/datasource/config/database%2F1'))
 })
 test('restoration uses the active request identity and keeps definition snapshots isolated', async () => {
-  const p = provider(), first = client(), second = client({ query: { ...query, name: 'Other user records' } })
+  const p = provider(), first = client(), second = client({ query: { ...query, name: 'Other user records' },
+    commands: [{ ...command, name: 'Other user list' }] })
   const left = await p.dynamicSources.resolve(id, { request: first })
   const right = await p.dynamicSources.resolve(id, { request: second })
   assert.notEqual(left.name, right.name)
-  assert.match(left.name, /^Records/)
+  assert.equal(left.name, 'QueryList')
+  assert.equal(right.name, 'Other user list')
+  assert.equal(left.facets.queryName, 'Records')
+  assert.equal(right.facets.queryName, 'Other user records')
   assert.ok(first.calls.length > 0 && second.calls.length > 0)
 })
 test('unknown or removed commands never recover a different saved definition', async () => {
