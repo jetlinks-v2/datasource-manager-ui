@@ -1,6 +1,6 @@
 # 可视化自定义查询 Provider
 
-`register.ts` 仅在私有化构建中注册 `datasource.saved-query` 动态命名空间。SaaS / cloud 不装配 Provider，也不读取连接目录。
+`dataCapabilities/manifest.ts` 是平台 `register.ts` 与独立播放器共用的公开清单，`index.ts` 仍导出实际 Provider。清单仅在私有化构建中注册 `datasource.saved-query` 动态命名空间。SaaS / cloud 不装配 Provider，也不读取连接目录。
 
 `discover` 分页读取连接及其保存查询，再按 support 获取命令元数据；同一查询的多个命令分别展示。单个查询元数据加载失败返回部分目录诊断，不影响其他查询。`resolve` 直接读取保存查询、所属连接详情及命令，不读取连接管理列表，适用于已保存组件直接进入预览 / 发布页。连接不存在或所属关系不匹配时不恢复，停用连接仍展示不可用原因并禁止执行。
 

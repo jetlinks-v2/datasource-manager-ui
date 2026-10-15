@@ -3,11 +3,32 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
-import { transformSync } from 'esbuild'
+import { build, transformSync } from 'esbuild'
 import { firstValueFrom } from 'rxjs'
 
 const require = createRequire(import.meta.url)
 const root = resolve(import.meta.dirname, '../dataCapabilities')
+
+test('公共 Provider 清单仅在私有化环境装配，SaaS 和 cloud 不加载数据源', async () => {
+  for (const environment of ['', 'saas', 'cloud']) {
+    const output = await build({
+      entryPoints: [resolve(root, 'manifest.ts')], bundle: true, write: false, format: 'esm',
+      define: { 'import.meta.env.VITE_APP_ENVIRONMENT': JSON.stringify(environment) },
+      alias: { '@jetlinks-web-core': resolve(root, '../../../jetlinks-web-core/src') },
+      plugins: [{ name: 'provider-boundary', setup(api) {
+        api.onResolve({ filter: /^\.\/index$/ }, () => ({ path: './index', external: true }))
+      } }],
+    })
+    const { default: manifest } = await import(`data:text/javascript;base64,${Buffer.from(output.outputFiles[0].text).toString('base64')}`)
+    assert.deepEqual(Object.keys(manifest), environment ? [] : ['savedQueries'])
+    if (!environment) {
+      assert.equal(manifest.savedQueries.dynamicSourceNamespace, 'datasource.saved-query')
+      assert.deepEqual(manifest.savedQueries.capabilityIds, [])
+      assert.equal(typeof manifest.savedQueries.loader, 'function')
+    }
+  }
+})
+
 const cache = new Map()
 // Execute the real Provider, codecs and service with only the HTTP transport supplied by each test.
 function load(filename) {
