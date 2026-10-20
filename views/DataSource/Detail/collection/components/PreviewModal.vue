@@ -40,7 +40,7 @@
                 :show-expand-column="true"
                 :scroll="{ y: 380 }"
               />
-              <a-empty v-else />
+              <CloudEmpty v-else />
             </div>
             <div
               v-show="activeTab === 'json'"

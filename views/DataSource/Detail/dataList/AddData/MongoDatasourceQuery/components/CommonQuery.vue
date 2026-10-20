@@ -37,10 +37,9 @@
                 :isDark="false"
               />
             </a-form>
-            <a-empty
+            <CloudEmpty
               v-else
               :description="$t('DataSource.MongoCommonQuery.100054-1')"
-              :image="Empty.PRESENTED_IMAGE_SIMPLE"
             />
           </div>
         </div>
@@ -59,7 +58,6 @@
 </template>
 
 <script setup lang="ts" name="MongoCommonQuery">
-import { Empty } from 'ant-design-vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
