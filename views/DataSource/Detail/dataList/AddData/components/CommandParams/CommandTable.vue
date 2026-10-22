@@ -1,5 +1,16 @@
 <template>
-  <div>
+
+  <DefineEmptyCreate>
+    <template v-if="addButton && !preview"><a-button
+      type="dashed"
+      block
+      @click="handleAdd"
+    >
+      <AIcon type="PlusOutlined" />
+      {{ $t('DataSource.ParamTable.100034-8') }}
+    </a-button></template>
+  </DefineEmptyCreate>
+  <div v-bind="$attrs">
     <a-table
       :data-source="tableData"
       :columns="filteredColumns"
@@ -14,6 +25,11 @@
       :scroll="scroll"
       style="min-height: 200px"
     >
+      <template #emptyText>
+        <CloudEmpty :search-name="$t('DataSource.FormUniversal.100007-21')">
+          <EmptyCreateButton />
+        </CloudEmpty>
+      </template>
       <template #bodyCell="{ column, record, index }">
         <!-- ID / Name 列 -->
         <template v-if="column.dataIndex === 'id' || column.dataIndex === 'name'">
@@ -76,19 +92,14 @@
       v-if="addButton && !preview"
       class="add-button-wrapper"
     >
-      <a-button
-        type="dashed"
-        block
-        @click="handleAdd"
-      >
-        <AIcon type="PlusOutlined" />
-        {{ $t('DataSource.ParamTable.100034-8') }}
-      </a-button>
+      <EmptyCreateButton />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { createReusableTemplate } from '@vueuse/core'
+
 import { cloneDeep, isArray } from 'lodash-es'
 import { ParamsSpec } from '../../type'
 import DataTypeCell from './DataTypeCell.vue'
@@ -523,6 +534,8 @@ watch(
 )
 
 defineExpose({ tableData, validateAllData, selectedOutputTreeData, selectAll })
+
+const [DefineEmptyCreate, EmptyCreateButton] = createReusableTemplate()
 </script>
 
 <style scoped lang="less">
