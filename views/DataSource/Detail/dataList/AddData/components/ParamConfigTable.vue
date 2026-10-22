@@ -1,5 +1,16 @@
 <template>
-  <div>
+
+  <DefineEmptyCreate>
+    <a-button
+      type="dashed"
+      block
+      @click="handleAdd"
+    >
+      <PlusOutlined />
+      {{ $t('DataSource.ParamConfigTable.100082-3') }}
+    </a-button>
+  </DefineEmptyCreate>
+  <div v-bind="$attrs">
     <a-table
       :data-source="tableData"
       :columns="columns"
@@ -9,6 +20,11 @@
       bordered
       :scroll="{ y: 260 }"
     >
+      <template #emptyText>
+        <CloudEmpty :search-name="$t('DataSource.FormUniversal.100007-21')">
+          <EmptyCreateButton />
+        </CloudEmpty>
+      </template>
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.dataIndex === 'enable'">
           <a-checkbox
@@ -57,19 +73,14 @@
     </a-table>
 
     <div class="add-button-wrapper">
-      <a-button
-        type="dashed"
-        block
-        @click="handleAdd"
-      >
-        <PlusOutlined />
-        {{ $t('DataSource.ParamConfigTable.100082-3') }}
-      </a-button>
+      <EmptyCreateButton />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { createReusableTemplate } from '@vueuse/core'
+
 import type { TableColumnType } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
@@ -232,6 +243,8 @@ watch(
 defineExpose({
   validateAll
 })
+
+const [DefineEmptyCreate, EmptyCreateButton] = createReusableTemplate()
 </script>
 
 <style scoped lang="less">
