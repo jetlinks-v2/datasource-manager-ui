@@ -7,7 +7,9 @@
       "name": {
         "zh_CN": "系统设置",
         "en_US": "System Settings",
-        "en": "System Settings"
+        "en": "System Settings",
+        "ja": "システム設定",
+        "ja_JP": "システム設定"
       }
     },
     "id": "fd1670b860ae58cc58bcd01d027ccd35",
@@ -25,7 +27,9 @@
           "name": {
             "zh_CN": "平台设置",
             "en_US": "Platform Settings",
-            "en": "Platform Settings"
+            "en": "Platform Settings",
+            "ja": "プラットフォーム設定",
+            "ja_JP": "プラットフォーム設定"
           }
         },
         "id": "fe2e589bcf09a5353cbb5adrgb0b715l",
@@ -40,7 +44,9 @@
               "name": {
                 "zh_CN": "数据源",
                 "en_US": "Data Sources",
-                "en": "Data Sources"
+                "en": "Data Sources",
+                "ja": "データソース",
+                "ja_JP": "データソース"
               }
             },
             "owner": "iot",
@@ -59,7 +65,9 @@
                 "i18nMessages": {
                   "zh_CN": "查看",
                   "en_US": "View",
-                  "en": "View"
+                  "en": "View",
+                  "ja": "表示",
+                  "ja_JP": "表示"
                 },
                 "permissions": [
                   {
@@ -95,7 +103,9 @@
                 "i18nMessages": {
                   "zh_CN": "删除",
                   "en_US": "Delete",
-                  "en": "Delete"
+                  "en": "Delete",
+                  "ja": "削除",
+                  "ja_JP": "削除"
                 },
                 "permissions": [
                   {
@@ -124,7 +134,9 @@
                 "i18nMessages": {
                   "zh_CN": "启用/禁用",
                   "en_US": "Enable/Disable",
-                  "en": "Enable/Disable"
+                  "en": "Enable/Disable",
+                  "ja": "有効化/無効化",
+                  "ja_JP": "有効化/無効化"
                 },
                 "permissions": [
                   {
@@ -147,7 +159,9 @@
                 "i18nMessages": {
                   "zh_CN": "编辑",
                   "en_US": "Edit",
-                  "en": "Edit"
+                  "en": "Edit",
+                  "ja": "編集",
+                  "ja_JP": "編集"
                 },
                 "permissions": [
                   {
@@ -170,7 +184,9 @@
                 "i18nMessages": {
                   "zh_CN": "新增",
                   "en_US": "Add",
-                  "en": "Add"
+                  "en": "Add",
+                  "ja": "追加",
+                  "ja_JP": "追加"
                 },
                 "permissions": [
                   {
@@ -205,7 +221,11 @@
                     ]
                   }
                 ],
-                "i18nName": "测试链接"
+                "i18nName": "测试链接",
+                "i18nMessages": {
+                  "ja": "接続テスト",
+                  "ja_JP": "接続テスト"
+                }
               },
               {
                 "id": "execute",
@@ -219,7 +239,11 @@
                     ]
                   }
                 ],
-                "i18nName": "数据源命令执行"
+                "i18nName": "数据源命令执行",
+                "i18nMessages": {
+                  "ja": "データソースコマンドの実行",
+                  "ja_JP": "データソースコマンドの実行"
+                }
               },
               {
                 "id": "add_class",
@@ -232,7 +256,11 @@
                     ]
                   }
                 ],
-                "i18nName": "新增分类"
+                "i18nName": "新增分类",
+                "i18nMessages": {
+                  "ja": "カテゴリを追加",
+                  "ja_JP": "カテゴリを追加"
+                }
               },
               {
                 "id": "delete_class",
@@ -245,7 +273,11 @@
                     ]
                   }
                 ],
-                "i18nName": "删除分类"
+                "i18nName": "删除分类",
+                "i18nMessages": {
+                  "ja": "カテゴリを削除",
+                  "ja_JP": "カテゴリを削除"
+                }
               },
               {
                 "id": "edit_class",
@@ -258,7 +290,11 @@
                     ]
                   }
                 ],
-                "i18nName": "编辑分类"
+                "i18nName": "编辑分类",
+                "i18nMessages": {
+                  "ja": "カテゴリを編集",
+                  "ja_JP": "カテゴリを編集"
+                }
               }
             ],
             "accessSupport": "support",
