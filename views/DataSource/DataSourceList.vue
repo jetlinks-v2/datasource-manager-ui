@@ -87,14 +87,16 @@
 
         <template #emptyText>
           <div class="empty-table">
-            <j-empty>
+            <CloudEmpty :search="emptyCreateSearch" :search-name="$t('DataSource.index.100001-0')">
               <template #description>
                 <a-space direction="vertical">
                   <span style="font-size: 18px">{{ $t('DataSource.List.100002-0') }}</span>
                   <span style="font-size: 14px; color: rgba(0, 0, 0, 0.6)">{{ $t('DataSource.List.100002-1') }}</span>
                 </a-space>
               </template>
-            </j-empty>
+
+              <slot />
+            </CloudEmpty>
           </div>
         </template>
       </j-pro-table>
@@ -133,6 +135,9 @@ import { DEFAULT_CATEGORY_ID } from '@datasource-manager-ui/utils/const'
 import { useSourceDetailStore } from './sourceDetail'
 import { useI18n } from 'vue-i18n'
 import { useMenuStore } from '@jetlinks-web-core/store'
+import { ref as emptyCreateSearchRef } from 'vue'
+const emptyCreateSearch = emptyCreateSearchRef(false)
+
 
 const { t: $t } = useI18n()
 
@@ -182,6 +187,8 @@ const refreshCategoryList = () => {
 }
 
 const onSearch = (params: any) => {
+  emptyCreateSearch.value = Boolean(params.terms?.length)
+
   showDataTable.value = true
   const searchTerms = params.terms || []
 
@@ -297,6 +304,7 @@ const handleCreateSuccess = (payload: { id: string; typeId?: string }) => {
 watch(
   () => clickItem.value,
   (item: any) => {
+    emptyCreateSearch.value = false
     showDataTable.value = true
     terms.value =
       item.id === DEFAULT_CATEGORY_ID

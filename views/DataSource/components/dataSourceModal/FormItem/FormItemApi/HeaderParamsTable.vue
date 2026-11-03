@@ -1,5 +1,15 @@
 <template>
-  <div>
+
+  <DefineEmptyCreate>
+    <a-button
+      block
+      type="dashed"
+      @click="addItem"
+    >
+      {{ $t('DataSource.HeaderParams.100069-3') }}
+    </a-button>
+  </DefineEmptyCreate>
+  <div v-bind="$attrs">
     <a-table
       :columns="columns"
       :dataSource="modelValue"
@@ -7,6 +17,11 @@
       size="small"
       rowKey="id"
     >
+      <template #emptyText>
+        <CloudEmpty :search-name="$t('DataSource.FormUniversal.100007-20')">
+          <EmptyCreateButton />
+        </CloudEmpty>
+      </template>
       <!-- <template #headerCell="{ column }">
         <template v-if="column.key === 'key'">
           <span class="table-header-title">{{ column.title }}</span>
@@ -45,18 +60,14 @@
       </template>
     </a-table>
     <a-form-item>
-      <a-button
-        block
-        type="dashed"
-        @click="addItem"
-      >
-        {{ $t('DataSource.HeaderParams.100069-3') }}
-      </a-button>
+      <EmptyCreateButton />
     </a-form-item>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { createReusableTemplate } from '@vueuse/core'
+
 import { useI18n } from 'vue-i18n'
 import FormItem from '../../../FormItem.vue'
 
@@ -208,6 +219,8 @@ const validate = (): boolean => {
 defineExpose({
   validate
 })
+
+const [DefineEmptyCreate, EmptyCreateButton] = createReusableTemplate()
 </script>
 
 <style lang="less" scoped>

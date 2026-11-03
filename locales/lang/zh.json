@@ -873,5 +873,7 @@
   "DataSource.Upload.100097-2": "文件大小必须小于{0}M",
   "DataSource.binding.readOnlyRequired": "该操作未声明为可重复读取的查询，暂不支持自动绑定",
   "DataSource.binding.disabled": "数据源已禁用",
-  "DataSource.binding.partialCatalog": "部分自定义查询的元数据加载失败，请检查权限或数据源状态后刷新"
+  "DataSource.binding.partialCatalog": "部分自定义查询的元数据加载失败，请检查权限或数据源状态后刷新",
+  "EmptyCreate.names.enum_entries": "枚举项",
+  "EmptyCreate.names.commands": "命令"
 }

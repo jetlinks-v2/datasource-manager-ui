@@ -1,5 +1,18 @@
 <template>
-  <div class="content-warp">
+
+  <DefineEmptyCreate>
+    <a-button
+      @click="handleAdd"
+      style="width: 100%"
+      v-if="!readonly"
+    >
+      <template #icon>
+        <AIcon type="PlusOutlined" />
+      </template>
+      {{ $t('DataSource.Enum.100030-1') }}
+    </a-button>
+  </DefineEmptyCreate>
+  <div v-bind="$attrs" class="content-warp">
     <a-table
       :columns="columns"
       :data-source="formData.elements"
@@ -8,6 +21,11 @@
       style="height: 200px; width: 100%"
       :scroll="{ y: 130 }"
     >
+      <template #emptyText>
+        <CloudEmpty :search-name="$t('EmptyCreate.names.enum_entries')">
+          <EmptyCreateButton />
+        </CloudEmpty>
+      </template>
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.dataIndex === 'value'">
           <FormItem
@@ -42,20 +60,13 @@
         </template>
       </template>
     </a-table>
-    <a-button
-      @click="handleAdd"
-      style="width: 100%"
-      v-if="!readonly"
-    >
-      <template #icon>
-        <AIcon type="PlusOutlined" />
-      </template>
-      {{ $t('DataSource.Enum.100030-1') }}
-    </a-button>
+    <EmptyCreateButton v-if="!readonly" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { createReusableTemplate } from '@vueuse/core'
+
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 import { randomString } from '@jetlinks-web/utils'
@@ -218,6 +229,8 @@ defineExpose({
   getData,
   setData
 })
+
+const [DefineEmptyCreate, EmptyCreateButton] = createReusableTemplate()
 </script>
 
 <style scoped lang="less">

@@ -1,5 +1,15 @@
 <template>
-  <div class="command-list">
+
+  <DefineEmptyCreate>
+    <a-button
+      size="small"
+      type="text"
+      @click="onAdd"
+    >
+      <AIcon type="PlusOutlined" />
+    </a-button>
+  </DefineEmptyCreate>
+  <div v-bind="$attrs" class="command-list">
     <ListHeader
       :search-placeholder="$t('DataSource.CommandList.100015-0')"
       @search="handleSearch"
@@ -35,13 +45,7 @@
           </FileUpload>
         </a-tooltip>
 
-        <a-button
-          size="small"
-          type="text"
-          @click="onAdd"
-        >
-          <AIcon type="PlusOutlined" />
-        </a-button>
+        <EmptyCreateButton />
       </template>
     </ListHeader>
 
@@ -87,13 +91,17 @@
 
     <template v-else>
       <div class="empty-container">
-        <j-empty />
+        <CloudEmpty :search="searchQuery" :search-name="$t('EmptyCreate.names.commands')">
+          <EmptyCreateButton />
+        </CloudEmpty>
       </div>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { createReusableTemplate } from '@vueuse/core'
+
 import ListHeader from '../../../../components/ListHeader.vue'
 import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
 import { useI18n } from 'vue-i18n'
@@ -189,6 +197,8 @@ watch(
 )
 
 defineExpose({ selectById })
+
+const [DefineEmptyCreate, EmptyCreateButton] = createReusableTemplate()
 </script>
 
 <style lang="less" scoped>

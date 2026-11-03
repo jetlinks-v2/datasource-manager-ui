@@ -873,5 +873,7 @@
   "DataSource.Upload.100097-2": "File size must be less than {0}M",
   "DataSource.binding.readOnlyRequired": "This operation is not declared as a repeatable read query",
   "DataSource.binding.disabled": "Data source is disabled",
-  "DataSource.binding.partialCatalog": "Some custom queries could not load. Check permissions and source status, then refresh."
+  "DataSource.binding.partialCatalog": "Some custom queries could not load. Check permissions and source status, then refresh.",
+  "EmptyCreate.names.enum_entries": "enum entries",
+  "EmptyCreate.names.commands": "commands"
 }
