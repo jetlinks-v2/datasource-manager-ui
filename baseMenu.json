@@ -299,7 +299,11 @@
             ],
             "accessSupport": "support",
             "supportDataAccess": true,
-            "assetType": "datasource"
+            "assetType": "datasource",
+            "assetTypes": [
+              "datasource",
+              "datasource_group"
+            ]
           }
         ]
       }
