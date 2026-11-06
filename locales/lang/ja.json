@@ -1,4 +1,9 @@
 {
+  "DataSource.list.retry": "再試行",
+  "DataSource.list.loadFailed": "データソースを読み込めませんでした。再試行してください。",
+  "DataSource.category.loadFailed": "分類を読み込めませんでした。再試行してください。",
+  "DataSource.category.edit": "分類を編集",
+  "DataSource.category.title": "データソース分類",
   "DataSource.index.100001-0": "データソース",
   "DataSource.index.100001-1": "追加",
   "DataSource.index.100001-2": "この名前は既に存在します",
@@ -13,7 +18,7 @@
   "DataSource.index.100001-11": "操作が完了しました",
   "DataSource.index.100001-12": "すべて",
   "DataSource.List.100002-0": "データがありません",
-  "DataSource.List.100002-1": "右上の「データソースの追加」をクリックしてください",
+  "DataSource.List.100002-1": "「追加」をクリックしてデータソースを追加してください",
   "DataSource.List.100002-2": "編集",
   "DataSource.List.100002-3": "このデータソースを削除すると、関連データも削除されます。慎重に操作してください",
   "DataSource.List.100002-4": "削除に成功しました",

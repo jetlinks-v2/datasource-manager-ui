@@ -43,6 +43,7 @@ export const dataSourceColumns: Array<any> = [
     title: i18n.global.t('DataSource.table.100003-0'),
     dataIndex: 'name',
     key: 'name',
+    ellipsis: true,
     search: {
       type: 'string',
       componentProps: {
@@ -55,6 +56,7 @@ export const dataSourceColumns: Array<any> = [
     title: i18n.global.t('DataSource.table.100003-2'),
     dataIndex: 'id',
     key: 'id',
+    ellipsis: true,
     search: {
       type: 'string',
       componentProps: {
@@ -81,6 +83,7 @@ export const dataSourceColumns: Array<any> = [
     title: i18n.global.t('DataSource.table.100003-6'),
     dataIndex: 'description',
     key: 'description',
+    ellipsis: true,
     search: {
       type: 'string',
       componentProps: {
@@ -94,7 +97,8 @@ export const dataSourceColumns: Array<any> = [
     dataIndex: 'action',
     key: 'action',
     ellipsis: true,
-    width: '180px',
+    width: 120,
+    fixed: 'right',
     scopedSlots: true
   }
 ]

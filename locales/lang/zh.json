@@ -1,4 +1,9 @@
 {
+  "DataSource.list.retry": "重试",
+  "DataSource.list.loadFailed": "数据源加载失败，请重试",
+  "DataSource.category.loadFailed": "分类加载失败，请重试",
+  "DataSource.category.edit": "编辑分类",
+  "DataSource.category.title": "数据源分类",
   "DataSource.index.100001-0": "数据源",
   "DataSource.index.100001-1": "新增",
   "DataSource.index.100001-2": "该名称重复",
@@ -13,7 +18,7 @@
   "DataSource.index.100001-11": "操作成功",
   "DataSource.index.100001-12": "全部",
   "DataSource.List.100002-0": "暂无数据",
-  "DataSource.List.100002-1": "点击右上角「新增数据源」",
+  "DataSource.List.100002-1": "点击「新增」添加数据源",
   "DataSource.List.100002-2": "编辑",
   "DataSource.List.100002-3": "删除该数据源后，相关数据将被删除，请谨慎操作",
   "DataSource.List.100002-4": "删除成功",
