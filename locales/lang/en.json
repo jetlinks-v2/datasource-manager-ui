@@ -1,4 +1,9 @@
 {
+  "DataSource.list.retry": "Retry",
+  "DataSource.list.loadFailed": "Unable to load data sources. Please retry.",
+  "DataSource.category.loadFailed": "Unable to load categories. Please retry.",
+  "DataSource.category.edit": "Edit category",
+  "DataSource.category.title": "Data source categories",
   "DataSource.index.100001-0": "Data Source",
   "DataSource.index.100001-1": "Add",
   "DataSource.index.100001-2": "Name already exists",
@@ -13,7 +18,7 @@
   "DataSource.index.100001-11": "Operation successful",
   "DataSource.index.100001-12": "All",
   "DataSource.List.100002-0": "No Data",
-  "DataSource.List.100002-1": "Click \"Add Data Source\" in the upper right corner",
+  "DataSource.List.100002-1": "Click \"Add\" to create a data source",
   "DataSource.List.100002-2": "Edit",
   "DataSource.List.100002-3": "After deleting this data source, related data will be deleted. Please proceed with caution",
   "DataSource.List.100002-4": "Delete successful",
