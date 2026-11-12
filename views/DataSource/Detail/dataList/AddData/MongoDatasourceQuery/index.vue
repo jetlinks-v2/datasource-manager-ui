@@ -27,10 +27,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="MongoDatasourceQuery">
+<script setup lang="ts">
 import CommonQuery from './components/CommonQuery.vue'
 import AggregateQuery from './components/AggregateQuery/index.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'MongoDatasourceQuery' })
 
 const props = defineProps({
   data: {

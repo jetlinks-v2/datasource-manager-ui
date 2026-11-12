@@ -95,7 +95,7 @@
   </a-tabs>
 </template>
 
-<script setup lang="ts" name="RequestParams">
+<script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
 import { onlyMessage } from '@jetlinks-web/utils'
 import ParamConfigTable from '../../components/ParamConfigTable.vue'
@@ -104,6 +104,8 @@ import { paramColumns, type ParamItem } from '../../components/setting'
 import { useAllParams } from '../../utils'
 import { convertParamsToObject, findBodyJsonParams, findQueryParams, findUriParams } from '../../components/utils'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'RequestParams' })
 
 const { t: $t } = useI18n()
 type BodyFormatType = 'none' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'application/json'

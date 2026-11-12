@@ -93,10 +93,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="IndexContent">
+<script setup lang="ts">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import DescriptionItemList, { type DescriptionItem } from '../../info/components/DescriptionItemList.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'IndexContent' })
 
 const props = defineProps<{
   selectedItem: any

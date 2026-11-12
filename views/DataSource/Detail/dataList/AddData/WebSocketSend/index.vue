@@ -62,7 +62,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="WebSocketSend">
+<script setup lang="ts">
 import RequestParams from './RequestParams/index.vue'
 import CheckTest from '../components/CheckTest/index.vue'
 import ResponseResult from './ResponseResult/index.vue'
@@ -74,6 +74,8 @@ import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { WebSocketProtocol } from '../type'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'WebSocketSend' })
 
 const { t: $t } = useI18n()
 

@@ -61,7 +61,7 @@
   />
 </template>
 
-<script lang="ts" name="DataList" setup>
+<script lang="ts" setup>
 import { Modal } from 'ant-design-vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import AddData from './AddData/index.vue'
@@ -76,6 +76,8 @@ import {
   getDatasource,
   getDataSourceCommands
 } from '@datasource-manager-ui/api/data/datasource'
+
+defineOptions({ name: 'DataList' })
 
 const { t: $t } = useI18n()
 

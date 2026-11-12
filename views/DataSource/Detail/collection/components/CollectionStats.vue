@@ -66,11 +66,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CollectionStats">
+<script setup lang="ts">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import IndexKeysPreview from './IndexKeysPreview.vue'
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'CollectionStats' })
 
 interface CollectionStats {
   ns: string

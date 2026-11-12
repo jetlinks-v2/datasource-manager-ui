@@ -95,9 +95,11 @@
   </a-form>
 </template>
 
-<script setup lang="ts" name="FormItemRedis">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { RedisData } from '../../type'
+
+defineOptions({ name: 'FormItemRedis' })
 
 const { t: $t } = useI18n()
 

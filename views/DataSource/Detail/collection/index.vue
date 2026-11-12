@@ -11,10 +11,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="Collection">
+<script setup lang="ts">
 import { SourceDataInfo } from '../type'
 import CollectionList from './components/CollectionList.vue'
 import CollectionContent from './components/CollectionContent.vue'
+
+defineOptions({ name: 'Collection' })
 
 interface CollectionSchema {
   name: string

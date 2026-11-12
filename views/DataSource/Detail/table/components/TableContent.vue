@@ -82,9 +82,11 @@
   </div>
 </template>
 
-<script setup lang="ts" name="TableContent">
+<script setup lang="ts">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'TableContent' })
 
 const { t: $t } = useI18n()
 

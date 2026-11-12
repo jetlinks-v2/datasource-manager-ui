@@ -14,10 +14,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="Table">
+<script setup lang="ts">
 import { SourceDataInfo } from '../type'
 import TableList from './components/TableList.vue'
 import TableContent from './components/TableContent.vue'
+
+defineOptions({ name: 'Table' })
 
 interface TableSchema {
   name: string

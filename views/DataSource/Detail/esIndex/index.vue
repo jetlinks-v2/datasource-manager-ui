@@ -14,9 +14,11 @@
   </div>
 </template>
 
-<script setup lang="ts" name="EsIndex">
+<script setup lang="ts">
 import IndexList from './components/IndexList.vue'
 import IndexContent from './components/IndexContent.vue'
+
+defineOptions({ name: 'EsIndex' })
 
 const selectedItem = ref({} as any)
 

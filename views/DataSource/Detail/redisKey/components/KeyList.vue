@@ -86,12 +86,14 @@
   </div>
 </template>
 
-<script setup lang="ts" name="KeyList">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { getToken, onlyMessage } from '@jetlinks-web/utils'
 import { throttle } from 'lodash-es'
+
+defineOptions({ name: 'KeyList' })
 
 const { t: $t } = useI18n()
 

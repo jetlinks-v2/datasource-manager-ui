@@ -23,9 +23,11 @@
   </div>
 </template>
 
-<script setup lang="ts" name="RedisKey">
+<script setup lang="ts">
 import KeyList from './components/KeyList.vue'
 import KeyDetail from './components/KeyDetail.vue'
+
+defineOptions({ name: 'RedisKey' })
 
 const keyListRef = ref()
 

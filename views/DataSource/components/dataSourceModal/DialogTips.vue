@@ -43,8 +43,10 @@
   </a-modal>
 </template>
 
-<script setup lang="ts" name="DataSourceDialogTips">
+<script setup lang="ts">
 import { useMenuStore } from '@jetlinks-web-core/store'
+
+defineOptions({ name: 'DataSourceDialogTips' })
 
 const visible = ref(false)
 const datasourceId = ref('')

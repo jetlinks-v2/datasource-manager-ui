@@ -27,10 +27,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="RedisDatasourceQuery">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import CommonQuery from './components/CommonQuery.vue'
 import ScriptQuery from './components/ScriptQuery.vue'
+
+defineOptions({ name: 'RedisDatasourceQuery' })
 
 const { t: $t } = useI18n()
 

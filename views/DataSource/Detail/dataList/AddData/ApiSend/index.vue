@@ -66,7 +66,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="ApiSend">
+<script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { SelectValue } from 'ant-design-vue/lib/select'
@@ -78,6 +78,8 @@ import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import type { ApiMethod } from '../type'
 import { useI18n } from 'vue-i18n'
 import { isObject } from 'lodash-es'
+
+defineOptions({ name: 'ApiSend' })
 
 const { t: $t } = useI18n()
 
