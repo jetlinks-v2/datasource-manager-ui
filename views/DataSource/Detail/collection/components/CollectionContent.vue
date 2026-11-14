@@ -33,10 +33,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CollectionContent">
+<script setup lang="ts">
 import CollectionDataTable from './CollectionDataTable.vue'
 import CollectionStats from './CollectionStats.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'CollectionContent' })
 
 const { t: $t } = useI18n()
 

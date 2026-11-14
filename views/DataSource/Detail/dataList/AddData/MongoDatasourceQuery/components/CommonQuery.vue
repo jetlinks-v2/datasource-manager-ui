@@ -57,7 +57,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="MongoCommonQuery">
+<script setup lang="ts">
 import { onlyMessage } from '@jetlinks-web/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { moduleRegistry } from '@jetlinks-web-core/utils/module-registry'
@@ -66,6 +66,8 @@ import CollectionList from '@datasource-manager-ui/views/DataSource/Detail/colle
 import QueryResults from './QueryResults.vue'
 import TitleComponent from '@jetlinks-web-core/components/TitleComponent/index.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'MongoCommonQuery' })
 
 const { DataInputsItem } = moduleRegistry.getResource('visualization-designer-ui', 'components')
 

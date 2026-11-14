@@ -45,7 +45,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="EsDatasourceQuery">
+<script setup lang="ts">
 import { message } from 'ant-design-vue'
 import { randomString } from '@jetlinks-web/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
@@ -54,6 +54,8 @@ import IndexList from '@datasource-manager-ui/views/DataSource/Detail/esIndex/co
 import EsFieldSelector from './components/EsFieldSelector.vue'
 import QueryResults from '../RdbDatasourceQuery/components/QueryResults.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'EsDatasourceQuery' })
 
 const props = defineProps({
   data: {

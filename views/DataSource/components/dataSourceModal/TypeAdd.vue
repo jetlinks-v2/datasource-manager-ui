@@ -65,11 +65,13 @@
   </a-modal>
 </template>
 
-<script setup lang="ts" name="TypeAdd">
+<script setup lang="ts">
 import { typesData } from '../table'
 import { cloneDeep } from 'lodash-es'
 import { useSourceDetailStore } from '../../sourceDetail'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'TypeAdd' })
 
 const { t: $t } = useI18n()
 

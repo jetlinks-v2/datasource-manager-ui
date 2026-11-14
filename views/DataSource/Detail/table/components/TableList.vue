@@ -65,11 +65,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="TableList">
+<script setup lang="ts">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { queryDataSource, getDataSourceTables } from '@datasource-manager-ui/api/data/datasource'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'TableList' })
 
 interface TableSchema {
   name: string

@@ -17,11 +17,13 @@
   </div>
 </template>
 
-<script lang="ts" name="ApiConnection" setup>
+<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import DescriptionItemList, { type DescriptionItem, type DescriptionLabel } from './components/DescriptionItemList.vue'
 import MaskDisplay from './components/MaskDisplay.vue'
 import KeyValueTable from './components/KeyValueTable.vue'
+
+defineOptions({ name: 'ApiConnection' })
 
 const { t: $t } = useI18n()
 

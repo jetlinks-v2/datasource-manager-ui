@@ -51,10 +51,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CollectionList">
+<script setup lang="ts">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'CollectionList' })
 
 const { t: $t } = useI18n()
 

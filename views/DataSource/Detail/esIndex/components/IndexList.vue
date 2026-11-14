@@ -60,11 +60,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="IndexList">
+<script setup lang="ts">
 import ListHeader from '@datasource-manager-ui/views/DataSource/components/ListHeader.vue'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'IndexList' })
 
 const { t: $t } = useI18n()
 
