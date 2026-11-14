@@ -130,7 +130,7 @@
   </a-modal>
 </template>
 
-<script lang="ts" name="BaseFormInfo" setup>
+<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { Rule } from 'ant-design-vue/es/form'
 import { onlyMessage } from '@jetlinks-web/utils'
@@ -138,6 +138,8 @@ import { getDataSourceRepeat } from '@datasource-manager-ui/api/data/datasource'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { addDataSourceGroup } from '@datasource-manager-ui/api/data'
 import { BaseFormData } from '../../type'
+
+defineOptions({ name: 'BaseFormInfo' })
 
 const { t: $t } = useI18n()
 

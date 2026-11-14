@@ -47,13 +47,15 @@
   </div>
 </template>
 
-<script setup lang="ts" name="BasicForm">
+<script setup lang="ts">
 import { checkCommandExists } from '@datasource-manager-ui/api/data/datasource'
 import type { Rule } from 'ant-design-vue/es/form'
 import CommandParams from './CommandParams/index.vue'
 import { set } from 'lodash-es'
 import { DATA_TYPE_ITEM } from '../../../../components/table'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'BasicForm' })
 
 const { t: $t } = useI18n()
 

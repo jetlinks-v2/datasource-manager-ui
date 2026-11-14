@@ -66,7 +66,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CommonQuery">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnType } from 'ant-design-vue/es/table'
@@ -79,6 +79,8 @@ import {
 } from '@datasource-manager-ui/views/DataSource/Detail/redisKey/components/dataTypes'
 import { convertParamsToObject } from '../../components/utils'
 import { cloneDeep } from 'lodash-es'
+
+defineOptions({ name: 'CommonQuery' })
 
 const { t: $t } = useI18n()
 

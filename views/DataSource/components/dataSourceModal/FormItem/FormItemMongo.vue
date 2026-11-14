@@ -155,11 +155,13 @@
   </a-form>
 </template>
 
-<script setup lang="ts" name="FormItemMongo">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { MongoData } from '../../type'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import HeaderParamsTable from './FormItemApi/HeaderParamsTable.vue'
+
+defineOptions({ name: 'FormItemMongo' })
 
 const { t: $t } = useI18n()
 

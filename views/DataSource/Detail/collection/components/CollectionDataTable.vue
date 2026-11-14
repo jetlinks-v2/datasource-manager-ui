@@ -29,11 +29,13 @@
   </j-pro-table>
 </template>
 
-<script setup lang="ts" name="CollectionDataTable">
+<script setup lang="ts">
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import PreviewModal from './PreviewModal.vue'
 import { convertObjectId } from '../../utils'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'CollectionDataTable' })
 
 const { t: $t } = useI18n()
 

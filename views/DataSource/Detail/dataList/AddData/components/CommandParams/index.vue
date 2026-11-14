@@ -29,11 +29,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CommandParams">
+<script setup lang="ts">
 import CommandTable from './CommandTable.vue'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { cloneDeep, isArray } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'CommandParams' })
 
 const { t: $t } = useI18n()
 

@@ -106,7 +106,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="RedisScriptQuery">
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { onlyMessage } from '@jetlinks-web/utils'
 import LuaScriptEditor from './LuaScriptEditor.vue'
@@ -115,6 +115,8 @@ import CheckTest from '@datasource-manager-ui/views/DataSource/Detail/dataList/A
 import { convertParamsToObject } from '../../components/utils'
 import { convertToTableTreeData, parseTableTreeToMetadata } from '../../utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
+
+defineOptions({ name: 'RedisScriptQuery' })
 
 const { t: $t } = useI18n()
 

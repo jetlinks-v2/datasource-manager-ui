@@ -92,7 +92,7 @@
   </div>
 </template>
 
-<script lang="ts" name="Detail" setup>
+<script lang="ts" setup>
 import Info from './info/index.vue'
 import Query from './query/index.vue'
 import Table from './table/index.vue'
@@ -110,6 +110,8 @@ import { Modal } from 'ant-design-vue'
 import { useTestConnection } from '../composables/useTestConnection'
 import { useI18n } from 'vue-i18n'
 import { useMenuStore } from '@jetlinks-web-core/store'
+
+defineOptions({ name: 'Detail' })
 
 const { t: $t } = useI18n()
 

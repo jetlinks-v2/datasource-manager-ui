@@ -171,12 +171,14 @@
     </div>
   </a-form>
 </template>
-<script lang="ts" name="FormItemApi" setup>
+<script lang="ts" setup>
 import { useSourceDetailStore } from '../../../../sourceDetail'
 import { UniversalData } from '../../../type'
 import HeaderParamsTable from './HeaderParamsTable.vue'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'FormItemApi' })
 
 const { t: $t } = useI18n()
 

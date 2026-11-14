@@ -75,7 +75,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="RdbDatasourceQuery">
+<script setup lang="ts">
 import { onlyMessage, randomString } from '@jetlinks-web/utils'
 import { queryDataSource } from '@datasource-manager-ui/api/data/datasource'
 import { ColumnSchema, Key, TableSchema } from './type'
@@ -85,6 +85,8 @@ import FieldSelector from './components/FieldSelector.vue'
 import SqlEditor from './components/SqlEditor.vue'
 import QueryResults from './components/QueryResults.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'RdbDatasourceQuery' })
 
 const { t: $t } = useI18n()
 

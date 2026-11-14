@@ -127,13 +127,15 @@
   </a-form>
 </template>
 
-<script setup lang="ts" name="FormItemRdb">
+<script setup lang="ts">
 import { RelationData } from '../../type'
 import { DATASOURCE_TYPE, datasourceParseUrl } from '../../table'
 import { useSourceDetailStore } from '../../../sourceDetail'
 import { cloneDeep } from 'lodash-es'
 import { spaceValidator } from '@datasource-manager-ui/utils/utils'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'FormItemRdb' })
 
 const { t: $t } = useI18n()
 

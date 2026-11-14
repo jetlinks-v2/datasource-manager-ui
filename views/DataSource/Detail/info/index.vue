@@ -12,7 +12,7 @@
   />
 </template>
 
-<script setup lang="ts" name="Info">
+<script setup lang="ts">
 import dayjs from 'dayjs'
 import RdbConnection from './RdbConnection.vue'
 import ApiConnection from './ApiConnection.vue'
@@ -24,6 +24,8 @@ import { SourceDataInfo } from '../type'
 import RedisConnection from './RedisConnection.vue'
 import MongoConnection from './MongoConnection.vue'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'Info' })
 
 const props = defineProps<{ info: SourceDataInfo; sourceClassify: any; sourceData?: any }>()
 const { info, sourceClassify } = toRefs(props)
