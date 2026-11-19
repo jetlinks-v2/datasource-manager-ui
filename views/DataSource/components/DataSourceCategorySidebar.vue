@@ -1,15 +1,5 @@
 <template>
   <div class="datasource-categories">
-    <header class="datasource-categories__header">
-      <strong>{{ t('DataSource.category.title') }}</strong>
-    </header>
-    <a-input
-      :value="state.keyword" allow-clear
-      :placeholder="t('DataSource.BaseForm.100071-11')" :aria-label="t('DataSource.BaseForm.100071-11')"
-      @update:value="emit('search', $event)"
-    >
-      <template #prefix><AIcon type="SearchOutlined" aria-hidden="true" /></template>
-    </a-input>
     <div class="datasource-categories__body">
       <a-spin :spinning="state.loading">
         <a-alert v-if="state.error" type="error" show-icon :message="t('DataSource.category.loadFailed')">
@@ -86,7 +76,6 @@ const props = defineProps<{
   permission: string
 }>()
 const emit = defineEmits<{
-  search: [keyword: string]
   select: [category: DataSourceCategory]
   create: []
   edit: [category: DataSourceCategory]
@@ -113,13 +102,6 @@ const handleSelect: TreeProps['onSelect'] = (keys) => {
   min-width: 0;
 
   > :not(.datasource-categories__body) { flex-shrink: 0; }
-
-  &__header strong {
-    color: var(--jet-theme-text-title);
-    font-size: var(--fs-18);
-    font-weight: var(--chrome-label-font-weight);
-    line-height: var(--lh-24);
-  }
 
   &__body { flex: 1; min-height: 0; overflow: auto; }
   &__item { display: flex; align-items: center; gap: var(--space-1); min-width: 0; line-height: 2rem; }
