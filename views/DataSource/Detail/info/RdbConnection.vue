@@ -73,6 +73,7 @@ const getDatabaseName = computed(() => {
 const databaseItems = computed<DescriptionItem[]>(() => [
   {
     key: 'connectionMode',
+    helpKey: 'connection.mode',
     label: $t('Info.Rdb.100066-1'),
     value: isBasicMode.value ? $t('Info.Rdb.100066-2') : $t('Info.Rdb.100066-3'),
     condition: true

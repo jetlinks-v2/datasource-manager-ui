@@ -1,4 +1,12 @@
 {
+  "DataSourceDocumentHelp": {
+    "connection": "接続設定",
+    "commands": "データコマンド",
+    "connectionMode": "データベース接続方式",
+    "apiAuth": "API 認証方式",
+    "commandSupport": "コマンド識別子",
+    "commandParameters": "コマンドの入力と出力"
+  },
   "DataSource.list.retry": "再試行",
   "DataSource.list.loadFailed": "データソースを読み込めませんでした。再試行してください。",
   "DataSource.category.loadFailed": "分類を読み込めませんでした。再試行してください。",

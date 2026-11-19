@@ -1,10 +1,10 @@
 <template>
   <div class="basic-form">
     <a-form-item
-      :label="$t('DataSource.table.100003-2')"
       name="support"
       :rules="rules.support"
     >
+      <template #label>{{ $t('DataSource.table.100003-2') }} <DocumentHelp code="system/DataSource" help-key="command.support" /></template>
       <a-input
         :value="modelValue.support"
         :placeholder="$t('DataSource.BasicForm.100017-0')"
@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import DocumentHelp from '@jetlinks-web-core/components/DocumentHelp'
 import { checkCommandExists } from '@datasource-manager-ui/api/data/datasource'
 import type { Rule } from 'ant-design-vue/es/form'
 import CommandParams from './CommandParams/index.vue'

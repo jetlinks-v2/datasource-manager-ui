@@ -26,6 +26,7 @@
               />
             </a-tooltip>
           </a-space>
+          <DocumentHelp v-if="item.helpKey" code="system/DataSource" :help-key="item.helpKey" />
         </template>
 
         <!-- 如果有对应的插槽，使用插槽 -->
@@ -50,6 +51,7 @@
 </template>
 
 <script lang="ts" setup>
+import DocumentHelp from '@jetlinks-web-core/components/DocumentHelp'
 export interface DescriptionLabel {
   text: string
   tooltip?: string
@@ -57,6 +59,7 @@ export interface DescriptionLabel {
 
 export interface DescriptionItem {
   key: string
+  helpKey?: string
   label: string | DescriptionLabel
   value?: string
   component?: Component | string

@@ -1,4 +1,12 @@
 {
+  "DataSourceDocumentHelp": {
+    "connection": "Connection configuration",
+    "commands": "Data commands",
+    "connectionMode": "Database connection mode",
+    "apiAuth": "API authentication method",
+    "commandSupport": "Command identifier",
+    "commandParameters": "Command inputs and outputs"
+  },
   "DataSource.list.retry": "Retry",
   "DataSource.list.loadFailed": "Unable to load data sources. Please retry.",
   "DataSource.category.loadFailed": "Unable to load categories. Please retry.",

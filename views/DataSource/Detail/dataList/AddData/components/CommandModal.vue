@@ -14,6 +14,7 @@
         <j-ellipsis>
           <div class="title-content">{{ data.name }}</div>
         </j-ellipsis>
+        <DocumentHelp code="system/DataSource" help-key="command.parameters" />
       </div>
 
       <div class="meta">
@@ -45,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import DocumentHelp from '@jetlinks-web-core/components/DocumentHelp'
 import CommandParams from './CommandParams/index.vue'
 import { metadataConvertToTableTree } from '../utils'
 import { useI18n } from 'vue-i18n'

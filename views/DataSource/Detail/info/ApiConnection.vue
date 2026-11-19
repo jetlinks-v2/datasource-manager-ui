@@ -103,6 +103,7 @@ const baseItems = computed<DescriptionItem[]>(() => [
   },
   {
     key: 'authType',
+    helpKey: 'connection.apiAuth',
     label: $t('Info.Api.100063-2'),
     value: authTypeText.value
   }
