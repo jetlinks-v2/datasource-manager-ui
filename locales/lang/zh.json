@@ -1,4 +1,12 @@
 {
+  "DataSourceDocumentHelp": {
+    "connection": "连接配置",
+    "commands": "数据命令",
+    "connectionMode": "数据库连接方式",
+    "apiAuth": "API 认证方式",
+    "commandSupport": "命令标识",
+    "commandParameters": "命令输入与输出"
+  },
   "DataSource.list.retry": "重试",
   "DataSource.list.loadFailed": "数据源加载失败，请重试",
   "DataSource.category.loadFailed": "分类加载失败，请重试",
